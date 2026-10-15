@@ -2,7 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {systems,basisVectors,volume,dSpacing,cubicInfo,planePolygon,dot,wignerSeitz,madelungShells,potential,radialForce,equilibrium,structureBasis} from '../crystal-math.js';
 import {sections,pageMap,pageNotes,examples} from '../lecture-data.js';
+import {hexagonVertices,hexagonalPrismSites,fractional,norm,sub} from '../crystal-math.js';
 const near=(a,b,tolerance=1e-7)=>assert.ok(Math.abs(a-b)<tolerance,`${a} != ${b}`);
+test('hexagonal overview has a regular six-sided base and correct HCP AB layers',()=>{
+ const basis=basisVectors(systems.Hexagonal.params),ring=hexagonVertices().map(p=>fractional([...p,0],basis));
+ ring.forEach((p,i)=>{near(norm(p),1);near(norm(sub(p,ring[(i+1)%6])),1);});
+ const sites=hexagonalPrismSites(true);assert.equal(sites.length,17);
+ const middle=sites.filter(s=>s.p[2]===.5);assert.equal(middle.length,3);
+ for(const s of middle)near(norm(fractional([s.p[0],s.p[1],0],basis)),1/Math.sqrt(3));
+ near(12/6+2/2+middle.length,6);
+ const area=Math.abs(ring.reduce((sum,p,i)=>sum+p[0]*ring[(i+1)%6][1]-p[1]*ring[(i+1)%6][0],0))/2;
+ near(area*systems.Hexagonal.params[2],3*volume(basis));
+});
 
 test('all 40 lecture pages and all 13 worked examples are represented',()=>{
  assert.equal(pageMap.length,40);assert.equal(Object.keys(pageNotes).length,40);assert.equal(examples.length,13);assert.equal(sections.length,16);

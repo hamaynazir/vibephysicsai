@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {systems,basisVectors,fractional,unitSites,cubicInfo,cellEdges,cubeCorners,add,sub,mul,norm,unit,dot,planePolygon,reciprocal,wignerSeitz,madelungShells,potential,radialForce,atomDisplayGroup} from './crystal-math.js';
 import {drawTeaching} from './teaching-visuals.js';
+import {hexagonVertices,hexagonalPrismSites} from './crystal-math.js';
 
 const COLORS=['#76e0ce','#ba9dff','#f4bd77','#f18da7'];
 const v3=p=>new THREE.Vector3(p[0],p[2],-p[1]);
@@ -48,7 +49,8 @@ export class Visualizer{
   const type=s.structure||'SC';let params=s.params||[1,1,1,90,90,90],centering=null;
   if(mode==='systems'||mode==='bravais'){params=systems[s.system||'Cubic'].params;centering=mode==='bravais'?(s.centering||'P'):'P';}
   if(type==='HCP'&&mode==='structures')params=[1,1,+s.ca||Math.sqrt(8/3),90,90,120];
-  const basis=basisVectors(params),repeats=s.repeat&&s.teaching?.topic!=='counting'?2:1,center=mul(fractional([repeats/2,repeats/2,repeats/2],basis),-1),scale=1.5/Math.max(...params.slice(0,3),1)/repeats;
+  const hexPrism=!s.teaching&&!s.repeat&&((mode==='structures'&&type==='HCP')||(['systems','bravais'].includes(mode)&&s.system==='Hexagonal'));
+  const basis=basisVectors(params),repeats=s.repeat&&s.teaching?.topic!=='counting'?2:1,center=mul(fractional(hexPrism?[0,0,.5]:[repeats/2,repeats/2,repeats/2],basis),-1),scale=1.5/Math.max(...params.slice(0,3),1)/repeats;
   const world=p=>mul(add(fractional(p,basis),center),scale);
   const cartesian=p=>mul(add(p,center),scale);
   if(mode==='symmetry'){const corners=cubeCorners().map(p=>sub(p,[.5,.5,.5]));cellEdges(corners).forEach(([a,b])=>this.line(a,b,COLORS[0],.8));corners.forEach(p=>this.atom(p,.06));const operation=s.operation||'4-fold';
@@ -57,7 +59,13 @@ export class Visualizer{
    else {const axis=unit(operation==='3-fold'?[1,1,1]:operation==='2-fold'?[1,1,0]:[0,0,1]);this.line(mul(axis,-1),mul(axis,1),COLORS[2],.9);this.label(operation,mul(axis,1.1),COLORS[2]);if(s.angle)this.group.quaternion.setFromAxisAngle(v3(axis),s.angle*Math.PI/180);}
    return;
   }
-  const corners=cubeCorners().map(p=>world(mul(p,repeats)));cellEdges(corners).forEach(([a,b])=>this.line(a,b,'#7d91b1',.55));
+  if(hexPrism){
+   const ring=hexagonVertices();
+   for(const z of [0,1]){const face=ring.map(p=>world([...p,z]));this.polygon(face,COLORS[0],.035);}
+   ring.forEach((p,i)=>{this.line(world([...p,0]),world([...p,1]),'#7d91b1',.8);});
+   this.label('A',world([1.18,0,0]),COLORS[0]);this.label('A',world([1.18,0,1]),COLORS[0]);
+   if(type==='HCP')this.label('B',world([1.18,0,.5]),COLORS[1]);
+  }else{const corners=cubeCorners().map(p=>world(mul(p,repeats)));cellEdges(corners).forEach(([a,b])=>this.line(a,b,'#7d91b1',.55));}
   if(mode==='indices'||mode==='spacing'){
    const indices=s.indices||[1,1,1];const nodes=cubeCorners();nodes.forEach(p=>this.atom(world(p),.033,COLORS[0],.8));
    if(s.indexMode==='direction'&&mode==='indices'){
@@ -69,7 +77,7 @@ export class Visualizer{
     const normal=unit(fractional(indices,reciprocal(basis))),c=world([.5,.5,.5]);if(s.teaching?.topic!=='planes'){this.arrow(c,add(c,mul(normal,.65)),COLORS[2]);this.label('normal',add(c,mul(normal,.8)),COLORS[2]);}
    }
   }else{
-   const sites=unitSites(type,repeats,centering),info=cubicInfo[type],baseRadius=(mode==='packing'?(info?.radius||.25):.09)*(+s.atomScale||.6),radius=baseRadius*scale;
+   const sites=hexPrism?hexagonalPrismSites(type==='HCP'):unitSites(type,repeats,centering),info=cubicInfo[type],baseRadius=(mode==='packing'?(info?.radius||.25):.09)*(+s.atomScale||.6),radius=baseRadius*scale;
    for(const {p,s:species}of sites){
     const t=s.teaching,selected=t?.topic==='neighbors'&&norm(sub(p,t.selected))<1e-6,near=t?.topic==='neighbors'&&t.neighbors.sites.some(n=>norm(sub(p,n.p))<1e-6);
     const boundaries=p.filter(x=>Math.abs(x)<1e-6||Math.abs(x-repeats)<1e-6).length;

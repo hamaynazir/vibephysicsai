@@ -57,6 +57,14 @@ export function unitSites(type,repeats=1,centering=null){
  for(let i=0;i<=repeats;i++)for(let j=0;j<=repeats;j++)for(let k=0;k<=repeats;k++)for(const {p,s}of sites){const q=add(p,[i,j,k]);if(q.every(x=>x<=repeats+1e-8))out.push({p:q,s});}return out;
 }
 export const cubeCorners=()=>Array.from({length:8},(_,i)=>[i&1,(i>>1)&1,(i>>2)&1]);
+// Six-sided presentation contains three primitive basal cells (volume 3 Vprimitive).
+export const hexagonVertices=()=>[[1,0],[1,1],[0,1],[-1,0],[-1,-1],[0,-1]];
+export function hexagonalPrismSites(hcp=false){
+ const ring=hexagonVertices(),sites=[];
+ for(const z of [0,1])for(const p of [[0,0],...ring])sites.push({p:[...p,z],s:0});
+ if(hcp)for(const p of [[2/3,1/3],[-1/3,1/3],[-1/3,-2/3]])sites.push({p:[...p,.5],s:0});
+ return sites;
+}
 export function cellEdges(corners=cubeCorners()){const edges=[];corners.forEach((p,i)=>{for(let j=0;j<3;j++){const k=i^(1<<j);if(k>i)edges.push([p,corners[k]]);}});return edges;}
 // Intersect a fractional plane h*x+k*y+l*z=t with the unit cube.
 export function planePolygon(indices,t=1){

@@ -81,7 +81,7 @@ All original pages are preserved, all 16 lecture sections have companion content
 
 The original PDF is the authoritative record of what the lecture says. Companion notes are explanatory additions. They clarify several issues: 230 counts space-group types, CsCl is primitive cubic with a basis, the rhombohedral metric has equal lengths, covalent bonds can join unlike species, dispersion involves correlated fluctuations, and the radial force is −dU/dr. Diffraction indices retain their order when calculating d. The four-shell 2D Madelung result is explicitly a partial sum.
 
-Models use idealized positions. Full spheres at cell boundaries are visual aids and are counted fractionally. Packing values refer to ideal touching spheres, independent of the display-size control. Bonding animations are conceptual, not quantum simulations. The disorder slider is not an atomistic glass model. The HCP model displays the two-atom primitive hexagonal cell rather than the larger six-atom hexagonal prism. Raw Madelung shell sums in 2D/3D do not provide a reliable converged bulk value.
+Models use idealized positions. Full spheres at cell boundaries are visual aids and are counted fractionally. Packing values refer to ideal touching spheres, independent of the display-size control. Bonding animations are conceptual, not quantum simulations. The disorder slider is not an atomistic glass model. Hexagonal and HCP overview models show the familiar six-sided prism. For HCP this contains six atoms after sharing; vector, counting, coordinate and repeated-cell teaching views use the two-atom primitive cell. Raw Madelung shell sums in 2D/3D do not provide a reliable converged bulk value.
 
 ## Upload to GitHub and host later
 
