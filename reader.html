@@ -40,6 +40,12 @@
           <div class="reader-footer"><span><span class="status-dot"></span> <span id="sync-label">Diagrams follow your page</span></span><button id="sync" aria-pressed="true">Sync on</button></div>
         </section>
         <section class="lab-panel panel" aria-label="Interactive companion">
+          <nav class="visual-navigation" aria-label="Visualization navigation">
+            <label>Subject<select id="visual-subject" aria-label="Choose subject"></select></label>
+            <label>Chapter<select id="visual-chapter" aria-label="Choose chapter"></select></label>
+            <label class="visual-section-field">Section<select id="visual-section" aria-label="Choose visualization section"></select></label>
+            <div class="visual-section-arrows"><button id="visual-previous" aria-label="Previous visualization section">←</button><button id="visual-next" aria-label="Next visualization section">→</button></div>
+          </nav>
           <div class="panel-toolbar"><div class="panel-title"><span class="tiny-icon mint">✧</span> THE INTERACTIVE LAB</div><span class="live-badge"><span class="status-dot"></span> LIVE</span></div>
             <div class="lab-scroll"><div class="lab-heading"><div class="eyebrow" id="section-label">01 / THE CRYSTALLINE STATE</div><h2 id="lab-title">Order makes a crystal.</h2><div class="lecture-lecturer">Lecturer: <strong>Mr. Shaho Mohammed Rasul</strong></div><p id="lab-description"></p></div>
           <div class="lab-tabs" role="tablist" aria-label="Study mode"><button id="tab-explore" role="tab" aria-selected="true" aria-controls="explore-view">Explore</button><button id="tab-ideas" role="tab" aria-selected="false" aria-controls="ideas-view">Key ideas</button><button id="tab-practice" role="tab" aria-selected="false" aria-controls="practice-view">Practice <span>↗</span></button></div>

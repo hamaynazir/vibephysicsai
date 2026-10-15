@@ -1,4 +1,5 @@
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
+import {subjects} from './catalog.js';
 import {Visualizer} from './visuals.js';
 import {Teaching} from './teaching.js';
 import {Learning} from './learning.js';
@@ -33,6 +34,18 @@ function buildToc(){const term=$('#search').value.toLowerCase();let count=0;$('#
 $('#search').addEventListener('input',buildToc);
 $('#toc').addEventListener('click',e=>{const link=e.target.closest('[data-topic]');if(!link)return;e.preventDefault();const section=sections.find(s=>s.id===link.dataset.topic);goPage(section.pages[0],section);});
 
+const readerSubject=subjects.find(s=>s.id==='solid-state-principles');
+$('#visual-subject').innerHTML=subjects.map(s=>`<option value="${s.id}">${escapeHTML(s.title)}${s.lessons.length?'':' · No lectures yet'}</option>`).join('');
+$('#visual-subject').value=readerSubject.id;
+$('#visual-chapter').innerHTML=readerSubject.lessons.map(l=>`<option value="${l.id}">${l.number}. ${escapeHTML(l.title)}</option>`).join('');
+$('#visual-section').innerHTML=sections.map(s=>`<option value="${s.id}">${s.n}. ${escapeHTML(s.title)}</option>`).join('');
+$('#visual-subject').onchange=e=>{location.href=`./#subject=${encodeURIComponent(e.target.value)}`;};
+$('#visual-chapter').onchange=e=>{const lesson=readerSubject.lessons.find(l=>l.id===e.target.value);if(lesson?.id==='crystal-structures')goPage(1,sections[0]);else if(lesson)location.href=lesson.reader;};
+function navigateVisualization(section){if(!section)return;goPage(section.pages[0],section);learning?.activate('explore');}
+$('#visual-section').onchange=e=>navigateVisualization(sections.find(s=>s.id===e.target.value));
+$('#visual-previous').onclick=()=>navigateVisualization(sections[sections.indexOf(currentSection)-1]);
+$('#visual-next').onclick=()=>navigateVisualization(sections[sections.indexOf(currentSection)+1]);
+
 function pagePreset(page){
  if(page===1)return {disorder:0};if(page===2||page===3)return {structure:'FCC',primitive:true};
  if(page===5)return {system:'Tetragonal'};if(page===6)return {system:'Monoclinic'};if(page===7)return {system:'Hexagonal'};
@@ -44,6 +57,9 @@ function pagePreset(page){
 }
 function setSection(section,{preset=true,force=false}={}){
  const changed=currentSection.id!==section.id||force;currentSection=section;
+ $('#visual-section').value=section.id;
+ $('#visual-previous').disabled=sections.indexOf(section)===0;
+ $('#visual-next').disabled=sections.indexOf(section)===sections.length-1;
  if(changed){mode=section.mode;state=structuredClone(defaults[mode]);}
  if(preset&&lastPagePreset!==currentPage){Object.assign(state,pagePreset(currentPage));lastPagePreset=currentPage;}
  $('#section-label').textContent=`${section.n} / ${section.title.toUpperCase()}`;$('#lab-title').textContent=section.heading;$('#lab-description').textContent=section.description;
