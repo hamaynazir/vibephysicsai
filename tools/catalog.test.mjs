@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import {subjects,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
 test('all five requested subjects exist and listed chapters have real readers',()=>{
  assert.deepEqual(subjects.map(s=>s.title),['Materials Science','Laser Physics','Solid State Principles','Nuclear Models','Electromagnetic Theory']);
+ assert.ok(subjects.every(s=>s.lecturer), 'Every subject identifies its lecturer');
  const lessons=allLessons(),crystal=lessons.find(l=>l.id==='crystal-structures');assert.ok(crystal);assert.equal(crystal.subjectId,'solid-state-principles');assert.equal(crystal.title,'Crystal Structures');for(const lesson of lessons)assert.ok(fs.existsSync(new URL('../'+lesson.reader,import.meta.url)),`Missing reader for ${lesson.id}`);assert.equal(new Set(lessons.map(l=>l.id)).size,lessons.length);
+ assert.equal(crystal.lecturer,'Mr. Shaho Mohammed Rasul');
  assert.equal(new Set(subjects.map(s=>s.id)).size,subjects.length);
 });
 test('resume positions handle missing, corrupt and out-of-range browser values',()=>{
