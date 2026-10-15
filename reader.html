@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Read all 40 pages of Crystal Structures alongside interactive 3D lattices, Miller planes, packing and bonding experiments.">
+  <meta name="author" content="Mohammed Ghazali Fadhil Tahir (Hamaynazir)">
+  <link rel="canonical" href="https://vibephysicsai.com/reader.html">
+  <title>Crystal Structures · Vibe Physics AI</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="reader.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script src="vendor/pdf.min.js" defer></script>
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to lecture</a>
+  <header class="topbar">
+    <div class="reader-home"><a class="library-back" href="./">← Library</a><span class="reader-home-divider" aria-hidden="true"></span><a href="#page=1" class="brand" aria-label="Crystal Structures, first page"><span class="brand-mark">◇</span> Crystal<span>Lab</span></a></div>
+    <div class="course"><span class="status-dot"></span> SOLID STATE PHYSICS <span class="divider">/</span> Chapter 01</div>
+    <div class="header-actions"><button id="chapters-toggle" aria-expanded="false" aria-controls="chapter-sidebar">Chapters</button><button id="theme" class="icon-button" aria-label="Switch color theme" title="Switch color theme">☀</button><button id="help" class="icon-button" aria-label="Help and keyboard shortcuts">?</button></div>
+  </header>
+  <div class="app-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Lecture navigation" inert>
+      <div class="chapter-heading"><div class="eyebrow">YOUR LECTURE</div><h1>Crystal<br>Structures<span>.</span></h1><p>40 pages. A new perspective.</p></div>
+      <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a topic…" aria-label="Find a lecture topic"><kbd>/</kbd></label>
+      <div class="toc-label">CHAPTER CONTENTS <span>16</span></div>
+      <nav id="toc"></nav><p id="no-results" hidden>No matching topics.</p>
+      <div class="sidebar-bottom"><div class="progress-label"><span>Reading position</span><span id="progress-text">1 / 40</span></div><div class="progress-track"><div id="progress"></div></div><a href="assets/lecture.pdf" target="_blank" rel="noopener">↗ Open original PDF</a></div>
+    </aside>
+    <main id="workspace" class="workspace">
+      <div class="workspace-heading"><div><div class="eyebrow">READ. ROTATE. UNDERSTAND.</div><h2>Your lecture, <span>in another dimension.</span></h2></div><span class="chapter-pill">CHAPTER 01 <span>↗</span></span></div>
+      <div class="mobile-switch" role="group" aria-label="Mobile panel"><button data-panel="lecture" class="active">Lecture</button><button data-panel="lab">Interactive lab</button></div>
+      <div class="study-grid">
+        <section class="lecture-panel panel" aria-label="Lecture PDF">
+          <div class="panel-toolbar"><div class="panel-title"><span class="tiny-icon">▤</span> THE LECTURE</div><div class="pdf-actions"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-label">Fit</span><button id="zoom-in" aria-label="Zoom in">+</button><span class="toolbar-divider"></span><button id="prev-page" aria-label="Previous page">‹</button><label class="page-control"><input id="page-input" type="number" min="1" max="40" value="1" aria-label="PDF page"> / 40</label><button id="next-page" aria-label="Next page">›</button></div></div>
+          <div id="pdf-scroll" class="pdf-scroll" tabindex="0" aria-label="Scrollable lecture pages"><div id="pdf-status" role="status">Opening your lecture…</div><div id="pdf-pages"></div></div>
+          <div class="reader-footer"><span><span class="status-dot"></span> <span id="sync-label">Diagrams follow your page</span></span><button id="sync" aria-pressed="true">Sync on</button></div>
+        </section>
+        <section class="lab-panel panel" aria-label="Interactive companion">
+          <div class="panel-toolbar"><div class="panel-title"><span class="tiny-icon mint">✧</span> THE INTERACTIVE LAB</div><span class="live-badge"><span class="status-dot"></span> LIVE</span></div>
+          <div class="lab-scroll"><div class="lab-heading"><div class="eyebrow" id="section-label">01 / THE CRYSTALLINE STATE</div><h2 id="lab-title">Order makes a crystal.</h2><p id="lab-description"></p></div>
+          <div class="lab-tabs" role="tablist" aria-label="Study mode"><button id="tab-explore" role="tab" aria-selected="true" aria-controls="explore-view">Explore</button><button id="tab-ideas" role="tab" aria-selected="false" aria-controls="ideas-view">Key ideas</button><button id="tab-practice" role="tab" aria-selected="false" aria-controls="practice-view">Practice <span>↗</span></button></div>
+          <div id="explore-view" role="tabpanel" aria-labelledby="tab-explore"><div id="controls" class="controls"></div><div class="visual-stage" id="visual-stage"><canvas id="scene" aria-label="Interactive scientific diagram"></canvas><div class="stage-top"><span id="scene-label">PERIODIC ARRANGEMENT</span><div><button id="spin" class="stage-button" aria-label="Toggle automatic rotation" aria-pressed="false" title="Automatic rotation">↻</button><button id="reset" class="stage-button" aria-label="Reset diagram view" title="Reset view">⟲</button></div></div><div id="scene-hint" class="scene-hint">Drag to rotate · Scroll to zoom</div></div><div id="metrics" class="metrics"></div><div id="insight" class="insight"></div><div id="extra-controls"></div></div>
+          <div id="ideas-view" role="tabpanel" aria-labelledby="tab-ideas" hidden></div><div id="practice-view" role="tabpanel" aria-labelledby="tab-practice" hidden></div>
+          <div class="lab-bottom"><span id="page-context">COMPANION TO PAGE 1</span><button id="next-topic">Next topic <span>→</span></button></div></div>
+        </section>
+      </div><footer class="workspace-footer"><span>A little interaction. A deeper understanding.</span><span>Original lecture + visual study companion</span></footer>
+    </main>
+  </div>
+  <dialog id="help-dialog"><button id="close-help" class="dialog-close" aria-label="Close help">×</button><div class="eyebrow">WELCOME TO CRYSTAL LAB</div><h2>Make the lecture tangible.</h2><p>Read the original PDF on the left. The lab follows your page automatically. Choose a topic in the sidebar, or explore the controls on the right.</p><p>Drag a 3D model to rotate it. Use the mouse wheel or a pinch gesture to zoom. Diagrams are idealized teaching models; whole boundary atoms are drawn for clarity.</p><dl><dt>← / →</dt><dd>Previous / next lecture page</dd><dt>/</dt><dd>Search topics</dd><dt>Sync</dt><dd>Keep the current lab while browsing other pages</dd></dl><p class="muted">Everything runs locally. No AI service, accounts, tracking, or API keys. The PDF is the original lecture; companion notes clarify a few terminology and formula issues.</p><a href="README.md" target="_blank">Project and hosting instructions ↗</a></dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+</body>
+</html>

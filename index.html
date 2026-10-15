@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="A personal library of interactive science lectures. Explore Materials Science, Laser Physics, Solid State Principles, Nuclear Models and Electromagnetic Theory.">
+  <meta name="author" content="Mohammed Ghazali Fadhil Tahir (Hamaynazir)">
+  <link rel="canonical" href="https://vibephysicsai.com/">
+  <title>Vibe Physics AI · A place to understand</title>
+  <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="library.css">
+  <script>
+    // Keep existing lecture bookmarks working after the library becomes home.
+    if (new URLSearchParams(location.hash.slice(1)).has('page')) {
+      const reader = new URL('./reader.html', location.href);
+      reader.search = location.search;
+      reader.hash = location.hash;
+      location.replace(reader.href);
+    }
+  </script>
+  <script type="module" src="library.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to subjects</a>
+  <header class="site-header">
+    <a class="library-brand" href="./" aria-label="Vibe Physics AI home"><img src="assets/library-mark.svg" alt="" width="28" height="28"><span>Vibe Physics AI<span class="brand-period">.</span></span></a>
+    <nav aria-label="Main navigation"><a href="#" id="subjects-nav" aria-current="page">Subjects</a><a href="about.html">About</a><a id="header-resume" href="reader.html" hidden>Continue learning <span aria-hidden="true">↗</span></a></nav>
+    <span class="header-note">A place to understand.</span>
+  </header>
+  <main id="main" class="library-main">
+    <section id="home-view" aria-labelledby="home-title">
+      <div class="welcome-grid">
+        <div class="welcome-copy"><div class="eyebrow"><span class="small-dot"></span> YOUR PERSONAL LEARNING SPACE</div><h1 id="home-title">Your subjects.<br>A little more understood.</h1><p>Read the lecture. Explore the idea. Make it click.<br> A growing collection of interactive lessons, all in one place.</p></div>
+        <aside id="continue-card" class="continue-card" aria-label="Your available lesson"></aside>
+      </div>
+      <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Choose your subject</h2></div><span id="collection-count" class="collection-count">5 subjects · 1 chapter ready</span></div>
+      <div class="browse-toolbar"><label class="library-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="subject-search" type="search" placeholder="Find a subject or chapter…" aria-label="Search subjects and chapters"><kbd>/</kbd></label><div class="filters" role="group" aria-label="Filter subjects"><button id="filter-all" aria-pressed="true">All subjects</button><button id="filter-ready" aria-pressed="false">Ready to study</button></div></div>
+      <div id="subjects-grid" class="subjects-grid" aria-label="Subjects"></div>
+      <div id="empty-search" class="search-empty" hidden><h3>No matching subjects.</h3><p>Try another subject name or search for “Crystal”.</p><button id="clear-search">Clear search</button></div>
+      <div class="collection-note"><span class="note-mark" aria-hidden="true">＋</span><p>A library that grows with you.<span>New chapters will live inside their subject as we build them.</span></p></div>
+    </section>
+    <section id="subject-view" aria-labelledby="subject-title" hidden></section>
+    <section id="not-found" hidden><a class="back-link" href="#">← All subjects</a><h1>That subject isn’t here yet.</h1><p>Choose one of the subjects in your library.</p></section>
+  </main>
+  <footer class="library-footer"><span class="creator-credit">Created by <a href="about.html">Mohammed Ghazali Fadhil Tahir <span>(Hamaynazir)</span></a></span><span>Progress stays on this device <span class="footer-dot" aria-hidden="true">·</span> <a href="about.html">About &amp; contact</a></span></footer>
+  <noscript><p class="noscript">Enable JavaScript to browse the subject library, or <a href="reader.html">open Crystal Structures</a>.</p></noscript>
+</body>
+</html>

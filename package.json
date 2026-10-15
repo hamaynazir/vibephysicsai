@@ -1,0 +1,11 @@
+{
+  "name": "study-library",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first science learning library with independent interactive lectures.",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test tools/science.test.mjs tools/teaching.test.mjs tools/learning.test.mjs tools/catalog.test.mjs"
+  }
+}
