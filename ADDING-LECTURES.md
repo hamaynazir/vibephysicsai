@@ -6,7 +6,7 @@ The library is the front door. Each lecture is a separate learning experience wi
 
 | Subject | Catalog ID | Current chapters |
 | --- | --- | --- |
-| Materials Science | `materials-science` | None yet |
+| Materials Science | `materials-science` | Materials and Bonding (16 pages, 22 sections) |
 | Laser Physics | `laser-physics` | None yet |
 | Solid State Principles | `solid-state-principles` | Crystal Structures |
 | Nuclear Models | `nuclear-models` | None yet |

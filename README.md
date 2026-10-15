@@ -6,7 +6,9 @@ Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**. Intended domain: **ht
 
 A simple white learning library for **Materials Science, Laser Physics, Solid State Principles, Nuclear Models, and Electromagnetic Theory**.
 
-The first available chapter is **Crystal Structures**, under **Solid State Principles**: a complete English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. The original PDF sits beside a lab that follows the current page. The other four subjects have real subject pages with explicit empty states, ready for future lectures.
+Two chapters are available: **Materials and Bonding** (Materials Science, Professor Dr. Omed Gh. Abdullah, 16 original PDF pages, 22 sections) and **Crystal Structures** (Solid State Principles, Mr. Shaho Mohammed Rasul, 40 pages, 16 sections). The other three subjects remain ready for future lectures. The Materials reader has its own PDF, models, notes, predictions, five numerical exercises, ten-step foundation path and saved review. See `lessons/materials-science/materials-and-bonding/README.md` for coverage, sources and model assumptions.
+
+**Crystal Structures**, under **Solid State Principles**, is a complete English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. **Materials and Bonding**, under **Materials Science**, adds a separate reader for its 16-page lecture. Each original PDF sits beside a lab that follows the current page. The other three subjects have explicit empty states for future lectures.
 
 The homepage is `index.html`; the existing interactive chapter is now `reader.html`. Old links such as `/#page=5` automatically open the reader at the same page. Reading position and answer history retain their existing storage keys.
 
@@ -31,7 +33,7 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 ## Use it
 
 - Choose one of the five subjects on the library homepage. Search by subject or chapter, or choose **Ready to study** to show subjects with available chapters.
-- Open **Solid State Principles → Crystal Structures** to enter the existing chapter. The other subjects honestly indicate that no lectures have been added yet.
+- Open **Solid State Principles → Crystal Structures** or **Materials Science → Materials and Bonding**. The other three subjects honestly indicate that no lectures have been added yet.
 - **Continue learning** resumes the available lesson at its saved page. The indicator is a reading position, not a completion or mastery score.
 - Use **← Library** in the reader header to return to the homepage.
 - Scroll the lecture or use the page arrows to move through all 40 pages.
@@ -52,6 +54,8 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 - Keyboard: left/right arrows turn pages when a control is not focused; `/` opens chapter search. Escape closes the chapter drawer or Help.
 
 ### The new learning modes
+
+The detailed controls below describe the Crystal Structures chapter. Materials and Bonding has its own lecture-specific diagrams, questions, five calculation exercises and ten-step foundation path.
 
 - **Explain what I click:** select a crystal atom, cell-axis arrow, plane patch, or teaching angle arc. A focused explanation describes its coordinates, vector components, intercepts, or true angle. Atom explanations can highlight its full periodic neighborhood and expand to neighboring cells. These are authored, local explanations; there is no AI request or chatbot. The 2D lattice/bonding views give a concept explanation, and clicking the energy plot evaluates its model potential and force.
 - **Build it yourself:** three exercises ask for an FCC primitive vector, the missing BCC body-center atom, and Miller indices from intercepts. Preview your entered vector, atom or plane, then check it. Feedback identifies incorrect components and explains the correct construction. Inputs are numerical rather than freehand drawing.

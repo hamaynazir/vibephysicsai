@@ -27,6 +27,12 @@ export const fractional=(p,basis)=>basis.reduce((r,b,i)=>add(r,mul(b,p[i])),[0,0
 export const volume=b=>Math.abs(dot(b[0],cross(b[1],b[2])));
 export function reciprocal(b){const v=dot(b[0],cross(b[1],b[2]));return [cross(b[1],b[2]),cross(b[2],b[0]),cross(b[0],b[1])].map(x=>mul(x,1/v));}
 export function dSpacing(indices,params){if(!indices.some(Boolean))return null;return 1/norm(fractional(indices,reciprocal(basisVectors(params))));}
+// Cartesian endpoints on adjacent planes G·r=t and G·r=t+1, along their normal.
+export function spacingMeasurement(indices,basis,offset=0,anchor=fractional([.5,.5,.5],basis)){
+ const G=fractional(indices,reciprocal(basis)),g2=dot(G,G);if(g2<1e-12)return null;
+ const start=add(anchor,mul(G,(offset-dot(anchor,G))/g2)),end=add(start,mul(G,1/g2));
+ return {start,end,d:1/Math.sqrt(g2),offset,normal:unit(G)};
+}
 export const cubicInfo={
   SC:{atoms:1,cn:6,apf:Math.PI/6,radius:.5,nearest:1,second:Math.SQRT2,relation:'a = 2R',count:'8 corners × ⅛ = 1',primitive:1},
   BCC:{atoms:2,cn:8,apf:Math.PI*Math.sqrt(3)/8,radius:Math.sqrt(3)/4,nearest:Math.sqrt(3)/2,second:1,relation:'√3a = 4R',count:'8 × ⅛ + 1 body = 2',primitive:.5},
@@ -88,7 +94,7 @@ export function potential(r,m=1,n=9,A=1,B=m/n){return -A/r**m+B/r**n;}
 export function radialForce(r,m=1,n=9,A=1,B=m/n){return -m*A/r**(m+1)+n*B/r**(n+1);}
 export function equilibrium(m,n,A=1,B=m/n){return (n*B/(m*A))**(1/(n-m));}
 export function madelungShells(dim=3,count=4){
- const shells=new Map(),extent=Math.ceil(Math.sqrt(count*5))+2;
+ const shells=new Map(),extent=dim===1?count:Math.ceil(Math.sqrt(count*5))+2;
  for(let x=-extent;x<=extent;x++)for(let y=dim>=2?-extent:0;y<=(dim>=2?extent:0);y++)for(let z=dim===3?-extent:0;z<=(dim===3?extent:0);z++){
  const r2=x*x+y*y+z*z;if(!r2)continue;const sign=(Math.abs(x+y+z)%2)?1:-1;
  if(!shells.has(r2))shells.set(r2,{r2,n:0,sign,points:[]});const s=shells.get(r2);s.n++;s.points.push([x,y,z]);}

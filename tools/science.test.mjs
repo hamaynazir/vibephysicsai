@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {systems,basisVectors,volume,dSpacing,cubicInfo,planePolygon,dot,wignerSeitz,madelungShells,potential,radialForce,equilibrium,structureBasis} from '../crystal-math.js';
 import {sections,pageMap,pageNotes,examples} from '../lecture-data.js';
 import {hexagonVertices,hexagonalPrismSites,fractional,norm,sub} from '../crystal-math.js';
+import {spacingMeasurement,reciprocal} from '../crystal-math.js';
 const near=(a,b,tolerance=1e-7)=>assert.ok(Math.abs(a-b)<tolerance,`${a} != ${b}`);
 test('hexagonal overview has a regular six-sided base and correct HCP AB layers',()=>{
  const basis=basisVectors(systems.Hexagonal.params),ring=hexagonVertices().map(p=>fractional([...p,0],basis));
@@ -55,7 +56,14 @@ test('potential minima and force signs match all three worked models',()=>{
  near(potential(1,2,10),-.8);near(potential(1,1,9),-8/9);
 });
 test('Madelung shells reproduce lecture examples without claiming convergence',()=>{
+ for(const n of [10,11,12]){const s=madelungShells(1,n);assert.equal(s.length,n);near(s.reduce((sum,x)=>sum+x.term,0),Array.from({length:n},(_,i)=>2*(i%2?-1:1)/(i+1)).reduce((a,b)=>a+b,0));}
  const chain=madelungShells(1,12);near(chain.slice(0,4).reduce((a,s)=>a+s.term,0),2*(1-.5+1/3-.25));
  const square=madelungShells(2,4);assert.deepEqual(square.map(s=>s.n),[4,4,4,8]);near(square.reduce((a,s)=>a+s.term,0),4-4/Math.SQRT2-2+8/Math.sqrt(5));
  const nacl=madelungShells(3,4);assert.deepEqual(nacl.map(s=>s.n),[6,12,8,6]);near(nacl.reduce((a,s)=>a+s.term,0),6-12/Math.SQRT2+8/Math.sqrt(3)-3);
+});
+test('spacing measurement connects adjacent planes along their true normal for every metric',()=>{
+ for(const system of Object.values(systems))for(const hkl of [[1,0,0],[1,1,1],[2,-1,3]]){
+  const b=basisVectors(system.params),m=spacingMeasurement(hkl,b,-1),G=fractional(hkl,reciprocal(b));
+  near(dot(m.start,G),-1);near(dot(m.end,G),0);near(norm(sub(m.end,m.start)),dSpacing(hkl,system.params));
+ }
 });

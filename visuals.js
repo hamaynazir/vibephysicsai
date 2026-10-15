@@ -3,6 +3,7 @@ import {OrbitControls} from './vendor/OrbitControls.js';
 import {systems,basisVectors,fractional,unitSites,cubicInfo,cellEdges,cubeCorners,add,sub,mul,norm,unit,dot,planePolygon,reciprocal,wignerSeitz,madelungShells,potential,radialForce,atomDisplayGroup} from './crystal-math.js';
 import {drawTeaching} from './teaching-visuals.js';
 import {hexagonVertices,hexagonalPrismSites} from './crystal-math.js';
+import {spacingMeasurement} from './crystal-math.js';
 
 const COLORS=['#76e0ce','#ba9dff','#f4bd77','#f18da7'];
 const v3=p=>new THREE.Vector3(p[0],p[2],-p[1]);
@@ -72,9 +73,23 @@ export class Visualizer{
     const max=Math.max(...indices.map(Math.abs),1),start=indices.map(x=>x<0?1:0),end=add(start,mul(indices,1/max));if(!s.teaching){this.arrow(world(start),world(end),COLORS[2]);this.label(`[${indices.join(' ')}]`,add(world(end),[0,0,.1]),COLORS[2]);}
    }else if(indices.some(Boolean)){
     const values=cubeCorners().map(p=>dot(p,indices)),low=Math.min(...values),high=Math.max(...values);let t=low<1&&high>=1?1:(low<=-1&&high> -1?-1:(low+high)/2);
-    const offsets=s.family?Array.from({length:Math.min(12,Math.ceil(high-low)+1)},(_,i)=>Math.ceil(low)+i).filter(v=>v<=high):[t];
-    if(s.teaching?.topic!=='planes')offsets.forEach(n=>this.polygon(planePolygon(indices,n).map(world),COLORS[1],s.family?.15:.3,{kind:'plane',indices:[...indices]}));
-    const normal=unit(fractional(indices,reciprocal(basis))),c=world([.5,.5,.5]);if(s.teaching?.topic!=='planes'){this.arrow(c,add(c,mul(normal,.65)),COLORS[2]);this.label('normal',add(c,mul(normal,.8)),COLORS[2]);}
+    const allOffsets=Array.from({length:Math.ceil(high-low)+1},(_,i)=>Math.ceil(low)+i).filter(v=>v<=high&&planePolygon(indices,v).length>=3);
+    const middle=dot([.5,.5,.5],indices),baseOffset=[...allOffsets].sort((a,b)=>Math.abs(a-middle)-Math.abs(b-middle))[0]??t;
+    let measurement=null;
+    if(mode==='spacing'&&s.teaching?.topic!=='planes'){
+     const base=planePolygon(indices,baseOffset).map(p=>fractional(p,basis)),centroid=mul(base.reduce(add,[0,0,0]),1/(base.length||1));
+     measurement=spacingMeasurement(indices,basis,baseOffset,centroid);
+     const delta=sub(measurement.end,measurement.start);
+     this.polygon(base.map(cartesian),COLORS[1],.21,{kind:'plane',indices:[...indices],offset:baseOffset});
+     this.polygon(base.map(p=>cartesian(add(p,delta))),COLORS[0],.21,{kind:'plane',indices:[...indices],offset:baseOffset+1});
+     if(s.family)allOffsets.filter(n=>n!==baseOffset&&n!==baseOffset+1).slice(0,12).forEach(n=>this.polygon(planePolygon(indices,n).map(world),'#8494a4',.06,{kind:'plane',indices:[...indices],offset:n}));
+    }else if(s.teaching?.topic!=='planes'){
+     const offsets=s.family?allOffsets.slice(0,12):[t];offsets.forEach(n=>this.polygon(planePolygon(indices,n).map(world),COLORS[1],s.family?.16:.27,{kind:'plane',indices:[...indices],offset:n}));
+    }
+    const normal=unit(fractional(indices,reciprocal(basis))),c=world([.5,.5,.5]);if(s.teaching?.topic!=='planes'){
+     if(measurement){const a=cartesian(measurement.start),b=cartesian(measurement.end);this.arrow(a,b,COLORS[2]);this.arrow(b,a,COLORS[2]);this.atom(a,.023,COLORS[2]);this.atom(b,.023,COLORS[2]);this.label('d = '+measurement.d.toFixed(3)+' Å',add(mul(add(a,b),.5),[0,0,.14]),COLORS[2]);}
+     else {this.arrow(c,add(c,mul(normal,.65)),COLORS[2]);this.label('normal',add(c,mul(normal,.8)),COLORS[2]);}
+    }
    }
   }else{
    const sites=hexPrism?hexagonalPrismSites(type==='HCP'):unitSites(type,repeats,centering),info=cubicInfo[type],baseRadius=(mode==='packing'?(info?.radius||.25):.09)*(+s.atomScale||.6),radius=baseRadius*scale;
