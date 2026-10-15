@@ -1,5 +1,4 @@
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
-import {subjects} from './catalog.js';
 import {Visualizer} from './visuals.js';
 import {Teaching} from './teaching.js';
 import {Learning} from './learning.js';
@@ -34,13 +33,7 @@ function buildToc(){const term=$('#search').value.toLowerCase();let count=0;$('#
 $('#search').addEventListener('input',buildToc);
 $('#toc').addEventListener('click',e=>{const link=e.target.closest('[data-topic]');if(!link)return;e.preventDefault();const section=sections.find(s=>s.id===link.dataset.topic);goPage(section.pages[0],section);});
 
-const readerSubject=subjects.find(s=>s.id==='solid-state-principles');
-$('#visual-subject').innerHTML=subjects.map(s=>`<option value="${s.id}">${escapeHTML(s.title)}${s.lessons.length?'':' · No lectures yet'}</option>`).join('');
-$('#visual-subject').value=readerSubject.id;
-$('#visual-chapter').innerHTML=readerSubject.lessons.map(l=>`<option value="${l.id}">${l.number}. ${escapeHTML(l.title)}</option>`).join('');
 $('#visual-section').innerHTML=sections.map(s=>`<option value="${s.id}">${s.n}. ${escapeHTML(s.title)}</option>`).join('');
-$('#visual-subject').onchange=e=>{location.href=`./#subject=${encodeURIComponent(e.target.value)}`;};
-$('#visual-chapter').onchange=e=>{const lesson=readerSubject.lessons.find(l=>l.id===e.target.value);if(lesson?.id==='crystal-structures')goPage(1,sections[0]);else if(lesson)location.href=lesson.reader;};
 function navigateVisualization(section){if(!section)return;goPage(section.pages[0],section);learning?.activate('explore');}
 $('#visual-section').onchange=e=>navigateVisualization(sections.find(s=>s.id===e.target.value));
 $('#visual-previous').onclick=()=>navigateVisualization(sections[sections.indexOf(currentSection)-1]);
