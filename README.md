@@ -12,7 +12,9 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, synthetic data recording/CSV export, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
 
-The library has **three available chapters, 70 original PDF pages and 57 companion sections**. Nuclear Models and Electromagnetic Theory remain explicitly marked for future chapters.
+The lecture library has **four available chapters, 79 original PDF pages and 71 companion sections**. Electromagnetic Theory remains explicitly marked for a future chapter. The separate Laboratories collection has two manuals and twelve experiment companions.
+
+**Nuclear Models → Basic Concepts in Nuclear Physics**, by Assistant Professor Dr. Adil M. Hussein M. Saeed, adds all nine original pages, fourteen sections, eleven calculation exercises and a nine-step introductory path. Models cover nuclide notation and relationships, isomer excitation, mass-energy units, helium binding, beta bookkeeping, Coulomb closest approach with recoil, radius/density scaling, nuclear charge, Fermi profiles and a piecewise-linear surface problem. Scientific clarifications are separated from the unchanged PDF; see [the nuclear chapter README](lessons/nuclear-models/basic-concepts/README.md).
 
 - Subject → Chapter → Section navigation lets you switch directly between available readers and resume saved positions.
 - The laser overview compares ordinary light with laser light through four animated views: coherence, directionality, spectral width and irradiance. Controls update diagrams and metrics; each comparison links to its detailed section.
@@ -34,9 +36,9 @@ The live site is hosted on **GitHub Pages** at **https://vibephysicsai.com/**. P
 
 A simple white learning library for **Materials Science, Laser Physics, Solid State Principles, Nuclear Models, and Electromagnetic Theory**.
 
-Three chapters are available: **Materials and Bonding** (Materials Science, Professor Dr. Omed Gh. Abdullah, 16 original PDF pages, 22 sections) and **Crystal Structures** (Solid State Principles, Mr. Shaho Mohammed Rasul, 40 pages, 16 sections). **Laser Radiation and Its Properties** (Laser Physics, Ms. Ahang Mohammed Hussein) adds all 14 original pages, 19 visual sections, eight calculation exercises and a twelve-step learning path. The other two subjects remain ready for future lectures. The Materials reader has its own PDF, models, notes, predictions, five numerical exercises, ten-step foundation path and saved review. See `lessons/materials-science/materials-and-bonding/README.md` for coverage, sources and model assumptions.
+The other available chapters are **Materials and Bonding** (Materials Science, Professor Dr. Omed Gh. Abdullah, 16 original PDF pages, 22 sections), **Crystal Structures** (Solid State Principles, Mr. Shaho Mohammed Rasul, 40 pages, 16 sections), and **Laser Radiation and Its Properties** (Laser Physics, Ms. Ahang Mohammed Hussein, 14 pages, 19 sections). Laser has eight calculation exercises and a twelve-step learning path. Materials has its own models, notes, predictions, five numerical exercises, ten-step foundation path and saved review. See its chapter README for coverage, sources and assumptions.
 
-**Crystal Structures**, under **Solid State Principles**, is a complete English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. **Materials and Bonding**, under **Materials Science**, adds a separate reader for its 16-page lecture. Each original PDF sits beside a lab that follows the current page. The other two subjects have explicit empty states for future lectures.
+**Crystal Structures**, under **Solid State Principles**, is an English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. Each prepared lecture has its own reader and browser-local progress. Original PDF pages sit beside corresponding models; Electromagnetic Theory has an explicit empty state until its lecture is prepared.
 
 The homepage is `index.html`; the existing interactive chapter is now `reader.html`. Old links such as `/#page=5` automatically open the reader at the same page. Reading position and answer history retain their existing storage keys.
 
@@ -63,10 +65,10 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 ## Use it
 
 - Choose one of the five subjects on the library homepage. Search by subject or chapter, or choose **Ready to study** to show subjects with available chapters.
-- Open **Solid State Principles → Crystal Structures** or **Materials Science → Materials and Bonding**, or **Laser Physics → Laser Radiation and Its Properties**. The other two subjects honestly indicate that no lectures have been added yet.
+- Open **Solid State Principles → Crystal Structures**, **Materials Science → Materials and Bonding**, **Laser Physics → Laser Radiation and Its Properties**, or **Nuclear Models → Basic Concepts in Nuclear Physics**. Electromagnetic Theory indicates that no lecture has been added yet.
 - **Continue learning** resumes the available lesson at its saved page. The indicator is a reading position, not a completion or mastery score.
 - Use **← Library** in the reader header to return to the homepage.
-- Scroll the lecture or use the page arrows; Crystal Structures has 40 pages, Materials has 16, and Laser has 14.
+- Scroll the lecture or use the page arrows; Crystal Structures has 40 pages, Materials has 16, Laser has 14, and Nuclear has nine (including its cover). Nuclear uses a single-page preview with page controls; all original pages remain accessible.
 - Open **Sections** to choose any of the 16 topics within the Crystal Structures chapter. The drawer closes after selection.
 - The lab follows your lecture page. Turn **Sync off** to pin the current lab while browsing other pages.
 - Use the single **Learn** menu: explore, explain what you click, build it yourself, predict then reveal, teach me from zero, review weak points, read notes, or answer a chapter question.
@@ -155,7 +157,7 @@ catalog.js             Subject and available-chapter registry
 about.html             Creator, independent-project details and source link
 reader-navigation.js   Shared Subject → Chapter → Section navigation
 study-motion.js        Shared playback and teaching-motion helpers
-lessons/               Materials and Laser readers, models and original PDFs
+lessons/               Materials, Laser and Nuclear readers, models and original PDFs
 laboratories/          Nuclear/Solid State manuals and 12 experiment companions
 reader.html            Existing interactive Crystal Structures reader
 styles.css             Responsive dark and light themes
@@ -183,7 +185,7 @@ tools/catalog.test.mjs Subject availability, search and saved-position checks
 
 ## Verification
 
-All three chapter readers provide Subject → Chapter → Section selectors above the visualization. Switching to another available subject opens its chapter at the saved page; selecting the current chapter leaves the current page alone. The two subjects without chapters are clearly marked and disabled rather than linking to nonexistent lessons. Chapter options come from the shared catalog, so future prepared chapters appear automatically. No answers or reading history are cleared by switching.
+All four chapter readers provide Subject → Chapter → Section selectors above the visualization. Switching to another available subject opens its chapter at the saved page; selecting the current chapter leaves the current page alone. Electromagnetic Theory is marked and disabled until a chapter is ready. Chapter options come from the shared catalog. No answers or reading history are cleared by switching.
 
 Materials Science and Crystal Structures add Play/Pause, Step, Restart and Speed where motion explains something. Materials animates transfer, scattering, molecular motion, London dipoles, electron drift and carbon view rotation. Solid State rotates the view and traces actual component paths, angle arcs, invariant A→B displacement and the perpendicular interplanar gap. These are teaching demonstrations; cell geometry and calculated parameters stay fixed. Manual 3D interaction pauses playback. Reduced-motion settings start paused, with deliberate Play available. Original PDFs, section counts, questions, exercises and saved-answer keys remain unchanged. Shared playback and conservation tests are in `tools/study-motion.test.mjs`.
 

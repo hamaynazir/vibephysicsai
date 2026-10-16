@@ -7,7 +7,7 @@ test('Laboratories are distinct from lecture subjects with six prepared experime
  assert.deepEqual(laboratories.map(l=>l.title),['Nuclear Laboratory','Solid State Physics Lab']);
  assert.equal(new Set(laboratories.map(l=>l.id)).size,2);
  for(const lab of laboratories){assert.equal(lab.experiments.length,6);assert.ok(!subjects.some(s=>s.id===lab.id));assert.ok(fs.existsSync(new URL('../'+lab.reader,import.meta.url)));}
- assert.equal(allLessons().length,3);
+ assert.equal(allLessons().length,4);
 });
 import {resumeReaderURL,preferredChapter} from '../reader-navigation.js';
 test('Reader switching uses chapter-specific saved pages and supports future chapter choices',()=>{const storage={getItem:key=>key==='crystal-page'?'6':key.includes('laser-radiation:page')?'8':null};const lessons=allLessons();assert.equal(resumeReaderURL(lessons.find(l=>l.id==='crystal-structures'),storage,'https://example.org/'),'https://example.org/reader.html#page=6');assert.match(resumeReaderURL(lessons.find(l=>l.id==='laser-radiation'),storage,'https://example.org/'),/laser-radiation\/index.html#page=8$/);assert.match(resumeReaderURL(lessons.find(l=>l.id==='materials-and-bonding'),storage,'https://example.org/'),/#page=1$/);const future={lessons:[{id:'one'},{id:'two'}]};assert.equal(preferredChapter(future,'two').id,'two');assert.equal(preferredChapter(future,'missing').id,'one');assert.equal(preferredChapter({lessons:[]},null),null);});
