@@ -67,3 +67,15 @@ Crystal Structures intentionally retains `crystal-page` and `crystal-learning-v1
 ## Hosting
 
 All catalog reader paths must be relative. This keeps the site portable between a local server, a GitHub Pages repository URL, and a custom domain. No account service or database is required for this browser-local progress model.
+
+## Laboratory manuals
+
+Laboratory experiment companions are separate from lecture chapters. Their registry
+and page maps live in `laboratories/content.js`, exposed as `laboratories` by
+`catalog.js`. Keep `subjects` and lecture chapter counts unchanged when adding a lab.
+Each laboratory needs a reader, unchanged manual PDF, explicit PDF-page ranges,
+scientific assumptions, supported calculations, and its own browser-storage key.
+Do not label synthetic readings as measured data or treat a study simulation as
+hardware operating instructions. See `laboratories/README.md` for the current model
+scope, provenance and examples. Run `npm test`; the deployment workflow includes the
+entire `laboratories/` folder.

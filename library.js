@@ -1,4 +1,4 @@
-import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js';
+import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js?v=manuals-1';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons={
@@ -49,6 +49,6 @@ document.addEventListener('click',event=>{const link=event.target.closest('[data
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!$('#home-view').hidden){e.preventDefault();$('#subject-search').focus();}});
 window.addEventListener('hashchange',route);window.addEventListener('pageshow',()=>{renderContinue();const subject=subjects.find(s=>s.id===new URLSearchParams(location.hash.slice(1)).get('subject'));if(subject)renderSubject(subject)});window.addEventListener('storage',()=>{renderContinue();route()});
 function renderLaboratories(){
- $('#laboratories-grid').innerHTML=laboratories.map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>What will be here?</summary><p>Once a manual is provided, prepared experiment companions can pair its pages with apparatus diagrams, interactive visualizations and explanations. No manuals or simulations have been added yet.</p></details><div class="card-footer"><span>Manuals coming soon</span><span>No experiments added yet</span></div></article>`).join('');
+ $('#laboratories-grid').innerHTML=laboratories.map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>Explore the six experiments</summary><ol>${lab.experiments.map(e=>`<li><a href="${lab.reader}#page=${e.pages[0]}&experiment=${e.id}">${esc(e.title)}</a></li>`).join('')}</ol></details><div class="card-footer"><span>${lab.pages} original manual pages · ${lab.experiments.length} experiments</span><a class="laboratory-open" href="${lab.reader}">Open laboratory →</a></div></article>`).join('');
 }
 renderCards();renderLaboratories();route();

@@ -6,7 +6,8 @@ Mohammed Ghazali Fadhil Tahir (Hamaynazir).
 
 It does **not** relicense or grant rights to:
 
-- Lecture PDFs, including `assets/lecture.pdf` and PDFs within `lessons/`.
+- Lecture and laboratory-manual PDFs, including `assets/lecture.pdf` and PDFs
+  within `lessons/` and `laboratories/`.
 - Lecturer-authored material, quoted source material, or other third-party
   educational content. These retain their respective ownership and permissions.
 - Third-party libraries and assets, including files in `vendor/`, which remain

@@ -10,7 +10,7 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 ## Current experience
 
-The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** and **Solid State Physics Lab**. Both are awaiting manuals; no experiment simulations are available yet. These are separate from lecture subjects and are not included in the chapter counts. Laboratory records live in `catalog.js`; experiment companions will be prepared from supplied manuals before being listed.
+The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, synthetic data recording/CSV export, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
 
 The library has **three available chapters, 70 original PDF pages and 57 companion sections**. Nuclear Models and Electromagnetic Theory remain explicitly marked for future chapters.
 
@@ -156,6 +156,7 @@ about.html             Creator, independent-project details and source link
 reader-navigation.js   Shared Subject → Chapter → Section navigation
 study-motion.js        Shared playback and teaching-motion helpers
 lessons/               Materials and Laser readers, models and original PDFs
+laboratories/          Nuclear/Solid State manuals and 12 experiment companions
 reader.html            Existing interactive Crystal Structures reader
 styles.css             Responsive dark and light themes
 reader.css             White minimal reader and progressive disclosure

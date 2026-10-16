@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
 
-test('Laboratories are distinct from lecture subjects and do not invent experiments',()=>{
+test('Laboratories are distinct from lecture subjects with six prepared experiments each',()=>{
  assert.deepEqual(laboratories.map(l=>l.title),['Nuclear Laboratory','Solid State Physics Lab']);
  assert.equal(new Set(laboratories.map(l=>l.id)).size,2);
- for(const lab of laboratories){assert.deepEqual(lab.experiments,[]);assert.ok(!subjects.some(s=>s.id===lab.id));}
+ for(const lab of laboratories){assert.equal(lab.experiments.length,6);assert.ok(!subjects.some(s=>s.id===lab.id));assert.ok(fs.existsSync(new URL('../'+lab.reader,import.meta.url)));}
  assert.equal(allLessons().length,3);
 });
 import {resumeReaderURL,preferredChapter} from '../reader-navigation.js';
