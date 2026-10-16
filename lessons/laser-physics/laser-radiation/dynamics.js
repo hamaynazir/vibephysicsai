@@ -1,0 +1,8 @@
+import {C,cavityGain,inversion} from './math.js';
+export const movingModes=new Set(['fields','wave','photons','interactions','spatial','cavity','direction','pulse','temporal','pumping']);
+export const opticalTimeFs=time=>time*.6;
+export const waveValue=(xNm,time,lambdaNm)=>Math.sin(2*Math.PI*(xNm-C*opticalTimeFs(time)*1e-6)/lambdaNm);
+export function fieldVectors(polarization,sample){const p=polarization*Math.PI/180;return {E:[0,sample*Math.cos(p),sample*Math.sin(p)],B:[0,-sample*Math.sin(p),sample*Math.cos(p)],flow:[sample*sample,0,0]};}
+export function interactionState(time,process){const period=5,cycle=Math.floor(time/period),phase=(time%period)/period,event=.4,emitted=phase>=event;return {phase,cycle,emitted,upper:process==='Absorption'?emitted:!emitted,input:process==='Spontaneous'?0:phase<event?1:0,output:emitted?(process==='Absorption'?0:process==='Stimulated'?2:1):0,travel:emitted?(phase-event)/(.6):phase/event};}
+export function relativePhase(time,baseDegrees,stable){if(stable)return baseDegrees*Math.PI/180;const tick=Math.floor(time*4),seed=Math.sin((tick+1)*127.1)*43758.5453;return 2*Math.PI*(seed-Math.floor(seed));}
+export function cavityTrace(time,upperFraction,reflectivity){const leg=1.8,elapsed=time%(leg*8),pass=Math.floor(elapsed/leg),u=(elapsed%leg)/leg,round=Math.floor(pass/2),forward=pass%2===0,a=.8*inversion(upperFraction)-.1,G=cavityGain(inversion(upperFraction),.8,.1,.995,reflectivity),weight=G**round*Math.exp(a*(forward?u:1+u))*(forward?1:reflectivity);return {x:forward?u:1-u,forward,round,weight,gain:G,outputWeight:G**round*Math.exp(a)*(1-reflectivity),outputTravel:forward?null:u};}

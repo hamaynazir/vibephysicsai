@@ -1,6 +1,7 @@
-import {lesson,sections,pageSections,guide,challenges,sources} from './content.js';
+import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=motion-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
-import {LaserDiagram} from './visuals.js';
+import {LaserDiagram} from './visuals.js?v=motion-1';
+import {movingModes} from './dynamics.js';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get(key){try{return localStorage.getItem(key)}catch{return null}},set(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}};
 let progress={records:{},guide:0},memoryAvailable=true;
@@ -10,6 +11,8 @@ const patches={intensity:{power:20},pulse:{lambda:623.8}};
 let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,pdf=null,zoom=1,rendering=false,epoch=0;
 const states=new Map(),queue=new Set();
 const diagram=new LaserDiagram($('#scene'),(title,text)=>{inspection={title,text};mode='explain';$('#learning-mode').value=mode;renderLearning();});
+diagram.onFrame=renderMotion;
+function renderMotion(){const active=movingModes.has(current.mode);$('#motion-controls').hidden=!active;$('#motion-status').hidden=!active;$('#animate').textContent=diagram.running?'Ⅱ Pause':'▷ Play';$('#animate').setAttribute('aria-pressed',String(diagram.running));$('#animate').setAttribute('aria-label',diagram.running?'Pause simulation':'Play simulation');$('#motion-status').textContent=(diagram.running?'Playing · ':'Paused · ')+(diagram.motionText||'Slowed teaching model, not real optical speed');}
 const fmt=(n,d=3)=>Number(n.toFixed(d)).toString();
 const save=()=>{memoryAvailable=store.set(lesson.learningKey,JSON.stringify(progress));renderCount();};
 const unresolved=()=>Object.entries(progress.records).filter(([,r])=>r&&r.correct===false);
@@ -30,9 +33,7 @@ function selectSection(section,keepMode=false){
  $('#visual-section').value=current.id;$('#visual-previous').disabled=current===sections[0];$('#visual-next').disabled=current===sections.at(-1);
  $('#section-label').textContent=current.title.toUpperCase();$('#lab-title').textContent=current.heading;$('#lab-description').textContent=current.description;
  $('#scene-label').textContent=current.title.toUpperCase()+' · TEACHING MODEL';
- $('#scene-hint').textContent='Change a control · Click a diagram part to explain it';
- $('#animate').hidden=!['wave','photons','spatial'].includes(current.mode);
- if($('#animate').hidden){diagram.running=false;$('#animate').setAttribute('aria-pressed','false');$('#animate').textContent='▷';}
+ $('#scene-hint').textContent='Change a control · Click a labeled part to explain it';
  $('#scene').setAttribute('aria-label',current.title+' interactive diagram');
  renderToc();renderControls();renderMetrics();renderNotes();renderLearning();$('#page-context').textContent='COMPANION TO PAGE '+currentPage;$('.lab-scroll').scrollTop=0;
 }
@@ -49,7 +50,7 @@ $('#sync').onclick=()=>{sync=!sync;$('#sync').setAttribute('aria-pressed',String
 const select=(key,label,options)=>`<label>${label}<select data-key="${key}">${options.map(v=>`<option ${s[key]===v?'selected':''}>${v}</option>`).join('')}</select></label>`;
 const slider=(key,label,min,max,step=1,unit='')=>`<label>${label}<input data-key="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${s[key]}" aria-label="${label}"><output data-output="${key}">${fmt(+s[key])}${unit}</output></label>`;
 function renderControls(){let html='';const m=current.mode;
- if(['wave','photons','direction','monochromatic','temporal'].includes(m))html+=slider('lambda','Vacuum wavelength',380,1000,.1,' nm');
+ if(['fields','wave','photons','direction','monochromatic','temporal'].includes(m))html+=slider('lambda','Vacuum wavelength',380,1000,.1,' nm');
  if(m==='wave')html+=slider('amplitude','Relative field amplitude',.2,1.5,.1);
  if(m==='fields')html+=slider('polarization','Polarization angle',0,180,5,'°');
  if(m==='history')html+=select('milestone','Milestone',['0','1','2','3']);
@@ -58,7 +59,7 @@ function renderControls(){let html='';const m=current.mode;
  if(['photons','intensity'].includes(m))html+=slider('power','Optical power',.1,50,.1,' mW');
  if(m==='interactions')html+=select('process','Process',['Absorption','Spontaneous','Stimulated']);
  if(['temporal','monochromatic'].includes(m))html+=slider('width','Spectral width Δλ',.001,1,.001,' nm');
- if(m==='temporal')html+=slider('index','Refractive index (constant n)',1,2,.05)+slider('delay','Normalized delay τΔν',0,2,.02);
+ if(m==='temporal')html+=slider('index','Refractive index (constant n)',1,2,.05)+slider('delay','Delay scan starts at τΔν',0,2,.02);
  if(m==='spatial')html+=select('relation','Relative phase',['Stable','Fluctuating'])+slider('phase','Phase difference',0,360,5,'°');
  if(m==='pulse')html+=slider('duration','Assumed pulse duration',.01,.5,.01,' ns')+select('shape','Width convention',['Estimate','Rectangular','Gaussian'])+'<span class="control-note">Center λ₀ = 623.8 nm. Estimate: ΔνΔt ≈ 1. Shape-specific options use intensity FWHM. PDF time units are incomplete.</span>';
  if(m==='direction')html+=slider('waist','Waist radius w₀',.1,3,.1,' mm')+slider('distance','Distance from waist',1,2000,1,' m');
@@ -122,7 +123,9 @@ function handleLearning(e){const b=e.target.closest('button');if(!b)return;
 $('#learning-activity').onclick=handleLearning;$('#question-view').onclick=handleLearning;
 $('#learning-activity').onchange=e=>{if(e.target.id==='challenge-select'){challengeIndex=+e.target.value;startChallenge();}};
 $('#reset').onclick=()=>{s={...defaults,...patches[current.id]};states.set(current.id,s);diagram.reset();renderControls();renderMetrics();};
-$('#animate').onclick=()=>{diagram.running=!diagram.running&&!matchMedia('(prefers-reduced-motion:reduce)').matches;$('#animate').setAttribute('aria-pressed',String(diagram.running));$('#animate').textContent=diagram.running?'Ⅱ':'▷';};
+$('#animate').onclick=()=>diagram.running?diagram.pause():diagram.play();
+$('#step').onclick=()=>diagram.step();
+$('#motion-speed').onchange=e=>{diagram.speed=+e.target.value;renderMotion();};
 $('#theme').onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';store.set('laser-theme',document.documentElement.dataset.theme);diagram.draw();};document.documentElement.dataset.theme=store.get('laser-theme')==='dark'?'dark':'light';
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();
 document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();queueVisible();};});
