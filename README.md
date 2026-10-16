@@ -6,9 +6,9 @@ Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**. Intended domain: **ht
 
 A simple white learning library for **Materials Science, Laser Physics, Solid State Principles, Nuclear Models, and Electromagnetic Theory**.
 
-Two chapters are available: **Materials and Bonding** (Materials Science, Professor Dr. Omed Gh. Abdullah, 16 original PDF pages, 22 sections) and **Crystal Structures** (Solid State Principles, Mr. Shaho Mohammed Rasul, 40 pages, 16 sections). The other three subjects remain ready for future lectures. The Materials reader has its own PDF, models, notes, predictions, five numerical exercises, ten-step foundation path and saved review. See `lessons/materials-science/materials-and-bonding/README.md` for coverage, sources and model assumptions.
+Three chapters are available: **Materials and Bonding** (Materials Science, Professor Dr. Omed Gh. Abdullah, 16 original PDF pages, 22 sections) and **Crystal Structures** (Solid State Principles, Mr. Shaho Mohammed Rasul, 40 pages, 16 sections). **Laser Radiation and Its Properties** (Laser Physics, Ms. Ahang Mohammed Hussein) adds all 14 original pages, 19 visual sections, eight calculation exercises and a twelve-step learning path. The other two subjects remain ready for future lectures. The Materials reader has its own PDF, models, notes, predictions, five numerical exercises, ten-step foundation path and saved review. See `lessons/materials-science/materials-and-bonding/README.md` for coverage, sources and model assumptions.
 
-**Crystal Structures**, under **Solid State Principles**, is a complete English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. **Materials and Bonding**, under **Materials Science**, adds a separate reader for its 16-page lecture. Each original PDF sits beside a lab that follows the current page. The other three subjects have explicit empty states for future lectures.
+**Crystal Structures**, under **Solid State Principles**, is a complete English-language interactive companion to the 40-page lecture from the Department of Physics, College of Science, University of Sulaimani. **Materials and Bonding**, under **Materials Science**, adds a separate reader for its 16-page lecture. Each original PDF sits beside a lab that follows the current page. The other two subjects have explicit empty states for future lectures.
 
 The homepage is `index.html`; the existing interactive chapter is now `reader.html`. Old links such as `/#page=5` automatically open the reader at the same page. Reading position and answer history retain their existing storage keys.
 
@@ -33,7 +33,7 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 ## Use it
 
 - Choose one of the five subjects on the library homepage. Search by subject or chapter, or choose **Ready to study** to show subjects with available chapters.
-- Open **Solid State Principles → Crystal Structures** or **Materials Science → Materials and Bonding**. The other three subjects honestly indicate that no lectures have been added yet.
+- Open **Solid State Principles → Crystal Structures** or **Materials Science → Materials and Bonding**, or **Laser Physics → Laser Radiation and Its Properties**. The other two subjects honestly indicate that no lectures have been added yet.
 - **Continue learning** resumes the available lesson at its saved page. The indicator is a reading position, not a completion or mastery score.
 - Use **← Library** in the reader header to return to the homepage.
 - Scroll the lecture or use the page arrows to move through all 40 pages.
