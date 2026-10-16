@@ -1,4 +1,4 @@
-import {subjects,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js';
+import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons={
@@ -38,7 +38,9 @@ function route(){
  $('#home-view').hidden=!!id;$('#subject-view').hidden=!subject;$('#not-found').hidden=!notFound;
  $('#subjects-nav').setAttribute('aria-current',id?'false':'page');
  if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':'Vibe Physics AI · A place to understand';
- renderContinue();window.scrollTo({top:0,behavior:'instant'});
+ renderContinue();
+ const collectionAnchor=['#laboratories','#subjects-grid'].includes(location.hash)?document.querySelector(location.hash):null;
+ if(collectionAnchor)collectionAnchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
 }
 $('#subject-search').addEventListener('input',renderCards);
 $('#filter-all').onclick=()=>{readyOnly=false;renderCards()};$('#filter-ready').onclick=()=>{readyOnly=true;renderCards()};
@@ -46,4 +48,7 @@ $('#clear-search').onclick=()=>{$('#subject-search').value='';readyOnly=false;re
 document.addEventListener('click',event=>{const link=event.target.closest('[data-open-lesson]');if(link)try{localStorage.setItem('study-library-last-lesson',link.dataset.openLesson)}catch{}});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!$('#home-view').hidden){e.preventDefault();$('#subject-search').focus();}});
 window.addEventListener('hashchange',route);window.addEventListener('pageshow',()=>{renderContinue();const subject=subjects.find(s=>s.id===new URLSearchParams(location.hash.slice(1)).get('subject'));if(subject)renderSubject(subject)});window.addEventListener('storage',()=>{renderContinue();route()});
-renderCards();route();
+function renderLaboratories(){
+ $('#laboratories-grid').innerHTML=laboratories.map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>What will be here?</summary><p>Once a manual is provided, prepared experiment companions can pair its pages with apparatus diagrams, interactive visualizations and explanations. No manuals or simulations have been added yet.</p></details><div class="card-footer"><span>Manuals coming soon</span><span>No experiments added yet</span></div></article>`).join('');
+}
+renderCards();renderLaboratories();route();

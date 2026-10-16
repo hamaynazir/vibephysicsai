@@ -9,6 +9,11 @@ export const subjects=[
  {id:'nuclear-models',title:'Nuclear Models',lecturer:'Assistant Professor Dr. Adil M. Hussein M. Saeed',description:'Build an understanding of the models used to describe the atomic nucleus.',icon:'nuclear',accent:'#6e66a4',tint:'#f5f3fb',lessons:[]},
  {id:'electromagnetic-theory',title:'Electromagnetic Theory',lecturer:'Mr. Taha Yasin Ahmed',description:'See how electric and magnetic fields connect, interact and travel as waves.',icon:'fields',accent:'#3a7296',tint:'#f0f6fa',lessons:[]}
 ];
+// Laboratory manuals are separate from lecture chapters; add experiments only once prepared.
+export const laboratories=[
+ {id:'nuclear-laboratory',title:'Nuclear Laboratory',icon:'nuclear',accent:'#6e66a4',tint:'#f5f3fb',description:'A dedicated collection for nuclear physics laboratory manuals and interactive experiment companions.',experiments:[]},
+ {id:'solid-state-physics-lab',title:'Solid State Physics Lab',icon:'crystal',accent:'#277e70',tint:'#f0f8f5',description:'A dedicated collection for solid state physics laboratory manuals and interactive experiment companions.',experiments:[]}
+];
 export const allLessons=()=>subjects.flatMap(subject=>subject.lessons.map(lesson=>({...lesson,subjectId:subject.id,subjectTitle:subject.title})));
 export function lessonPosition(lesson,storage){
  try{const n=Number(storage.getItem(lesson.storage.page));return Number.isFinite(n)&&n>=1?Math.min(lesson.pages,Math.floor(n)):null;}catch{return null;}

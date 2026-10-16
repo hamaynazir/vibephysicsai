@@ -10,6 +10,8 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 ## Current experience
 
+The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** and **Solid State Physics Lab**. Both are awaiting manuals; no experiment simulations are available yet. These are separate from lecture subjects and are not included in the chapter counts. Laboratory records live in `catalog.js`; experiment companions will be prepared from supplied manuals before being listed.
+
 The library has **three available chapters, 70 original PDF pages and 57 companion sections**. Nuclear Models and Electromagnetic Theory remain explicitly marked for future chapters.
 
 - Subject → Chapter → Section navigation lets you switch directly between available readers and resume saved positions.
