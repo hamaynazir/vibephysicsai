@@ -2,7 +2,7 @@
 
 An independent physics learning library: **original lecture pages beside interactive educational visualizations, guided explanations and practice.**
 
-[Visit the website](https://vibephysicsai.com/) · [About & contact](https://vibephysicsai.com/about.html) · [Public source on GitHub](https://github.com/hamaynazir/vibephysicsai)
+[Visit the website](https://vibephysicsai.com/) · [About & contact](https://vibephysicsai.com/about.html) · [Open source on GitHub](https://github.com/hamaynazir/vibephysicsai) · [MIT license](LICENSE)
 
 Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**, a fourth-year BSc Physics student in the Department of Physics, College of Science, University of Sulaimani. This is a personal, independent educational project—not an official university website or an endorsement by the university or lecturers.
 
@@ -22,9 +22,9 @@ The library has **three available chapters, 70 original PDF pages and 57 compani
 
 The website uses **HTML, CSS and JavaScript**, with **Canvas** for 2D diagrams, **Three.js/WebGL** for 3D and **PDF.js** for lecture viewing. The main diagrams are not SVG animations. Models are idealized teaching tools, not full quantum or molecular-dynamics simulations; assumptions and scientific qualifications are described in each chapter.
 
-## Public source, ownership and contributions
+## Open source, ownership and contributions
 
-The source is public in [hamaynazir/vibephysicsai](https://github.com/hamaynazir/vibephysicsai). **A license for the original website code has not yet been selected.** Public visibility alone does not grant an open-source reuse license. Lecture PDFs and third-party libraries retain their own ownership and permissions and are not included in any future license for the original code.
+The original website code and original project documentation are **open source under the [MIT license](LICENSE)**, copyright (c) 2026 Mohammed Ghazali Fadhil Tahir (Hamaynazir). You may use, modify and redistribute them, including commercially, while preserving the copyright and license notice. **Lecture PDFs and third-party materials are excluded** and retain their own ownership and permissions; third-party libraries keep their existing licenses. See [LICENSING.md](LICENSING.md) for the scope.
 
 Scientific corrections, accessibility feedback and suggestions are welcome through [GitHub issues](https://github.com/hamaynazir/vibephysicsai/issues). Include the chapter, section, observed problem and a reliable reference where relevant. Preserve original PDFs and existing progress-storage keys when proposing changes. Automated checks reduce mistakes but do not guarantee that every scientific explanation is error-free.
 
