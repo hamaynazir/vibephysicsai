@@ -1,4 +1,4 @@
-import {subjects,allLessons,lessonPosition,lessonURL} from './catalog.js?v=nuclear-1';
+import {subjects,allLessons,lessonPosition,lessonURL} from './catalog.js?v=vector-1';
 
 export function resumeReaderURL(lesson,storage,rootURL){return new URL(lessonURL(lesson,lessonPosition(lesson,storage)||1),rootURL).href;}
 export function preferredChapter(subject,recentId){return subject.lessons.find(l=>l.id===recentId)||subject.lessons[0]||null;}

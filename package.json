@@ -6,6 +6,6 @@
   "description": "A local-first science learning library with independent interactive lectures.",
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node --test tools/science.test.mjs tools/teaching.test.mjs tools/learning.test.mjs tools/catalog.test.mjs tools/materials.test.mjs tools/laser.test.mjs tools/laser-dynamics.test.mjs tools/study-motion.test.mjs tools/laboratories.test.mjs tools/nuclear.test.mjs"
+    "test": "node --test tools/science.test.mjs tools/teaching.test.mjs tools/learning.test.mjs tools/catalog.test.mjs tools/materials.test.mjs tools/laser.test.mjs tools/laser-dynamics.test.mjs tools/study-motion.test.mjs tools/laboratories.test.mjs tools/nuclear.test.mjs tools/emt.test.mjs"
   }
 }

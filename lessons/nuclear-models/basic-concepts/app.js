@@ -2,7 +2,7 @@ import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './
 import {evaluate} from './math.js';
 import {draw,moving} from './visuals.js';
 import {StudyMotion} from '../../../study-motion.js';
-import {installReaderNavigation} from '../../../reader-navigation.js?v=nuclear-1';
+import {installReaderNavigation} from '../../../reader-navigation.js?v=vector-1';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>n===null?'Not defined':typeof n==='number'?Number(n.toPrecision(5)).toString():String(n);
 const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch{return false}}};
 let memory={records:{},notes:{},guide:0};try{const m=JSON.parse(storage.get(lesson.learningKey));if(m&&typeof m==='object'){if(m.records&&typeof m.records==='object'&&!Array.isArray(m.records))memory.records=m.records;if(m.notes&&typeof m.notes==='object'&&!Array.isArray(m.notes))memory.notes=m.notes;if(Number.isInteger(m.guide))memory.guide=Math.min(guide.length-1,Math.max(0,m.guide));}}catch{}
