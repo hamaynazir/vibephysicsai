@@ -201,6 +201,12 @@ Checks include complete page/example coverage, 14 Bravais types, reciprocal-metr
 
 See `ADDING-LECTURES.md` for the catalog format and the workflow for adding independent subject chapters. Future chapter folders under `lessons/` are included automatically by the GitHub Pages workflow. The library does not invent placeholder chapters or turn an arbitrary uploaded PDF into an interactive lesson automatically: each lesson is prepared for its own content before being listed.
 
+## Inspiration and acknowledgements
+
+Part of the idea for Vibe Physics AI—reading lecture pages alongside interactive visualizations—was inspired by **Feynman Interactive**, originally shared by **mishig** on Hugging Face. The linked [hello2himel/feynman-interactive GitHub repository](https://github.com/hello2himel/feynman-interactive) is a community mirror and static-hosting adaptation of that project.
+
+This credit acknowledges the conceptual inspiration. Vibe Physics AI is an independent educational project and does not imply affiliation with or endorsement by those creators.
+
 ## Sources and dependencies
 
 - User-supplied lecture: **Chapter 1. Crystal Structure (1).pdf**, copied without alteration to `assets/lecture.pdf`.
