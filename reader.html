@@ -10,10 +10,11 @@
   <title>Crystal Structures · Vibe Physics AI</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="reader.css?v=labels-1">
+  <link rel="stylesheet" href="reader.css?v=switcher-1">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
   <script src="vendor/pdf.min.js" defer></script>
   <script src="app.js?v=labels-1" type="module"></script>
+ <script src="reader-navigation.js?v=switcher-1" type="module"></script>
 </head>
 <body class="solid-reader">
   <a class="skip" href="#workspace">Skip to lecture</a>
@@ -40,7 +41,7 @@
           <div class="reader-footer"><span><span class="status-dot"></span> <span id="sync-label">Diagrams follow your page</span></span><button id="sync" aria-pressed="true">Sync on</button></div>
         </section>
         <section class="lab-panel panel" aria-label="Interactive companion">
-          <nav class="visual-navigation" aria-label="Visualization navigation">
+          <nav class="visual-navigation" data-lesson="crystal-structures" aria-label="Subject, chapter and visualization navigation">
             <label class="visual-section-field">Section<select id="visual-section" aria-label="Choose visualization section"></select></label>
             <div class="visual-section-arrows"><button id="visual-previous" aria-label="Previous visualization section">←</button><button id="visual-next" aria-label="Next visualization section">→</button></div>
           </nav>

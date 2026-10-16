@@ -146,6 +146,8 @@ tools/catalog.test.mjs Subject availability, search and saved-position checks
 
 ## Verification
 
+All three chapter readers provide Subject → Chapter → Section selectors above the visualization. Switching to another available subject opens its chapter at the saved page; selecting the current chapter leaves the current page alone. The two subjects without chapters are clearly marked and disabled rather than linking to nonexistent lessons. Chapter options come from the shared catalog, so future prepared chapters appear automatically. No answers or reading history are cleared by switching.
+
 Materials Science and Crystal Structures add Play/Pause, Step, Restart and Speed where motion explains something. Materials animates transfer, scattering, molecular motion, London dipoles, electron drift and carbon view rotation. Solid State rotates the view and traces actual component paths, angle arcs, invariant A→B displacement and the perpendicular interplanar gap. These are teaching demonstrations; cell geometry and calculated parameters stay fixed. Manual 3D interaction pauses playback. Reduced-motion settings start paused, with deliberate Play available. Original PDFs, section counts, questions, exercises and saved-answer keys remain unchanged. Shared playback and conservation tests are in `tools/study-motion.test.mjs`.
 
 ```sh
