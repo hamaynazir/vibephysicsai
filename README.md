@@ -207,6 +207,12 @@ Part of the idea for Vibe Physics AI—reading lecture pages alongside interacti
 
 This credit acknowledges the conceptual inspiration. Vibe Physics AI is an independent educational project and does not imply affiliation with or endorsement by those creators.
 
+## AI assistance
+
+Vibe Physics AI was developed with assistance from **OpenAI Codex**, using **GPT-6.1 Sol** in the creator's development workflow. AI assistance supported writing and refining code, building interactive visualizations, drafting study explanations and exercises, and developing automated checks.
+
+**Mohammed Ghazali Fadhil Tahir (Hamaynazir)** provides the project direction, selects the lecture materials and learning goals, and decides what to include. AI-assisted content and code can contain errors; automated tests do not replace scientific review, lecturer guidance or authoritative references. This acknowledgement does not imply endorsement by OpenAI, the university or the lecturers. The published website uses prepared content and browser-based models, not a live AI tutor.
+
 ## Sources and dependencies
 
 - User-supplied lecture: **Chapter 1. Crystal Structure (1).pdf**, copied without alteration to `assets/lecture.pdf`.
