@@ -23,7 +23,7 @@ export class Learning{
   this.installDrawer();this.updateCount();
  }
  installDrawer(){
-  const sidebar=document.querySelector('.sidebar'),button=document.querySelector('#chapters-toggle');this.shade=document.createElement('button');this.shade.className='chapter-shade';this.shade.hidden=true;this.shade.setAttribute('aria-label','Close chapters');document.body.append(this.shade);
+  const sidebar=document.querySelector('.sidebar'),button=document.querySelector('#chapters-toggle');this.shade=document.createElement('button');this.shade.className='chapter-shade';this.shade.hidden=true;this.shade.setAttribute('aria-label','Close sections');document.body.append(this.shade);
   this.setChapters=(open,focus=false)=>{document.body.classList.toggle('chapters-open',open);sidebar.inert=!open;document.querySelector('#workspace').inert=open;button.setAttribute('aria-expanded',String(open));this.shade.hidden=!open;if(open)document.querySelector('#search').focus();else if(focus)button.focus();};
   button.onclick=()=>this.setChapters(!document.body.classList.contains('chapters-open'),true);this.shade.onclick=()=>this.setChapters(false,true);document.querySelector('#toc').addEventListener('click',e=>{if(e.target.closest('[data-topic]'))this.setChapters(false,true)});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('chapters-open'))this.setChapters(false,true);});

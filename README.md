@@ -1,6 +1,6 @@
 # Vibe Physics AI
 
-Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**. Intended domain: **https://vibephysicsai.com**. The About & Contact page contains the creator's email and LinkedIn link. The chapter keeps its Crystal Lab identity inside the reader.
+Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**. Website: **https://vibephysicsai.com**. The About & Contact page contains the creator's email and LinkedIn link. Reader labels distinguish subject labs from their current chapters: Solid State Lab → Crystal Structures, Materials Lab → Materials and Bonding, and Laser Lab → Laser Radiation and Its Properties.
 
 `CNAME` prepares the custom domain for publication; it does not connect DNS or publish the site. After deploying, configure the custom domain in your hosting settings, follow that provider's DNS instructions, and enable HTTPS when available. Hosting and domain ownership must be configured separately.
 
@@ -37,7 +37,7 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 - **Continue learning** resumes the available lesson at its saved page. The indicator is a reading position, not a completion or mastery score.
 - Use **← Library** in the reader header to return to the homepage.
 - Scroll the lecture or use the page arrows to move through all 40 pages.
-- Open **Chapters** to choose any of the 16 topics. The drawer closes after selection.
+- Open **Sections** to choose any of the 16 topics within the Crystal Structures chapter. The drawer closes after selection.
 - The lab follows your lecture page. Turn **Sync off** to pin the current lab while browsing other pages.
 - Use the single **Learn** menu: explore, explain what you click, build it yourself, predict then reveal, teach me from zero, review weak points, read notes, or answer a chapter question.
 - Drag 3D models to rotate, use the wheel/pinch to zoom, and use the reset button to restore the camera. Automatic rotation is optional.
@@ -103,7 +103,7 @@ For local Git, once your empty remote exists:
 ```sh
 git init
 git add .
-git commit -m "Add Crystal Lab interactive lecture"
+git commit -m "Add Solid State Lab interactive chapter"
 git branch -M main
 git remote add origin YOUR_REPOSITORY_URL
 git push -u origin main

@@ -10,21 +10,21 @@
   <title>Crystal Structures · Vibe Physics AI</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="reader.css?v=study-motion-1">
+  <link rel="stylesheet" href="reader.css?v=labels-1">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
   <script src="vendor/pdf.min.js" defer></script>
-  <script src="app.js?v=study-motion-1" type="module"></script>
+  <script src="app.js?v=labels-1" type="module"></script>
 </head>
-<body>
+<body class="solid-reader">
   <a class="skip" href="#workspace">Skip to lecture</a>
   <header class="topbar">
-    <div class="reader-home"><a class="library-back" href="./">← Library</a><span class="reader-home-divider" aria-hidden="true"></span><a href="#page=1" class="brand" aria-label="Crystal Structures, first page"><span class="brand-mark">◇</span> Crystal<span>Lab</span></a></div>
-    <div class="course"><span class="status-dot"></span> SOLID STATE PHYSICS <span class="divider">/</span> Chapter 01</div>
-    <div class="header-actions"><button id="chapters-toggle" aria-expanded="false" aria-controls="chapter-sidebar">Chapters</button><button id="theme" class="icon-button" aria-label="Switch color theme" title="Switch color theme">☀</button><button id="help" class="icon-button" aria-label="Help and keyboard shortcuts">?</button></div>
+    <div class="reader-home"><a class="library-back" href="./">← Library</a><span class="reader-home-divider" aria-hidden="true"></span><a href="#page=1" class="brand" aria-label="Solid State Lab — Crystal Structures, first page"><span class="brand-mark">◇</span> Solid State <span>Lab</span></a></div>
+    <div class="course"><span class="status-dot"></span> SOLID STATE PRINCIPLES <span class="divider">/</span> Chapter 01</div>
+    <div class="header-actions"><button id="chapters-toggle" aria-expanded="false" aria-controls="chapter-sidebar">Sections</button><button id="theme" class="icon-button" aria-label="Switch color theme" title="Switch color theme">☀</button><button id="help" class="icon-button" aria-label="Help and keyboard shortcuts">?</button></div>
   </header>
   <div class="app-shell">
-    <aside id="chapter-sidebar" class="sidebar" aria-label="Lecture navigation" inert>
-      <div class="chapter-heading"><div class="eyebrow">YOUR LECTURE</div><h1>Crystal<br>Structures<span>.</span></h1><p>40 pages. A new perspective.</p></div>
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Chapter sections" inert>
+      <div class="chapter-heading"><div class="eyebrow">SOLID STATE PRINCIPLES · CHAPTER 01</div><h1>Crystal<br>Structures<span>.</span></h1><p>40 original pages. 16 sections.</p></div>
       <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a topic…" aria-label="Find a lecture topic"><kbd>/</kbd></label>
       <div class="toc-label">CHAPTER CONTENTS <span>16</span></div>
       <nav id="toc"></nav><p id="no-results" hidden>No matching topics.</p>
@@ -45,7 +45,7 @@
             <div class="visual-section-arrows"><button id="visual-previous" aria-label="Previous visualization section">←</button><button id="visual-next" aria-label="Next visualization section">→</button></div>
           </nav>
           <div class="panel-toolbar"><div class="panel-title"><span class="tiny-icon mint">✧</span> THE INTERACTIVE LAB</div><span class="live-badge"><span class="status-dot"></span> LIVE</span></div>
-            <div class="lab-scroll"><div class="lab-heading"><div class="eyebrow" id="section-label">01 / THE CRYSTALLINE STATE</div><h2 id="lab-title">Order makes a crystal.</h2><div class="lecture-lecturer">Lecturer: <strong>Mr. Shaho Mohammed Rasul</strong></div><p id="lab-description"></p></div>
+            <div class="lab-scroll"><div class="lab-heading"><p class="reader-chapter-context">Solid State Principles · Chapter 1: Crystal Structures</p><div class="eyebrow" id="section-label">01 / THE CRYSTALLINE STATE</div><h2 id="lab-title">Order makes a crystal.</h2><div class="lecture-lecturer">Lecturer: <strong>Mr. Shaho Mohammed Rasul</strong></div><p id="lab-description"></p></div>
           <div class="lab-tabs" role="tablist" aria-label="Study mode"><button id="tab-explore" role="tab" aria-selected="true" aria-controls="explore-view">Explore</button><button id="tab-ideas" role="tab" aria-selected="false" aria-controls="ideas-view">Key ideas</button><button id="tab-practice" role="tab" aria-selected="false" aria-controls="practice-view">Practice <span>↗</span></button></div>
           <div id="explore-view" role="tabpanel" aria-labelledby="tab-explore"><div id="controls" class="controls"></div><div class="visual-stage" id="visual-stage"><canvas id="scene" aria-label="Interactive scientific diagram"></canvas><div class="stage-top"><span id="scene-label">PERIODIC ARRANGEMENT</span><div><button id="spin" class="stage-button" aria-label="Play or pause model motion" aria-pressed="false" title="Play or pause model motion">↻</button><button id="reset" class="stage-button" aria-label="Reset diagram view" title="Reset view">⟲</button></div></div><div id="scene-hint" class="scene-hint">Drag to rotate · Scroll to zoom</div></div><div id="metrics" class="metrics"></div><div id="insight" class="insight"></div><div id="extra-controls"></div></div>
           <div id="ideas-view" role="tabpanel" aria-labelledby="tab-ideas" hidden></div><div id="practice-view" role="tabpanel" aria-labelledby="tab-practice" hidden></div>
@@ -54,7 +54,7 @@
       </div><footer class="workspace-footer"><span>A little interaction. A deeper understanding.</span><span>Original lecture + visual study companion</span></footer>
     </main>
   </div>
-  <dialog id="help-dialog"><button id="close-help" class="dialog-close" aria-label="Close help">×</button><div class="eyebrow">WELCOME TO CRYSTAL LAB</div><h2>Make the lecture tangible.</h2><p>Read the original PDF on the left. The lab follows your page automatically. Choose a topic in the sidebar, or explore the controls on the right.</p><p>Drag a 3D model to rotate it. Use the mouse wheel or a pinch gesture to zoom. Diagrams are idealized teaching models; whole boundary atoms are drawn for clarity.</p><dl><dt>← / →</dt><dd>Previous / next lecture page</dd><dt>/</dt><dd>Search topics</dd><dt>Sync</dt><dd>Keep the current lab while browsing other pages</dd></dl><p class="muted">Everything runs locally. No AI service, accounts, tracking, or API keys. The PDF is the original lecture; companion notes clarify a few terminology and formula issues.</p><a href="README.md" target="_blank">Project and hosting instructions ↗</a></dialog>
+  <dialog id="help-dialog"><button id="close-help" class="dialog-close" aria-label="Close help">×</button><div class="eyebrow">WELCOME TO SOLID STATE LAB</div><h2>Make the lecture tangible.</h2><p>Read the original PDF on the left. The lab follows your page automatically. Choose a topic in the sidebar, or explore the controls on the right.</p><p>Drag a 3D model to rotate it. Use the mouse wheel or a pinch gesture to zoom. Diagrams are idealized teaching models; whole boundary atoms are drawn for clarity.</p><dl><dt>← / →</dt><dd>Previous / next lecture page</dd><dt>/</dt><dd>Search topics</dd><dt>Sync</dt><dd>Keep the current lab while browsing other pages</dd></dl><p class="muted">Models run in your browser; the hosted website loads files over the internet. There is no live AI tutor or required account. Reading position and practice history are saved only in this browser. The PDF is the original lecture; companion notes clarify a few terminology and formula issues.</p><a href="README.md" target="_blank">Project and hosting instructions ↗</a></dialog>
   <div id="toast" role="status" class="toast" hidden></div>
 </body>
 </html>

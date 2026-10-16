@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {subjects,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
+test('Reader labels distinguish subject labs, chapters and section navigation',()=>{const root=fs.readFileSync(new URL('../reader.html',import.meta.url),'utf8');assert.match(root,/Solid State <span>Lab<\/span>/);assert.match(root,/Solid State Principles · Chapter 1: Crystal Structures/);assert.match(root,/>Sections<\/button>/);assert.ok(!root.includes('CRYSTAL LAB'));for(const [path,context]of [['lessons/materials-science/materials-and-bonding/index.html','Materials Science · Chapter 1: Materials and Bonding'],['lessons/laser-physics/laser-radiation/index.html','Laser Physics · Chapter 1: Laser Radiation and Its Properties']]){const html=fs.readFileSync(new URL('../'+path,import.meta.url),'utf8');assert.ok(html.includes(context));assert.match(html,/>Sections<\/button>/);}const about=fs.readFileSync(new URL('../about.html',import.meta.url),'utf8');assert.match(about,/not a live AI tutor/);});
 test('all five requested subjects exist and listed chapters have real readers',()=>{
  assert.deepEqual(subjects.map(s=>s.title),['Materials Science','Laser Physics','Solid State Principles','Nuclear Models','Electromagnetic Theory']);
  assert.ok(subjects.every(s=>s.lecturer), 'Every subject identifies its lecturer');
