@@ -1,5 +1,5 @@
 import {C,cavityGain,inversion} from './math.js';
-export const movingModes=new Set(['fields','wave','photons','interactions','spatial','cavity','direction','pulse','temporal','pumping']);
+export const movingModes=new Set(['overview','fields','wave','photons','interactions','spatial','cavity','direction','pulse','temporal','pumping']);
 export const opticalTimeFs=time=>time*.6;
 export const waveValue=(xNm,time,lambdaNm)=>Math.sin(2*Math.PI*(xNm-C*opticalTimeFs(time)*1e-6)/lambdaNm);
 export function fieldVectors(polarization,sample){const p=polarization*Math.PI/180;return {E:[0,sample*Math.cos(p),sample*Math.sin(p)],B:[0,-sample*Math.sin(p),sample*Math.cos(p)],flow:[sample*sample,0,0]};}

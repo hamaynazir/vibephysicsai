@@ -8,6 +8,17 @@ The white split reader includes source-page synchronization, a section-only sele
 
 ## Scientific decisions and corrections
 
+### Four-property comparison on page 1
+
+The overview now directly compares an ordinary-source example with a laser example. Four accessible property buttons switch the two-panel animation; sliders, Play/Pause, Step, speed, Reset and a link to the existing detailed section are available. All 19 original companion sections, notes, questions and eight calculations remain.
+
+- Coherence uses the same nominal carrier and phase sketches at three sampled positions. The first two interfere. Ordinary-source relative phase is sampled from a zero-mean Gaussian of adjustable standard deviation σ; ideal ensemble fringe visibility is exp(−σ²/2). The laser example has a fixed adjustable offset and ideal visibility 1. The average strip is the analytic ensemble expectation, not a measured finite exposure. Stable nonzero phase offsets are still coherent. Display time is not calibrated as a coherence-time measurement.
+- Directionality is a labeled geometric ray comparison, not the Gaussian diffraction solver. Both sources start at radius 5 mm; end diameter is 2(r₀ + z tan θ), with the same propagation distance and shared auto-fitted transverse scale. Ordinary half-angle is entered in degrees, laser half-angle in mrad. Both are nonzero. Dots indicate representative propagation, not a photon count or physical propagation timing.
+- Spectra have common wavelength axes (380–780 nm) and independent unit-height Gaussian profiles; FWHM sliders explicitly set widths. The moving probe scans these stationary spectra. Packet colors qualitatively distinguish the broadband versus narrow-band examples. Neither profile is claimed to be a measured lamp/laser spectrum; normalized peak heights must not be used to infer equal spectral power.
+- Irradiance holds optical power equal in the two spots. Uniform circular I = 4P/(πd²); the ratio is the inverse area ratio. Spot diameters share a fixed spatial scale, while brightness is tone-mapped and equal packet-symbol counts are illustrative energy arrivals, not a hazard or photon statistics calculation. This isolates concentration rather than assuming lasers necessarily have higher total power.
+
+These examples are not universal definitions: ordinary light can be filtered or collimated, and actual lasers differ in coherence, divergence, mode structure, linewidth and power. All model limits are stated in the live comparison, not only here.
+
 ### Dynamic models
 
 Ten useful models now animate by default: traveling E/B fields, the wave snapshot, photon flow, absorption/emission, spatial coherence, cavity feedback, beam cross-section propagation, pulse-envelope passage, a temporal-delay scan and pump-energy flow. Play/Pause, a deterministic Step, 0.25×–2× speed and Reset are available. Reduced-motion preferences start paused, with deliberate Play or Step still available. Animation stops drawing while hidden or outside the viewport. Pausing and resuming uses elapsed-frame increments, never jumps to an absolute wall-clock time.

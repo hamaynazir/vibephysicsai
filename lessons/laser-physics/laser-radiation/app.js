@@ -1,12 +1,14 @@
-import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=motion-1';
+import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=compare-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
-import {LaserDiagram} from './visuals.js?v=motion-1';
-import {movingModes} from './dynamics.js';
+import {LaserDiagram} from './visuals.js?v=compare-1';
+import {movingModes} from './dynamics.js?v=compare-1';
+import {comparisonDefaults,comparisonFeatures,comparisonMetrics} from './comparisons.js';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get(key){try{return localStorage.getItem(key)}catch{return null}},set(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}};
 let progress={records:{},guide:0},memoryAvailable=true;
 try{const saved=JSON.parse(store.get(lesson.learningKey));if(saved&&typeof saved.records==='object'&&saved.records!==null&&!Array.isArray(saved.records)){progress.records=saved.records;progress.guide=Number.isInteger(saved.guide)?Math.max(0,Math.min(guide.length-1,saved.guide)):0;progress.guideComplete=saved.guideComplete===true;}}catch{}
 const defaults={lambda:632.8,amplitude:1,polarization:0,milestone:'3',logLambda:-6.2,lower:'1',upper:'2',power:2,process:'Stimulated',width:.05,index:1,delay:.5,relation:'Stable',phase:0,duration:.05,shape:'Estimate',waist:.5,distance:100,diameter:1.3,medium:'He–Ne',upperFraction:.8,reflectivity:.95};
+Object.assign(defaults,comparisonDefaults);
 const patches={intensity:{power:20},pulse:{lambda:623.8}};
 let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,pdf=null,zoom=1,rendering=false,epoch=0;
 const states=new Map(),queue=new Set();
@@ -33,7 +35,7 @@ function selectSection(section,keepMode=false){
  $('#visual-section').value=current.id;$('#visual-previous').disabled=current===sections[0];$('#visual-next').disabled=current===sections.at(-1);
  $('#section-label').textContent=current.title.toUpperCase();$('#lab-title').textContent=current.heading;$('#lab-description').textContent=current.description;
  $('#scene-label').textContent=current.title.toUpperCase()+' · TEACHING MODEL';
- $('#scene-hint').textContent='Change a control · Click a labeled part to explain it';
+ $('#scene-hint').textContent=current.mode==='overview'?'Both panels animate together · Pause or Step to inspect':'Change a control · Click a labeled part to explain it';
  $('#scene').setAttribute('aria-label',current.title+' interactive diagram');
  renderToc();renderControls();renderMetrics();renderNotes();renderLearning();$('#page-context').textContent='COMPANION TO PAGE '+currentPage;$('.lab-scroll').scrollTop=0;
 }
@@ -50,6 +52,7 @@ $('#sync').onclick=()=>{sync=!sync;$('#sync').setAttribute('aria-pressed',String
 const select=(key,label,options)=>`<label>${label}<select data-key="${key}">${options.map(v=>`<option ${s[key]===v?'selected':''}>${v}</option>`).join('')}</select></label>`;
 const slider=(key,label,min,max,step=1,unit='')=>`<label>${label}<input data-key="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${s[key]}" aria-label="${label}"><output data-output="${key}">${fmt(+s[key])}${unit}</output></label>`;
 function renderControls(){let html='';const m=current.mode;
+ if(m==='overview'){html='<div class="feature-choices" role="group" aria-label="Choose laser property comparison">'+Object.entries(comparisonFeatures).map(([key,f])=>'<button data-compare-feature="'+key+'" aria-pressed="'+(s.compareFeature===key)+'">'+esc(f.label)+'</button>').join('')+'</div>';if(s.compareFeature==='coherence')html+=slider('compareJitter','Ordinary phase spread σ',0,3,.1,' rad')+slider('comparePhase','Stable laser phase offset',0,180,5,'°');if(s.compareFeature==='direction')html+=slider('compareSpread','Ordinary half-angle',15,60,1,'°')+slider('compareDivergence','Laser half-angle',1,20,1,' mrad')+slider('compareDistance','Same distance',1,10,.5,' m');if(s.compareFeature==='spectrum')html+=slider('compareBroad','Ordinary linewidth',60,180,5,' nm')+slider('compareNarrow','Laser linewidth',1,15,1,' nm')+slider('compareCenter','Same center wavelength',450,650,1,' nm');if(s.compareFeature==='irradiance')html+=slider('comparePower','Power in EACH spot',1,20,1,' mW')+slider('compareWideSpot','Ordinary spot diameter',10,40,1,' mm')+slider('compareSmallSpot','Laser spot diameter',.5,5,.5,' mm');html+='<button class="small-button" id="open-feature-section">Open detailed section →</button><span class="control-note">Illustrative sources, not universal rules: ordinary light can be filtered or collimated, and real lasers vary.</span>';}
  if(['fields','wave','photons','direction','monochromatic','temporal'].includes(m))html+=slider('lambda','Vacuum wavelength',380,1000,.1,' nm');
  if(m==='wave')html+=slider('amplitude','Relative field amplitude',.2,1.5,.1);
  if(m==='fields')html+=slider('polarization','Polarization angle',0,180,5,'°');
@@ -71,10 +74,11 @@ function renderControls(){let html='';const m=current.mode;
 }
 $('#controls').oninput=e=>{const key=e.target.dataset.key;if(!key||e.target.tagName==='SELECT')return;if(!e.target.checkValidity()||e.target.value==='')return;s[key]=+e.target.value;const out=$('[data-output="'+key+'"]');if(out)out.textContent=fmt(s[key]);renderMetrics();};
 $('#controls').onchange=e=>{const key=e.target.dataset.key;if(!key||e.target.tagName!=='SELECT')return;s[key]=e.target.value;if(+s.lower>=+s.upper){if(key==='lower')s.upper=String(+s.lower+1);else s.lower=String(+s.upper-1);}renderControls();renderMetrics();};
+$('#controls').onclick=e=>{const key=e.target.closest('[data-compare-feature]')?.dataset.compareFeature;if(key){s.compareFeature=key;inspection=null;renderControls();renderMetrics();renderLearning();}if(e.target.id==='open-feature-section')goSection(comparisonFeatures[s.compareFeature].target);};
 function metric(v,label){return '<div class="metric"><strong>'+esc(v)+'</strong><small>'+esc(label)+'</small></div>';}
 const sci=(n,d=3)=>n.toExponential(d).replace('e+',' × 10^').replace('e-',' × 10^−');
 function renderMetrics(){const m=current.mode,l=light(+s.lambda);let values=[],insight=current.formula;
- if(m==='overview')values=[['4','key properties'],['Stimulated','emission'],['Pump','energy source']];
+ if(m==='overview'){values=comparisonMetrics(s);insight=comparisonFeatures[s.compareFeature].note;}
  if(m==='history')values=[['1917 · 1950s · 1958 · 1960','teaching timeline'],[['Einstein','Maser','Optical proposal','Ruby laser'][+s.milestone],'selected milestone']];
  if(m==='fields'){const p=s.polarization*Math.PI/180;values=[['(1, 0, 0)','k̂ propagation'],['(0, '+fmt(Math.cos(p),2)+', '+fmt(Math.sin(p),2)+')','Ê · i, j, k components'],['(0, '+fmt(-Math.sin(p),2)+', '+fmt(Math.cos(p),2)+')','B̂ · i, j, k components']];insight='Ê · B̂ = 0 and Ê × B̂ = (1,0,0). E and B are in phase for this vacuum plane wave. Arrow lengths use independent scales, not equal SI magnitudes.';}
  if(m==='wave')values=[[fmt(l.frequency/1e12,2)+' THz','frequency ν'],[fmt(l.period/1e-15,3)+' fs','period T'],[fmt(s.amplitude**2,2)+'×','irradiance relative to E₀ = 1']];
@@ -122,7 +126,7 @@ function handleLearning(e){const b=e.target.closest('button');if(!b)return;
 }
 $('#learning-activity').onclick=handleLearning;$('#question-view').onclick=handleLearning;
 $('#learning-activity').onchange=e=>{if(e.target.id==='challenge-select'){challengeIndex=+e.target.value;startChallenge();}};
-$('#reset').onclick=()=>{s={...defaults,...patches[current.id]};states.set(current.id,s);diagram.reset();renderControls();renderMetrics();};
+$('#reset').onclick=()=>{const feature=s.compareFeature;s={...defaults,...patches[current.id]};if(current.mode==='overview')s.compareFeature=feature;states.set(current.id,s);diagram.reset();renderControls();renderMetrics();};
 $('#animate').onclick=()=>diagram.running?diagram.pause():diagram.play();
 $('#step').onclick=()=>diagram.step();
 $('#motion-speed').onchange=e=>{diagram.speed=+e.target.value;renderMotion();};
