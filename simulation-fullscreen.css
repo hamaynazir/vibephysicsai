@@ -1,0 +1,27 @@
+.simulation-fullscreen-button{font:inherit;font-size:11px;white-space:nowrap;border:1px solid var(--border,var(--line,#dfe5e7));background:var(--surface,var(--bg,#fff));color:var(--text,#263642);border-radius:6px;padding:8px 10px;cursor:pointer}
+.simulation-fullscreen-button:focus-visible,.simulation-focus-toolbar button:focus-visible{outline:2px solid var(--accent,#07888c);outline-offset:3px}
+.simulation-focus-toolbar[hidden]{display:none!important}
+.simulation-focus-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:30;flex:0 0 auto;width:100%;padding:12px 18px;border-bottom:1px solid var(--border,var(--line,#dfe5e7));background:var(--surface,var(--bg,#fff));color:var(--text,#263642);font-size:12px;box-sizing:border-box}
+.simulation-focus-toolbar button{font:inherit;font-size:12px;white-space:nowrap;border:1px solid var(--border,var(--line,#dfe5e7));background:var(--surface,var(--bg,#fff));color:var(--accent,#07888c);border-radius:6px;padding:8px 12px;cursor:pointer}
+body .simulation-focus,body .simulation-focus:fullscreen{position:fixed!important;inset:0!important;z-index:10000!important;display:block!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;background:var(--surface,var(--bg,#fff));color:var(--text,#263642);box-sizing:border-box;overflow:auto!important}
+body .lab-panel.simulation-focus{display:flex!important;flex-direction:column!important;padding:0!important}
+.lab-panel.simulation-focus>.visual-navigation{flex:0 0 auto;position:relative;top:auto}
+.lab-panel.simulation-focus>.lab-scroll{flex:1 1 auto;min-height:0;overflow:auto;padding-left:max(24px,calc((100vw - 1120px)/2));padding-right:max(24px,calc((100vw - 1120px)/2))}
+.lab-panel.simulation-focus .visual-stage{height:clamp(360px,62dvh,850px);min-height:360px}
+body .companion.simulation-focus{padding:0 max(24px,calc((100vw - 1120px)/2)) 60px!important}
+.companion.simulation-focus>.simulation-focus-toolbar{margin:0 0 12px;}
+.companion.simulation-focus>.section-context,.companion.simulation-focus>.eyebrow,.companion.simulation-focus>.credit,.companion.simulation-focus>.description,.companion.simulation-focus>.safety{display:none}
+.companion.simulation-focus>h1{font-size:25px;margin:10px 0}
+.companion.simulation-focus .mode{margin:10px 0}
+.simulation-focus #controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 18px;margin:12px 0}
+.simulation-focus #controls>.control-note{grid-column:1/-1}
+.simulation-focus .study-motion-status{min-height:0;margin:4px 0;font-size:10px}
+.companion.simulation-focus .stage:not(.enlarged){max-width:min(1120px,calc((100dvh - 330px)*1.72));margin-left:auto;margin-right:auto}
+.lab-panel.simulation-focus .lab-heading .reader-chapter-context,.lab-panel.simulation-focus .lab-heading>.eyebrow,.lab-panel.simulation-focus .lab-heading>.lecture-lecturer,.lab-panel.simulation-focus .lab-heading>p{display:none}
+.lab-panel.simulation-focus .lab-heading h2{font-size:25px;margin:12px 0}
+.companion.simulation-focus #scene{max-height:none;height:auto}
+.companion.simulation-focus .stage:not(.enlarged) #scene{max-width:1120px;margin:0 auto}
+@media(max-width:800px){.header-buttons:has(.simulation-fullscreen-button),.header-actions:has(.simulation-fullscreen-button){flex-wrap:wrap;justify-content:flex-end;gap:4px}.simulation-fullscreen-button{font-size:0!important;padding:5px 8px!important;min-width:32px;min-height:30px}.simulation-fullscreen-button:before{content:'⛶';font-size:20px}.simulation-focus-toolbar{padding:10px 12px;font-size:11px}.simulation-focus-toolbar button{font-size:11px;padding:7px 9px}.lab-panel.simulation-focus>.lab-scroll{padding-left:16px;padding-right:16px}body .companion.simulation-focus{padding-left:16px!important;padding-right:16px!important}.simulation-focus-toolbar span{max-width:45%}}
+@media(max-width:380px){.header-buttons:has(.simulation-fullscreen-button){gap:3px}.header-buttons:has(.simulation-fullscreen-button) button{padding:4px 5px;font-size:10px}.header-buttons .simulation-fullscreen-button{min-width:28px;padding:4px 6px!important}header:has(>.simulation-fullscreen-button){gap:6px;padding:0 10px}header:has(>.simulation-fullscreen-button) strong{font-size:13px}header:has(>.simulation-fullscreen-button)>div{gap:4px}}
+@media(max-width:800px){.simulation-focus #controls{grid-template-columns:repeat(2,minmax(0,1fr))}.companion.simulation-focus .stage:not(.enlarged){max-width:100%}}
+@media(prefers-reduced-motion:reduce){.simulation-focus{scroll-behavior:auto!important}}

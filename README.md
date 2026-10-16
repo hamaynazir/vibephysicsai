@@ -10,6 +10,8 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 ## Current experience
 
+All five lecture readers and both laboratories have a **Full-screen simulation** button (⛶ on small screens). It hides the PDF and expands the interactive companion, keeping model controls, playback and learning tools available. Use **Back to lecture/manual** or Escape to return. Supported browsers use native full screen; otherwise a full-page focus view provides the same PDF-free layout. Models and saved progress are not recreated or cleared.
+
 The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, synthetic data recording/CSV export, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
 
 The lecture library has **five available chapters, 115 original PDF pages and 95 companion sections**. All five subjects now have a prepared first chapter. The separate Laboratories collection has two manuals, 71 original manual pages and twelve experiment companions.
