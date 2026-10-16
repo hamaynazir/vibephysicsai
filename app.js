@@ -1,5 +1,5 @@
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
-import {Visualizer} from './visuals.js';
+import {Visualizer} from './visuals.js?v=study-motion-1';
 import {Teaching} from './teaching.js';
 import {Learning} from './learning.js';
 import {nearestNeighbors} from './teaching-math.js';
@@ -206,7 +206,7 @@ function bindControl(container){
  });
 }
 bindControl($('#controls'));bindControl($('#extra-controls'));
-$('#spin').onclick=()=>{model.spin=!model.spin;$('#spin').setAttribute('aria-pressed',String(model.spin));model.dirty=true;};$('#reset').onclick=()=>model.reset();
+$('#spin').onclick=()=>{model.motion.toggle();$('#spin').setAttribute('aria-pressed',String(!model.motion.clock.paused));model.dirty=true;};$('#reset').onclick=()=>model.reset();
 
 function renderIdeas(){const section=currentSection;const relevant=examples.filter(e=>e.pages[1]>=section.pages[0]&&e.pages[0]<=section.pages[1]);$('#ideas-view').innerHTML=`<div class="note"><strong>On page ${currentPage}</strong><br>${pageNotes[currentPage]}</div><div class="formula">${section.formula}</div>${section.ideas.map(([title,body])=>`<div class="idea-block"><h3>${title}</h3><p>${body}</p></div>`).join('')}${relevant.length?'<div class="eyebrow">WORKED EXAMPLES</div>':''}${relevant.map(e=>`<details><summary>Example ${e.n} · ${e.title}</summary><p>${e.body}</p><button class="inline-link" data-example="${e.n}">Explore this example →</button><p class="small">Original solution: ${e.pages[0]===e.pages[1]?'page '+e.pages[0]:'pages '+e.pages.join('–')}</p></details>`).join('')}<details><summary>About these companion notes</summary><p>The PDF is unchanged. These original study notes clarify terminology and sign conventions. For formal definitions, see the <a href="https://dictionary.iucr.org/Interplanar_spacing" target="_blank" rel="noopener">IUCr definition of interplanar spacing</a>, <a href="https://www.iucr.org/who-we-are/commissions/commission-on-crystallographic-nomenclature/published-reports/bravais" target="_blank" rel="noopener">Bravais nomenclature</a>, and <a href="https://journals.iucr.org/j/issues/2023/06/00/dv5006/index.html" target="_blank" rel="noopener">IUCr symmetry database and CsCl example</a>.</p></details>`;}
 $('#ideas-view').onclick=e=>{const t=e.target.closest('[data-example]');if(!t)return;const ex=examples.find(x=>x.n===t.dataset.example);goPage(ex.pages[0]);mode=ex.mode;state=structuredClone(defaults[mode]);if(mode==='structures')state.structure=ex.preset;if(mode==='indices'){state.indexMode=ex.preset==='direction'?'direction':'plane';state.indices=ex.preset==='negative'?[1,0,-3]:ex.preset==='direction'?[1,2,3]:[1,1,1];}if(mode==='spacing'){const a=ex.preset==='Al'?4.468914856:3.524;state.params=[a,a,a,90,90,90];state.indices=ex.preset==='Al'?[1,1,1]:[2,2,0];}if(mode==='forces')[state.m,state.n]=ex.preset.split(',').map(Number);if(mode==='madelung')state.dimension=+ex.preset;renderControls();refresh();switchTab('explore');};

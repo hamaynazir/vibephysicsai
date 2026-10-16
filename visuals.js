@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import {StudyMotion,pathPoint,ionicTransfer} from './study-motion.js';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {systems,basisVectors,fractional,unitSites,cubicInfo,cellEdges,cubeCorners,add,sub,mul,norm,unit,dot,planePolygon,reciprocal,wignerSeitz,madelungShells,potential,radialForce,atomDisplayGroup} from './crystal-math.js';
-import {drawTeaching} from './teaching-visuals.js';
+import {drawTeaching} from './teaching-visuals.js?v=study-motion-1';
 import {hexagonVertices,hexagonalPrismSites} from './crystal-math.js';
 import {spacingMeasurement} from './crystal-math.js';
 
@@ -18,7 +19,7 @@ export class Visualizer{
   this.group=new THREE.Group();this.scene.add(this.group);this.sphereGeometry=new THREE.SphereGeometry(1,24,16);
   this.pickable=[];this.inspectable=[];this.raycaster=new THREE.Raycaster();this.raycaster.params.Line.threshold=.075;
   this.readout=document.createElement('div');this.readout.className='teaching-readout';this.readout.hidden=true;this.stage.append(this.readout);
-  canvas.addEventListener('pointerdown',e=>{this.pointerStart=[e.clientX,e.clientY]});
+  canvas.addEventListener('pointerdown',e=>{this.pointerStart=[e.clientX,e.clientY];if(this.motion){this.motion.clock.paused=true;this.motion.update();}});
   canvas.addEventListener('pointerup',e=>{
    if(!this.pointerStart||Math.hypot(e.clientX-this.pointerStart[0],e.clientY-this.pointerStart[1])>6||(!this.pickable.length&&!this.inspectable.length))return;
    const r=canvas.getBoundingClientRect();this.raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),this.camera);
@@ -32,17 +33,17 @@ export class Visualizer{
    else if(['order','translation'].includes(this.mode))this.onInspect?.({kind:'concept',label:'A repeating lattice',text:'Each point represents a lattice site. Integer translations along the lattice vectors reproduce the pattern. The atoms placed at every site form its atomic basis.'});
    else if(this.mode==='bonding')this.onInspect?.({kind:'concept',label:this.state.bond+' bonding',text:'This is a conceptual illustration of electron behavior, not a quantum trajectory. Change the bond type to compare electron transfer, sharing, delocalization and secondary interactions.'});
   });
-  new ResizeObserver(()=>this.resize()).observe(this.stage);this.resize();this.loop=this.loop.bind(this);requestAnimationFrame(this.loop);
+  this.motion=new StudyMotion(this.stage,()=>{this.time=this.motion.clock.time;this.updateMotionGeometry();this.dirty=true;});new ResizeObserver(()=>this.resize()).observe(this.stage);this.resize();this.loop=this.loop.bind(this);requestAnimationFrame(this.loop);
  }
  resize(){const w=this.stage.clientWidth,h=this.stage.clientHeight;if(!w||!h)return;this.width=w;this.height=h;const dpr=Math.min(devicePixelRatio,2);this.plot.width=w*dpr;this.plot.height=h*dpr;this.ctx.setTransform(dpr,0,0,dpr,0,0);this.renderer?.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();this.dirty=true;}
- clear(){this.pickable=[];this.inspectable=[];while(this.group.children.length){const o=this.group.children.pop();o.traverse(obj=>{if(obj.geometry&&obj.geometry!==this.sphereGeometry)obj.geometry.dispose();if(obj.material){const materials=Array.isArray(obj.material)?obj.material:[obj.material];materials.forEach(m=>{m.map?.dispose();m.dispose();});}});}this.group.rotation.set(0,0,0);this.group.quaternion.identity();}
+ clear(){this.motionRoute=[];this.motionCursor=null;this.pickable=[];this.inspectable=[];while(this.group.children.length){const o=this.group.children.pop();o.traverse(obj=>{if(obj.geometry&&obj.geometry!==this.sphereGeometry)obj.geometry.dispose();if(obj.material){const materials=Array.isArray(obj.material)?obj.material:[obj.material];materials.forEach(m=>{m.map?.dispose();m.dispose();});}});}this.group.rotation.set(0,0,0);this.group.quaternion.identity();}
  atom(p,r=.065,color=COLORS[0],opacity=1){const material=new THREE.MeshStandardMaterial({color,roughness:.3,metalness:.12,transparent:opacity<1,opacity});const atom=new THREE.Mesh(this.sphereGeometry,material);atom.scale.setScalar(r);atom.position.copy(v3(p));this.group.add(atom);return atom;}
  line(a,b,color=COLORS[0],opacity=.45,detail=null){const geo=new THREE.BufferGeometry().setFromPoints([v3(a),v3(b)]),m=new THREE.LineBasicMaterial({color,transparent:true,opacity}),line=new THREE.Line(geo,m);this.group.add(line);if(detail){line.userData.inspect=detail;this.inspectable.push(line);}return line;}
  polygon(points,color=COLORS[1],opacity=.2,detail=null){if(points.length<3)return;const positions=[];for(let i=1;i<points.length-1;i++)for(const p of [points[0],points[i],points[i+1]])positions.push(...v3(p).toArray());const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false,roughness:.65}));this.group.add(mesh);if(detail){mesh.userData.inspect=detail;this.inspectable.push(mesh);}points.forEach((p,i)=>this.line(p,points[(i+1)%points.length],color,.7));}
  label(text,p,color=COLORS[0]){const c=document.createElement('canvas');c.width=320;c.height=96;const ctx=c.getContext('2d');ctx.font='500 40px system-ui';ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(text,160,61);const texture=new THREE.CanvasTexture(c),m=new THREE.SpriteMaterial({map:texture,depthTest:false});const s=new THREE.Sprite(m);s.position.copy(v3(p));s.userData.anchor=s.position.clone();s.scale.set(.95,.285,1);this.group.add(s);}
  arrow(a,b,color=COLORS[0],detail=null){const d=sub(b,a),len=norm(d);if(len<1e-8)return;const arrow=new THREE.ArrowHelper(v3(unit(d)),v3(a),len,color,.07,.035);this.group.add(arrow);if(detail){arrow.userData.inspect=detail;this.inspectable.push(arrow);}return arrow;}
- set(mode,state){this.mode=mode;this.state={...state};this.readout.hidden=!state.teaching;this.readout.textContent=state.teaching?.readout||'';this.stage.classList.toggle('is-teaching',!!state.teaching);const is2D=['order','translation','forces','bonding'].includes(mode);this.canvas.hidden=is2D;this.plot.hidden=!is2D;if(this.fallback)this.fallback.hidden=is2D;document.getElementById('spin').disabled=is2D||!this.renderer;document.getElementById('scene-hint').textContent=is2D?({order:'Move the slider to explore periodicity',translation:'Whole lattice shifts preserve the pattern',forces:'Move the distance slider to stretch the bond',bonding:'Conceptual electron illustration · not to scale'}[mode]):'Drag to rotate · Scroll to zoom';if(!is2D)this.build3D();this.dirty=true;}
- reset(){this.camera.position.set(2.7,2.05,3.5);this.orbit?.target.set(0,0,0);this.orbit?.update();this.group.quaternion.identity();this.dirty=true;}
+ set(mode,state){this.mode=mode;this.state={...state};this.readout.hidden=!state.teaching;this.readout.textContent=state.teaching?.readout||'';this.stage.classList.toggle('is-teaching',!!state.teaching);const is2D=['order','translation','forces','bonding'].includes(mode);this.canvas.hidden=is2D;this.plot.hidden=!is2D;if(this.fallback)this.fallback.hidden=is2D;document.getElementById('spin').disabled=is2D||!this.renderer;document.getElementById('scene-hint').textContent=is2D?({order:'Move the slider to explore periodicity',translation:'Whole lattice shifts preserve the pattern',forces:'Move the distance slider to stretch the bond',bonding:'Conceptual electron illustration · not to scale'}[mode]):'Drag to rotate · Scroll to zoom';if(!is2D)this.build3D();this.setupMotion(is2D);this.dirty=true;}
+ reset(){this.motion.restart();this.time=0;this.updateMotionGeometry();this.camera.position.set(2.7,2.05,3.5);this.orbit?.target.set(0,0,0);this.orbit?.update();this.group.quaternion.identity();this.dirty=true;}
  build3D(){
   this.clear();const s=this.state,mode=this.mode;this.group.position.y=(s.teaching?.topic==='angles'||s.teaching?.topic==='vectors') ? .16 : 0;
   if(mode==='wigner'){const type=s.structure||'BCC',faces=wignerSeitz(type),step=s.teaching?.topic==='construction'?s.teaching.step:3;if(step>=2)faces.forEach(f=>this.polygon(f,COLORS[0],step===2?.07:.19));this.atom([0,0,0],.07,COLORS[2]);if(s.neighbors||step<3){const seen=new Set();faces.forEach(f=>{let center=mul(f.reduce(add,[0,0,0]),1/f.length);const n=mul(center,2),key=n.map(x=>x.toFixed(5)).join();if(!seen.has(key)){seen.add(key);this.atom(n,.045,COLORS[1],.8);if(step>=1)this.line([0,0,0],n,COLORS[1],.4);}});}this.label('origin',[0,0,-.14],COLORS[2]);return;}
@@ -87,7 +88,7 @@ export class Visualizer{
      const offsets=s.family?allOffsets.slice(0,12):[t];offsets.forEach(n=>this.polygon(planePolygon(indices,n).map(world),COLORS[1],s.family?.16:.27,{kind:'plane',indices:[...indices],offset:n}));
     }
     const normal=unit(fractional(indices,reciprocal(basis))),c=world([.5,.5,.5]);if(s.teaching?.topic!=='planes'){
-     if(measurement){const a=cartesian(measurement.start),b=cartesian(measurement.end);this.arrow(a,b,COLORS[2]);this.arrow(b,a,COLORS[2]);this.atom(a,.023,COLORS[2]);this.atom(b,.023,COLORS[2]);this.label('d = '+measurement.d.toFixed(3)+' Å',add(mul(add(a,b),.5),[0,0,.14]),COLORS[2]);}
+     if(measurement){const a=cartesian(measurement.start),b=cartesian(measurement.end);this.arrow(a,b,COLORS[2]);this.arrow(b,a,COLORS[2]);this.atom(a,.023,COLORS[2]);this.atom(b,.023,COLORS[2]);this.motionRoute=[a,b];this.label('d = '+measurement.d.toFixed(3)+' Å',add(mul(add(a,b),.5),[0,0,.14]),COLORS[2]);}
      else {this.arrow(c,add(c,mul(normal,.65)),COLORS[2]);this.label('normal',add(c,mul(normal,.8)),COLORS[2]);}
     }
    }
@@ -125,16 +126,18 @@ export class Visualizer{
    label.position.copy(this.group.worldToLocal(projected.unproject(this.camera)));
   }
  }
- loop(now){requestAnimationFrame(this.loop);if(document.hidden||!this.width)return;this.time=now/1000;const visible=this.stage.getBoundingClientRect();if(visible.width===0||visible.bottom<0||visible.top>innerHeight)return;
-  const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!this.plot.hidden&&(this.dirty||(this.mode==='bonding'&&this.state.animate!==false&&motion))){this.draw2D();this.dirty=false;}
-  if(!this.canvas.hidden&&this.renderer){if(this.orbit){this.orbit.autoRotate=this.spin&&motion;this.orbit.autoRotateSpeed=.8;this.orbit.update();}if(this.dirty||this.spin){this.keepLabelsInFrame();this.renderer.render(this.scene,this.camera);this.dirty=false;}}
+ setupMotion(is2D){this.motionKind=is2D?(this.mode==='translation'?'translation':this.mode==='bonding'&&this.state.animate!==false&&this.state.bond!=='Hydrogen'?'bonding':'none'):this.motionRoute?.length>1?'trace':'orbit';const active=this.motionKind!=='none';if(this.motionKind==='trace')this.motionCursor=this.atom(this.motionRoute[0],.035,COLORS[3]);const note=this.motionKind==='orbit'?'Rotating view only · atoms, cell geometry and measured angles stay fixed':this.motionKind==='trace'?(this.mode==='spacing'?'Pink marker traces the perpendicular gap d · planes and spacing do not change':this.state.teaching?.topic==='origin'?'Trace A → B · changing the reference origin never changes this displacement':'Pink marker traces the actual vector, component path or angle arc · geometry stays fixed'):this.motionKind==='translation'?'Rigid lattice translation · only integer multiples of a reproduce the fixed reference pattern':'Slowed bonding illustration · not a quantum trajectory; each ionic loop starts a fresh pair';this.motion.configure(this.mode+'|'+this.state.structure+'|'+this.state.teaching?.topic+'|'+this.state.teaching?.step,active,note);this.time=this.motion.clock.time;this.lastMotionTime=this.time;document.getElementById('spin').setAttribute('aria-pressed',String(active&&!this.motion.clock.paused));this.updateMotionGeometry();}
+ updateMotionGeometry(){if(this.motionCursor&&this.motionRoute?.length>1)this.motionCursor.position.copy(v3(pathPoint(this.motionRoute,(this.motion.clock.time%4)/4)));}
+ loop(now){requestAnimationFrame(this.loop);const visible=this.stage.getBoundingClientRect(),onScreen=!document.hidden&&this.width&&visible.width>0&&visible.bottom>0&&visible.top<innerHeight,changed=this.motion.tick(now,onScreen);if(!onScreen)return;const previous=this.lastMotionTime;this.time=this.motion.clock.time;const delta=this.time-previous;
+  if(changed||this.lastMotionTime!==this.time){if(this.motionKind==='orbit'&&delta>0&&this.orbit){const relative=this.camera.position.clone().sub(this.orbit.target);relative.applyAxisAngle(new THREE.Vector3(0,1,0),delta*.16);this.camera.position.copy(relative.add(this.orbit.target));}this.updateMotionGeometry();this.dirty=true;this.lastMotionTime=this.time;}
+  if(!this.plot.hidden&&this.dirty){this.draw2D();this.dirty=false;}
+  if(!this.canvas.hidden&&this.renderer){if(this.orbit){this.orbit.autoRotate=false;this.orbit.update();}if(this.dirty){this.keepLabelsInFrame();this.renderer.render(this.scene,this.camera);this.dirty=false;}}
  }
- draw2D(){const ctx=this.ctx,w=this.width,h=this.height;ctx.clearRect(0,0,w,h);ctx.fillStyle=css('--muted');ctx.strokeStyle=css('--border');ctx.lineWidth=1;ctx.font='10px system-ui';if(this.mode==='forces')this.drawEnergy(ctx,w,h);else if(this.mode==='bonding')this.drawBonding(ctx,w,h);else this.drawLattice(ctx,w,h);}
+  draw2D(){const ctx=this.ctx,w=this.width,h=this.height;ctx.clearRect(0,0,w,h);ctx.fillStyle=css('--muted');ctx.strokeStyle=css('--border');ctx.lineWidth=1;ctx.font='10px system-ui';if(this.mode==='forces')this.drawEnergy(ctx,w,h);else if(this.mode==='bonding')this.drawBonding(ctx,w,h);else this.drawLattice(ctx,w,h);}
  text(ctx,text,x,y,color=css('--muted'),size=10,align='center'){ctx.fillStyle=color;ctx.font=`${size}px system-ui`;ctx.textAlign=align;ctx.fillText(text,x,y);}
  circle(ctx,x,y,r,color){const grad=ctx.createRadialGradient(x-r*.3,y-r*.3,0,x,y,r);grad.addColorStop(0,color);grad.addColorStop(1,color+'99');ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
  drawLattice(ctx,w,h){
-  const s=this.state,spacing=Math.min(43,(w-64)/7,(h-105)/4),cx=w/2,cy=h/2+8,jitter=(+s.disorder||0)/100,shift=this.mode==='translation'?+s.shift||0:0;
+  const s=this.state,spacing=Math.min(43,(w-64)/7,(h-105)/4),cx=w/2,cy=h/2+8,jitter=(+s.disorder||0)/100,shift=this.mode==='translation'?(+s.shift||0)+(this.time%4)/4:0;
   const rand=(i,j,k)=>Math.sin(i*127.1+j*311.7+k*78.233)*43758.5453%1;
   ctx.lineWidth=.7;ctx.strokeStyle=css('--border');
   if(!jitter)for(let i=-3;i<=3;i++){ctx.beginPath();ctx.moveTo(cx+i*spacing,cy-2*spacing);ctx.lineTo(cx+i*spacing,cy+2*spacing);ctx.stroke();}
@@ -146,7 +149,7 @@ export class Visualizer{
    if(x>24&&x<w-24)this.circle(ctx,x,y,5.8,COLORS[0]);
    if(s.basis)this.circle(ctx,x+spacing*.3,y-spacing*.25,4.3,COLORS[1]);
   }
-  if(this.mode==='translation'){const x=cx-2*spacing,y=cy+2*spacing+24;ctx.strokeStyle=COLORS[2];ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+shift*spacing,y);ctx.stroke();if(shift){ctx.beginPath();ctx.moveTo(x+shift*spacing,y);ctx.lineTo(x+shift*spacing-Math.sign(shift)*6,y-4);ctx.lineTo(x+shift*spacing-Math.sign(shift)*6,y+4);ctx.fillStyle=COLORS[2];ctx.fill();}this.text(ctx,`R = ${shift}a`,cx,y+15,COLORS[2],10);}
+  if(this.mode==='translation'){const x=cx-2*spacing,y=cy+2*spacing+24;ctx.strokeStyle=COLORS[2];ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+shift*spacing,y);ctx.stroke();if(shift){ctx.beginPath();ctx.moveTo(x+shift*spacing,y);ctx.lineTo(x+shift*spacing-Math.sign(shift)*6,y-4);ctx.lineTo(x+shift*spacing-Math.sign(shift)*6,y+4);ctx.fillStyle=COLORS[2];ctx.fill();}this.text(ctx,`R = ${shift.toFixed(2)}a`,cx,y+15,COLORS[2],10);}
   else this.text(ctx,jitter>0?'Schematic disorder: no exact translational repetition':'a repeating motif → long-range order',cx,cy+2*spacing+27,css('--muted'),10);
  }
  drawEnergy(ctx,w,h){
@@ -163,7 +166,7 @@ export class Visualizer{
  drawBonding(ctx,w,h){
   const type=this.state.bond||'Ionic',t=this.state.animate===false?0:this.time,cx=w/2,cy=h/2+7;const atom=(x,y,color,label,r=24)=>{this.circle(ctx,x,y,r,color);this.text(ctx,label,x,y+4,'#0b1727',12)};
   const electron=(x,y)=>{this.circle(ctx,x,y,3.4,COLORS[2]);};
-  if(type==='Ionic'){const d=w*.19;atom(cx-d,cy,COLORS[0],'Na⁺');atom(cx+d,cy,COLORS[1],'Cl⁻',31);ctx.strokeStyle=COLORS[2];ctx.setLineDash([3,5]);ctx.beginPath();ctx.moveTo(cx-d+29,cy);ctx.lineTo(cx+d-36,cy);ctx.stroke();ctx.setLineDash([]);electron(cx-d+((Math.sin(t)+1)/2)*2*d,cy-44);this.text(ctx,'electron transfer',cx,cy-67,css('--muted'),11);this.text(ctx,'opposite charges attract',cx,cy+66,css('--text'),12);}
+  if(type==='Ionic'){const p=ionicTransfer(t),d=w*.19;atom(cx-d,cy,COLORS[0],p.na===11?'Na':'Na⁺');atom(cx+d,cy,COLORS[1],p.cl===17?'Cl':'Cl⁻',31);if(p.free)electron(cx-d+29+p.progress*(2*d-65),cy-35);this.text(ctx,p.stage==='neutral'?'Neutral atoms':p.stage==='transfer'?'One electron in transit':'Oppositely charged ions',cx,cy-67,css('--muted'),11);this.text(ctx,p.na+' + '+p.cl+' + '+p.free+' free = 28 electrons',cx,cy+66,css('--text'),12);}
   else if(type==='Covalent'){const d=w*.12;ctx.fillStyle='#b19cff20';ctx.beginPath();ctx.ellipse(cx,cy,d*1.6,28,0,0,Math.PI*2);ctx.fill();atom(cx-d,cy,COLORS[0],'C');atom(cx+d,cy,COLORS[0],'C');electron(cx+Math.sin(t)*9,cy-7);electron(cx-Math.sin(t)*9,cy+7);this.text(ctx,'shared electron pair',cx,cy+66,css('--text'),12);this.text(ctx,'One bond shown; diamond has 4 tetrahedral bonds per atom.',cx,cy-65,css('--muted'),Math.min(10,w/40));}
   else if(type==='Metallic'){ctx.fillStyle='#76e0ce0b';ctx.fillRect(cx-w*.35,cy-65,w*.7,130);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)atom(cx+i*65,cy+j*46,COLORS[0],'+',14);for(let i=0;i<14;i++){const x=cx+Math.sin(i*7.12+t*.35)*w*.3,y=cy+Math.cos(i*4.3+t*.43)*54;electron(x,y);}this.text(ctx,'positive ion cores + delocalized electrons',cx,cy+93,css('--text'),11);}
   else if(type==='Hydrogen'){const water=(x,y)=>{atom(x,y,COLORS[1],'O',20);atom(x+25,y-18,COLORS[0],'H',11);atom(x+25,y+18,COLORS[0],'H',11);};water(cx-72,cy);water(cx+55,cy);ctx.setLineDash([4,5]);ctx.strokeStyle=COLORS[2];ctx.beginPath();ctx.moveTo(cx-36,cy-18);ctx.lineTo(cx+34,cy);ctx.stroke();ctx.setLineDash([]);this.text(ctx,'Oδ− ··· Hδ+ hydrogen interaction',cx,cy+75,css('--text'),11);this.text(ctx,'O—H within each molecule: covalent',cx,cy-65,css('--muted'),10);}

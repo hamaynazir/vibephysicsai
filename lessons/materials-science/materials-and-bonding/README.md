@@ -1,5 +1,15 @@
 # Materials and Bonding
 
+## Dynamic companion models
+
+Nine model views now include automatic motion: alumina scattering paths, Na/Cl transfer, sp³/sp² view rotation, metallic electron motion, London dipoles, a small H₂ bond vibration, and relative molecular motion in the hydrogen-bond/molecular-material sketches. Play/Pause, Step, Restart and Speed supplement the existing controls. Dragging carbon models pauses rotation; true bond angles stay fixed. Reduced-motion settings start paused, with Play and Step available. Hidden/offscreen models do not advance.
+
+The ionic sequence preserves 28 electrons, including one in transit during transfer. Each repetition starts a fresh pair. Transfer paths are symbolic, not quantum trajectories or a solved reaction mechanism; shell circles remain counting diagrams, never animated electron orbits. Transfer stage 1 still holds the original final ion state. Displayed counts follow the actual animation stage.
+
+Small bond and molecular motions are prescribed qualitative oscillations, not temperature/force-law simulations. Internal covalent lengths stay fixed during relative molecular motion; H₂'s separate bond-vibration example changes its own bond length slightly. Metal motion adds a leftward drift for a rightward field and is not a band-transport calculation. The drawing has 15 positive ion cores and 15 representative monovalent electrons. London charge separation varies together in correlated dipoles, without claiming an absolute force scale. Ray markers trace qualitative scattering paths, not measured transmission.
+
+Original PDF pages, all 22 sections, notes, five exercises, quizzes and saved-answer keys are preserved. Static calculators, orbital bookkeeping and other diagrams remain unchanged where motion adds no meaning.
+
 Materials Science, Chapter 1. Lecturer: Professor Dr. Omed Gh. Abdullah.
 
 The 16-page supplied `[Chap.1] Materals Science.pdf` is copied unchanged into `assets/lecture.pdf`. Its printed page numbers match PDF page numbers. PDF scripting is not run by this reader.

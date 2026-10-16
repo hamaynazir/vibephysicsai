@@ -11,6 +11,7 @@ export function drawTeaching(model,ctx,colors){
  if(t.topic==='vectors'){
   const v=fractional(t.vector,basis),end=cartesian(v);cartAxes();
   const path=[[0,0,0],[v[0],0,0],[v[0],v[1],0],v];
+  model.motionRoute=path.map(cartesian);
   for(let i=0;i<3;i++)if(norm(sub(path[i+1],path[i]))>1e-7){const a=cartesian(path[i]),b=cartesian(path[i+1]);model.arrow(a,b,colors[i]);const labelPos=add(mul(add(a,b),.5),[0,0,.08]);model.label(`${f(v[i])}${['î','ĵ','k̂'][i]}`,labelPos,colors[i]);}
   model.arrow(zero,end,colors[2],{kind:'vector',label:t.vectorName,components:t.originalComponents||v});model.atom(zero,.025,gray);model.label('O',add(zero,[-.09,0,-.07]),gray);model.atom(end,.035,colors[2]);model.label(t.vectorName,add(end,[.05,0,.14]),colors[2]);
  }
@@ -19,11 +20,13 @@ export function drawTeaching(model,ctx,colors){
   vectors.forEach((b,k)=>{model.arrow(zero,cartesian(b),k===i||k===j?colors[k]:gray);model.label(t.angleNames[k],add(cartesian(mul(b,.72)),[0,0,.08]),colors[k]);});
   let n=unit(sub(v,mul(u,dot(u,v))));const radius=.34*Math.min(...vectors.map(norm))*scale,points=[];
   for(let k=0;k<=36;k++){const angle=theta*k/36;points.push(add(zero,mul(add(mul(u,Math.cos(angle)),mul(n,Math.sin(angle))),radius)));}
+  model.motionRoute=points;
   for(let k=1;k<points.length;k++)model.line(points[k-1],points[k],colors[3],1,{kind:'angle',label:({alpha:'α',beta:'β',gamma:'γ'}[t.angle])+' = '+f(theta*180/Math.PI)+'°',text:`The angle is between ${t.angleNames[i]} and ${t.angleNames[j]}. Its cosine is their dot product divided by the product of their lengths.`});
   const mid=add(zero,mul(add(mul(u,Math.cos(theta/2)),mul(n,Math.sin(theta/2))),radius*1.45));model.label(`${{alpha:'α',beta:'β',gamma:'γ'}[t.angle]} ${f(theta*180/Math.PI)}°`,mid,colors[3]);model.label('O',add(zero,[-.08,0,-.08]),gray);
  }
  else if(t.topic==='origin'){
   const O=world(t.origin),A=world(t.A),B=world(t.B);cartAxes(O);model.atom(zero,.035,gray);model.label('O',add(zero,[-.09,0,-.08]),gray);model.atom(O,.045,colors[3]);model.label('O′',add(O,[.08,0,.12]),colors[3]);
+  model.motionRoute=[A,B];
   model.atom(A,.05,colors[0]);model.atom(B,.05,colors[1]);model.label('A',add(A,[0,0,.12]),colors[0]);model.label('B',add(B,[0,0,.12]),colors[1]);model.arrow(O,A,colors[0]);model.arrow(O,B,colors[1]);model.arrow(A,B,colors[2]);
  }
  else if(t.topic==='primitive'){
