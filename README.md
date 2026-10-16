@@ -1,8 +1,34 @@
 # Vibe Physics AI
 
-Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**. Website: **https://vibephysicsai.com**. The About & Contact page contains the creator's email and LinkedIn link. Reader labels distinguish subject labs from their current chapters: Solid State Lab → Crystal Structures, Materials Lab → Materials and Bonding, and Laser Lab → Laser Radiation and Its Properties.
+An independent physics learning library: **original lecture pages beside interactive educational visualizations, guided explanations and practice.**
 
-`CNAME` prepares the custom domain for publication; it does not connect DNS or publish the site. After deploying, configure the custom domain in your hosting settings, follow that provider's DNS instructions, and enable HTTPS when available. Hosting and domain ownership must be configured separately.
+[Visit the website](https://vibephysicsai.com/) · [About & contact](https://vibephysicsai.com/about.html) · [Public source on GitHub](https://github.com/hamaynazir/vibephysicsai)
+
+Created by **Mohammed Ghazali Fadhil Tahir (Hamaynazir)**, a fourth-year BSc Physics student in the Department of Physics, College of Science, University of Sulaimani. This is a personal, independent educational project—not an official university website or an endorsement by the university or lecturers.
+
+Reader labels distinguish subject labs from their chapters: Solid State Lab → Crystal Structures, Materials Lab → Materials and Bonding, and Laser Lab → Laser Radiation and Its Properties.
+
+## Current experience
+
+The library has **three available chapters, 70 original PDF pages and 57 companion sections**. Nuclear Models and Electromagnetic Theory remain explicitly marked for future chapters.
+
+- Subject → Chapter → Section navigation lets you switch directly between available readers and resume saved positions.
+- The laser overview compares ordinary light with laser light through four animated views: coherence, directionality, spectral width and irradiance. Controls update diagrams and metrics; each comparison links to its detailed section.
+- Other laser demonstrations animate waves, emission and absorption, coherence, pulses, divergence, pumping and cavity feedback.
+- Materials and Solid State use motion where useful: electron transfer, scattering, molecular motion, electron drift, crystal rotation, vector component paths, angles, origin-invariant displacement and perpendicular interplanar gaps.
+- Play/Pause, Step, Restart and Speed controls support deliberate exploration. Reduced-motion preferences start playback paused.
+- Responsive white and optional dark layouts support phones and computers. Guided paths, predictions, questions, numerical exercises and saved review complement the lecture pages.
+- No account, database, API key or paid AI service is required. Reading positions and practice history stay in the browser, not a cloud account. The explanations are prepared teaching content—not a live AI tutor.
+
+The website uses **HTML, CSS and JavaScript**, with **Canvas** for 2D diagrams, **Three.js/WebGL** for 3D and **PDF.js** for lecture viewing. The main diagrams are not SVG animations. Models are idealized teaching tools, not full quantum or molecular-dynamics simulations; assumptions and scientific qualifications are described in each chapter.
+
+## Public source, ownership and contributions
+
+The source is public in [hamaynazir/vibephysicsai](https://github.com/hamaynazir/vibephysicsai). **A license for the original website code has not yet been selected.** Public visibility alone does not grant an open-source reuse license. Lecture PDFs and third-party libraries retain their own ownership and permissions and are not included in any future license for the original code.
+
+Scientific corrections, accessibility feedback and suggestions are welcome through [GitHub issues](https://github.com/hamaynazir/vibephysicsai/issues). Include the chapter, section, observed problem and a reliable reference where relevant. Preserve original PDFs and existing progress-storage keys when proposing changes. Automated checks reduce mistakes but do not guarantee that every scientific explanation is error-free.
+
+The live site is hosted on **GitHub Pages** at **https://vibephysicsai.com/**. Pushes to `main` run the publication workflow. The `CNAME` file declares the custom domain; DNS and HTTPS are configured separately in domain and hosting settings.
 
 A simple white learning library for **Materials Science, Laser Physics, Solid State Principles, Nuclear Models, and Electromagnetic Theory**.
 
@@ -12,7 +38,9 @@ Three chapters are available: **Materials and Bonding** (Materials Science, Prof
 
 The homepage is `index.html`; the existing interactive chapter is now `reader.html`. Old links such as `/#page=5` automatically open the reader at the same page. Reading position and answer history retain their existing storage keys.
 
-## Run on your PC
+## Run on your PC (optional, for development)
+
+Visitors can use [the published website](https://vibephysicsai.com/) without installing anything. These instructions are only for running a local copy.
 
 On Windows, double-click **START-STUDY-LIBRARY.cmd**. Node.js must be installed. Keep the server window open and visit **http://localhost:4173**. The older `START-CRYSTAL-LAB.cmd` shortcut also works.
 
@@ -36,7 +64,7 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 - Open **Solid State Principles → Crystal Structures** or **Materials Science → Materials and Bonding**, or **Laser Physics → Laser Radiation and Its Properties**. The other two subjects honestly indicate that no lectures have been added yet.
 - **Continue learning** resumes the available lesson at its saved page. The indicator is a reading position, not a completion or mastery score.
 - Use **← Library** in the reader header to return to the homepage.
-- Scroll the lecture or use the page arrows to move through all 40 pages.
+- Scroll the lecture or use the page arrows; Crystal Structures has 40 pages, Materials has 16, and Laser has 14.
 - Open **Sections** to choose any of the 16 topics within the Crystal Structures chapter. The drawer closes after selection.
 - The lab follows your lecture page. Turn **Sync off** to pin the current lab while browsing other pages.
 - Use the single **Learn** menu: explore, explain what you click, build it yourself, predict then reveal, teach me from zero, review weak points, read notes, or answer a chapter question.
@@ -55,7 +83,7 @@ Open **http://localhost:4173**. Opening `index.html` directly as a file will not
 
 ### The new learning modes
 
-The detailed controls below describe the Crystal Structures chapter. Materials and Bonding has its own lecture-specific diagrams, questions, five calculation exercises and ten-step foundation path.
+The detailed controls below describe the Crystal Structures chapter. Materials and Bonding has its own lecture-specific diagrams, questions, five calculation exercises and ten-step foundation path. Laser Radiation and Its Properties has eight calculation exercises and a twelve-step foundation path; see its chapter README for models and assumptions.
 
 - **Explain what I click:** select a crystal atom, cell-axis arrow, plane patch, or teaching angle arc. A focused explanation describes its coordinates, vector components, intercepts, or true angle. Atom explanations can highlight its full periodic neighborhood and expand to neighboring cells. These are authored, local explanations; there is no AI request or chatbot. The 2D lattice/bonding views give a concept explanation, and clicking the energy plot evaluates its model potential and force.
 - **Build it yourself:** three exercises ask for an FCC primitive vector, the missing BCC body-center atom, and Miller indices from intercepts. Preview your entered vector, atom or plane, then check it. Feedback identifies incorrect components and explains the correct construction. Inputs are numerical rather than freehand drawing.
@@ -87,7 +115,9 @@ The original PDF is the authoritative record of what the lecture says. Companion
 
 Models use idealized positions. Full spheres at cell boundaries are visual aids and are counted fractionally. Packing values refer to ideal touching spheres, independent of the display-size control. Bonding animations are conceptual, not quantum simulations. The disorder slider is not an atomistic glass model. Hexagonal and HCP overview models show the familiar six-sided prism. For HCP this contains six atoms after sharing; vector, counting, coordinate and repeated-cell teaching views use the two-atom primitive cell. Raw Madelung shell sums in 2D/3D do not provide a reliable converged bulk value.
 
-## Upload to GitHub and host later
+## Hosting and deploying updates
+
+This repository is already published on GitHub Pages. Push updates to `main`; `.github/workflows/pages.yml` tests and deploys the site. The setup steps below are for someone hosting their own copy, not requirements for visitors.
 
 This is a buildless **static website**. It needs no backend, API key, database or paid AI service. All website libraries are stored in `vendor/`; there are no runtime CDN requests, external fonts or trackers. External references only open if clicked.
 
@@ -109,7 +139,7 @@ git remote add origin YOUR_REPOSITORY_URL
 git push -u origin main
 ```
 
-Cloudflare Pages or Netlify can also serve this folder as a static site with no build command. Upload only the website files listed below. No hosting account has been created and nothing has been published by this project setup.
+Cloudflare Pages or Netlify can also serve a copy as a static site with no build command. Upload only website files, excluding temporary files, screenshots, credentials and local dependencies.
 
 **Lecture rights:** The included `assets/lecture.pdf` is the user-supplied lecture and retains its original ownership. Only publish it if you have the right to share it. A public repository and ordinary public static hosting expose the PDF to visitors. The website does not grant a license to the lecture.
 
@@ -120,6 +150,10 @@ index.html             Main library homepage + old-bookmark redirect
 library.css            White library and subject-page styling
 library.js             Subject routes, search, filters and resume links
 catalog.js             Subject and available-chapter registry
+about.html             Creator, independent-project details and source link
+reader-navigation.js   Shared Subject → Chapter → Section navigation
+study-motion.js        Shared playback and teaching-motion helpers
+lessons/               Materials and Laser readers, models and original PDFs
 reader.html            Existing interactive Crystal Structures reader
 styles.css             Responsive dark and light themes
 reader.css             White minimal reader and progressive disclosure
@@ -154,7 +188,7 @@ Materials Science and Crystal Structures add Play/Pause, Step, Restart and Speed
 npm test
 ```
 
-Checks include complete page/example coverage, 14 Bravais types, reciprocal-metric d-spacing, negative-index plane geometry, Wigner–Seitz face counts and volumes, hard-sphere packing, force equilibria/signs and Madelung shell multiplicities. The checks use only Node.js built-in modules.
+Checks include complete page/example coverage, 14 Bravais types, reciprocal-metric d-spacing, negative-index plane geometry, Wigner–Seitz face counts and volumes, hard-sphere packing, force equilibria/signs and Madelung shell multiplicities. Materials and Laser checks cover their content, calculations, playback timing, charge/electron conservation and ordinary-light versus laser comparison models. The checks use only Node.js built-in modules.
 
 ## Add future lectures
 
