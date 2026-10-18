@@ -130,7 +130,7 @@ $('#reset').onclick=()=>{const feature=s.compareFeature;s={...defaults,...patche
 $('#animate').onclick=()=>diagram.running?diagram.pause():diagram.play();
 $('#step').onclick=()=>diagram.step();
 $('#motion-speed').onchange=e=>{diagram.speed=+e.target.value;renderMotion();};
-$('#theme').onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';store.set('laser-theme',document.documentElement.dataset.theme);diagram.draw();};document.documentElement.dataset.theme=store.get('laser-theme')==='dark'?'dark':'light';
+window.addEventListener('vibe-theme-change',()=>diagram.draw());
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();
 document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();queueVisible();};});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#chapter-sidebar').inert){chapterDrawer(false);return;}if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {e.preventDefault();chapterDrawer(true);return;}if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement.tagName)||$('#workspace').inert||$('#help-dialog').open)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage+(e.key==='ArrowRight'?1:-1));}});

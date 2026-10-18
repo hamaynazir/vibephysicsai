@@ -2,7 +2,7 @@ export const H=6.62607015e-34,E=1.602176634e-19,ME=9.1093837139e-31,C=299792458,
 export const FWHM=2*Math.sqrt(2*Math.log(2));
 export function poisson(mu,random=Math.random){if(!(mu>=0&&mu<700))throw Error('Poisson mean out of supported range');let p=1,k=0,L=Math.exp(-mu);do{k++;p*=random();}while(p>L);return k-1;}
 export function statistics(values){const n=values.length,mean=n?values.reduce((a,b)=>a+b,0)/n:0;return {n,mean,sd:n>1?Math.sqrt(values.reduce((a,b)=>a+(b-mean)**2,0)/(n-1)):null};}
-export function calibration(c1,c2,unknown,width){if(c1===c2)throw Error('Distinct peak positions required');const a=(1332-1173)/(c2-c1),b=1173-a*c1,energy=a*unknown+b;return {a,b,energy,fwhm:Math.abs(a)*width*FWHM,resolution:Math.abs(a)*width*FWHM/energy*100};}
+export function calibration(c1,c2,unknown,width){if(c1===c2)throw Error('Distinct peak positions required');const a=(1332-1173)/(c2-c1),b=1173-a*c1,energy=a*unknown+b;return {a,b,energy,fwhm:Math.abs(a)*width*FWHM,resolution:energy>0?Math.abs(a)*width*FWHM/energy*100:null};}
 export const observedRate=(n,tau)=>n/(1+n*tau);
 export function correctedRate(m,tau){if(m<0||tau<0||m*tau>=1)throw Error('Rate correction requires 0 ≤ mτ < 1');return m/(1-m*tau);}
 export const twoSourceApprox=(m1,m2,m12)=>(m1+m2-m12)/(2*m1*m2);

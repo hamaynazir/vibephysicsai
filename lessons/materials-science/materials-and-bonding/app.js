@@ -130,7 +130,7 @@ $('#learning-activity').onclick=handleLearning;$('#question-view').onclick=handl
 $('#learning-activity').onchange=e=>{if(e.target.id==='challenge-select'){challengeIndex=+e.target.value;startChallenge();}};
 $('#reset').onclick=()=>{s={...defaults,...patches[current.id]};states.set(current.id,s);diagram.reset();renderControls();renderMetrics();};
 $('#animate').onclick=()=>diagram.motion.toggle();
-$('#theme').onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';store.set('materials-theme',document.documentElement.dataset.theme);diagram.draw();};document.documentElement.dataset.theme=store.get('materials-theme')==='dark'?'dark':'light';
+window.addEventListener('vibe-theme-change',()=>diagram.draw());
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();
 document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();queueVisible();};});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#chapter-sidebar').inert){chapterDrawer(false);return;}if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {e.preventDefault();chapterDrawer(true);return;}if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement.tagName)||$('#workspace').inert||$('#help-dialog').open)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage+(e.key==='ArrowRight'?1:-1));}});

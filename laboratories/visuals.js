@@ -9,8 +9,8 @@ export function draw(canvas,exp,s,time,records,step){
  const packet=(x1,y1,x2,y2,phase=0,color=teal)=>{const f=(time*.28+phase)%1;dot(x1+(x2-x1)*f,y1+(y2-y1)*f,color,5);};
  const result=evaluate(exp.id,s);canvas.dataset.experiment=exp.id;canvas.dataset.time=time.toFixed(4);
  text('SIMULATED TEACHING MODEL · NOT MEASURED DATA',25,27,11,muted);
- const graph=(points,xlabel,ylabel,marker=null)=>{
-  const x0=78,y0=352,w=600,h=125,xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(0,...ys),ymax=Math.max(...ys);if(xmax===xmin)xmax=xmin+1;if(ymax===ymin)ymax=ymin+1;
+ const graph=(points,xlabel,ylabel,marker=null,extraY=[])=>{
+  const x0=78,y0=352,w=600,h=125,xs=points.map(p=>p[0]),ys=[...points.map(p=>p[1]),...extraY];let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(0,...ys),ymax=Math.max(...ys);if(xmax===xmin)xmax=xmin+1;if(ymax===ymin)ymax=ymin+1;
   const px=x=>x0+(x-xmin)/(xmax-xmin)*w,py=y=>y0-(y-ymin)/(ymax-ymin)*h;
   line(x0,y0,x0+w,y0,muted,1);line(x0,y0,x0,y0-h,muted,1);text(ylabel,x0,y0-h-15,12);text(xlabel,x0+170,y0+47,12);text(fmt(xmin),x0,y0+18,11,muted);text(fmt(xmax),x0+w-40,y0+18,11,muted);text(fmt(ymax),x0-45,y0-h+5,11,muted);
   ctx.strokeStyle=teal;ctx.lineWidth=2;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(px(x),py(y)):ctx.moveTo(px(x),py(y)));ctx.stroke();
@@ -20,17 +20,18 @@ export function draw(canvas,exp,s,time,records,step){
  switch(exp.id){
  case 'statistics':{
   box('Source',35,65,130,step===0);box('Detector + gate',270,65,160,step===1);box('Scaler',550,65,150,step===2);line(165,87,270,87);line(430,87,550,87);packet(165,87,270,87);packet(430,87,550,87,.5);text(`Expected μ = ${fmt(result.mu)} per gate`,35,150);text(`${records.length} simulated trials recorded`,400,150);
-  const mu=result.mu,span=Math.max(6,Math.ceil(4*Math.sqrt(mu))),lo=Math.max(0,Math.floor(mu-span)),hi=Math.ceil(mu+span),bins=Array.from({length:hi-lo+1},(_,i)=>[lo+i,records.filter(r=>r.count===lo+i).length]);
+  const mu=result.mu,span=Math.max(6,Math.ceil(4*Math.sqrt(mu))),lo=Math.max(0,Math.min(Math.floor(mu-span),...records.map(r=>r.count))),hi=Math.max(Math.ceil(mu+span),...records.map(r=>r.count)),bins=Array.from({length:hi-lo+1},(_,i)=>[lo+i,records.filter(r=>r.count===lo+i).length]);
   // Expected Poisson frequency for n recorded gates, evaluated recursively in log space.
-  const n=records.length||100,expected=bins.map(([k])=>{let lf=0;for(let j=2;j<=k;j++)lf+=Math.log(j);return [k,n*Math.exp(-mu+k*Math.log(mu)-lf)]});graph(expected,'Counts per gate N',records.length?'Expected frequency in recorded sample':'Expected frequency for 100 gates');
-  if(records.length){const max=Math.max(...expected.map(p=>p[1]),1);bins.forEach(([k,v])=>{const x=78+(k-lo)/(hi-lo)*600;line(x,352,x,352-v/max*125,purple,Math.max(1,520/bins.length));});}break;
+  const n=records.length||100,expected=bins.map(([k])=>{let lf=0;for(let j=2;j<=k;j++)lf+=Math.log(j);return [k,n*Math.exp(-mu+k*Math.log(mu)-lf)]});graph(expected,'Counts per gate N',records.length?'Frequency: teal expected, violet observed':'Expected frequency for 100 gates',null,bins.map(p=>p[1]));
+  if(records.length){const max=Math.max(...expected.map(p=>p[1]),...bins.map(p=>p[1]),1);bins.forEach(([k,v])=>{const x=78+(k-lo)/(hi-lo)*600;line(x,352,x,352-v/max*125,purple,Math.max(1,520/bins.length));});}break;
  }
  case 'voltage':{
   const labels=['γ → NaI(Tl)','Photocathode','Dynodes','Threshold'];labels.forEach((v,i)=>{box(v,28+i*183,65,150,step===i);if(i<3){line(178+i*183,87,211+i*183,87);packet(178+i*183,87,211+i*183,87,i*.15);}});text(`Gain ×${fmt(result.gain)} · threshold ${fmt(s.threshold)}`,35,155);graph(sample(.8,1,V=>evaluate('voltage',{...s,voltage:V}).source),'High voltage (kV)','Illustrative net rate (s⁻¹)',[s.voltage,result.source]);break;
  }
  case 'calibration':{
   text(`Co-60: 1173 keV at C₁=${s.channel1} · 1332 keV at C₂=${s.channel2}`,35,78);text(`E = ${fmt(result.a)} C + ${fmt(result.b)} keV`,35,113,19,teal);text('Purple marker scans the spectrum; peak locations stay fixed.',35,155,13,muted);
-  graph(sample(0,1000,x=>Math.exp(-.5*((x-s.channel1)/s.width)**2)+.8*Math.exp(-.5*((x-s.channel2)/s.width)**2),1000),'Pulse-height channel (arbitrary units)','Relative synthetic counts');break;
+  graph(sample(0,1000,x=>Math.exp(-.5*((x-s.channel1)/s.width)**2)+.8*Math.exp(-.5*((x-s.channel2)/s.width)**2),1000),'Pulse-height channel (arbitrary units)','Relative synthetic counts');
+  const cursor=78+s.unknown*.6;ctx.setLineDash([4,4]);line(cursor,227,cursor,352,purple,1);ctx.setLineDash([]);text(`Selected channel ${s.unknown}`,Math.min(cursor+5,555),202,12,purple);break;
  }
  case 'electronics':{
   ['Detector','Preamp','Amplifier','SCA'].forEach((v,i)=>{box(v,30+i*181,60,140,step===i);if(i<3){line(170+i*181,82,211+i*181,82);packet(170+i*181,82,211+i*181,82,i*.2);}});text(`Amplified pulse ${fmt(result.amplitude)} V`,35,146);text(result.accepted?'Accepted → standardized logic pulse':'Rejected → no logic pulse',350,146,15,result.accepted?teal:purple);
@@ -60,7 +61,7 @@ export function draw(canvas,exp,s,time,records,step){
  }
  case 'powder':{
   const cx=210,cy=115;line(30,cy,cx,cy,teal);dot(cx,cy,purple,8);const ang=result.theta*Math.PI/180*2,tx=cx+180*Math.cos(ang),dy=110*Math.sin(ang);line(cx,cy,tx,cy-dy,teal);line(cx,cy,tx,cy+dy,teal);packet(30,cy,cx,cy);packet(cx,cy,tx,cy-dy,.5);text(`(${result.hkl.join(' ')}) · 2θ = ${fmt(result.two)}°`,430,65,18,teal);text('Cone cross-section · not a flat-screen ring',360,176,12,muted);
-  const peaks=families.map((h,i)=>({angle:2*bragg(s.wavelength,s.lattice/Math.hypot(...h)),height:1-i*.1}));graph(sample(10,100,x=>peaks.reduce((sum,p)=>sum+p.height*Math.exp(-.5*((x-p.angle)/.5)**2),0),900),'Detector scattering angle 2θ (degrees)','Arbitrary synthetic peak heights');break;
+  const peaks=families.map((h,i)=>({angle:2*bragg(s.wavelength,s.lattice/Math.hypot(...h)),height:1-i*.1}));graph(sample(10,Math.max(100,...peaks.map(p=>p.angle+5)),x=>peaks.reduce((sum,p)=>sum+p.height*Math.exp(-.5*((x-p.angle)/.5)**2),0),900),'Detector scattering angle 2θ (degrees)','Arbitrary synthetic peak heights');break;
  }
  case 'electron':{
   const cx=410,cy=118,scale=4;for(const [r,color] of [[result.inner,teal],[result.outer,purple]]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r*scale,0,Math.PI*2);ctx.stroke();const a=time*.8;dot(cx+r*scale*Math.cos(a),cy+r*scale*Math.sin(a),color,4);}text('Screen view',35,62);text('Inner: d = 213 pm',35,103,14,teal);text('Outer: d = 123 pm',35,132,14,purple);text('Moving dots are guides, not trajectories.',35,185,12,muted);

@@ -17,7 +17,7 @@ export const manuals=[
  'Does increasing detector high voltage increase the gamma energy emitted by the source?', ['Yes','No'],1,'The source transition energy is unchanged; the photomultiplier changes electrical gain.'),
  experiment('calibration','Energy calibration & resolution',[11,16],'Map pulse-height channels to energy and see how peak width affects resolution.','Known gamma source → scintillation detector → pulse-height analyzer','E = aC + b; a = (E₂−E₁)/(C₂−C₁); R = FWHM(E) / Epeak × 100%',[
  control('channel1','Co-60 lower peak channel C₁',200,500,1,350),control('channel2','Co-60 upper peak channel C₂',550,850,1,650),control('unknown','Unknown peak channel',0,1000,1,500),control('width','Gaussian peak σ (channels)',3,50,1,12)],
- ['Identify two known peak centroids, not arbitrary peak edges. Here E₁ = 1173 keV and E₂ = 1332 keV use the manual’s rounded values.','Set the two channel positions and calculate the positive slope a and the intercept b.','Move the unknown channel marker to read its energy. Only interpret the calibrated range; extrapolation is not verified.','Increase σ and compare FWHM with energy resolution. Lower percentage resolution means sharper separation.'],
+ ['Identify two known peak centroids, not arbitrary peak edges. Here E₁ = 1173 keV and E₂ = 1332 keV are rounded Co-60 reference energies; the manual prints 1333 keV for the upper line.','Set the two channel positions and calculate the positive slope a and the intercept b.','Move the unknown channel marker to read its energy. Only interpret the calibrated range; extrapolation is not verified.','Increase σ and compare FWHM with energy resolution. Lower percentage resolution means sharper separation.'],
  'Both calibration differences must use the same ordering. The intercept is not assumed zero. For a nonzero intercept, FWHM(channel)/channel is not generally the energy-resolution ratio.',
  'Two Gaussian reference photopeaks only: continuum, escape/sum peaks and noise are omitted. Channels here are arbitrary digitizer units, not the manual’s BLV volts. Companion corrects the reversed calibration-sign formula on printed p14. Na-22 decays to Ne-22, not Na-22; 511 keV is positron-annihilation radiation, not a nuclear “pair-production peak.”',
  'With a nonzero calibration intercept, which expression gives energy resolution?', ['FWHM(E) / Epeak','FWHM(channel) / channel, always'],0,'Convert width using |a| and the centroid using aC+b. The channel-only ratio assumes b = 0.'),
@@ -80,7 +80,7 @@ export const manuals=[
  ]}
 ];
 export function experimentForPage(manual,page){return manual.experiments.find(e=>page>=e.pages[0]&&page<=e.pages[1])|| (page<manual.experiments[0].pages[0]?manual.experiments[0]:manual.experiments.at(-1));}
-export const references=[
+const references=[
  ['PHYWE: electron diffraction','https://www.phywe.com/experiments-sets/nobel-prize-experiments/electron-diffraction_9532_10463/'],
  ['Graphite ring spacings (University of Washington)','https://phys-office.phys.washington.edu/lectdemo/DetailPages/7/A/Electron_Diffraction_%287A60.10%29.html'],
  ['PHYWE: thermogenerator, no-load voltage and Seebeck coefficient','https://www.phywe.com/experiments-sets/university-experiments/semiconductor-thermogenerator-seebeck-effect_10679_11610/'],
@@ -88,3 +88,24 @@ export const references=[
  ['NIST: SI defining constants','https://www.nist.gov/pml/special-publication-330/sp-330-section-2'],
  ['LD Didactic: LiF diffraction and conventional cell edge','https://www.ld-italia.it/uploads/4/7/2/8/47287479/p7122_e.pdf']
 ];
+const geiger = ['ORTEC Experiment 2: counting statistics and GM resolving-time corrections', 'https://www.ortec-online.com/-/media/ametekortec/third-edition-experiments/2-geiger-counting.pdf'];
+// Explicit opt-in: never attach a whole-library bibliography to an experiment.
+const experimentReferences = {
+ 'statistics': [['ORTEC Experiment 2.6: counting statistics (PDF pages 9–11)', geiger[1]+'#page=9']],
+ 'voltage': [],
+ 'calibration': [references[3]],
+ 'electronics': [],
+ 'dead-time': [[geiger[0]+' · section 2.2 (PDF pages 3–4)',geiger[1]+'#page=3']],
+ 'efficiency': [['ORTEC Experiment 2.5: counting geometry and intrinsic efficiency (PDF pages 8–9)',geiger[1]+'#page=8']],
+ 'resistance': [],
+ 'lif': [references[5]],
+ 'moseley': [references[4]],
+ 'powder': [],
+ 'electron': [references[0], references[1], references[4]],
+ 'thermoelectric': [references[2]]
+};
+export function referencesForExperiment(id) {
+ if (!Object.hasOwn(experimentReferences, id)) throw new Error('Unknown experiment reference scope: ' + id);
+ return experimentReferences[id];
+}
+

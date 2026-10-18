@@ -1,5 +1,12 @@
 # Vibe Physics AI
 
+Appearance: use the sun/moon button on any page to switch between white light mode
+and dark mode. Your choice is shared across the library, About, all lectures and
+laboratories. Original PDF pages retain their original appearance.
+
+Laboratory references are scoped to each experiment and update with navigation;
+see `laboratories/README.md` for the latest bounded scientific/model review.
+
 An independent physics learning library: **original lecture pages beside interactive educational visualizations, guided explanations and practice.**
 
 [Visit the website](https://vibephysicsai.com/) · [About & contact](https://vibephysicsai.com/about.html) · [Open source on GitHub](https://github.com/hamaynazir/vibephysicsai) · [MIT license](LICENSE)

@@ -101,6 +101,35 @@ Reference links are in `content.js` and available in the readers. They include p
 manufacturer experiment descriptions, INL NaI spectra and NIST SI constants. Core
 algebra, limiting cases and inverse relationships are checked in `tools/laboratories.test.mjs`.
 
+## October 18, 2026 review
+
+Reviewed all twelve companion definitions, equations, slider bounds, model limits,
+plots and source/manual page mappings. This is a bounded implementation review,
+not an independent experimental validation or a guarantee of error-free science.
+
+- Replaced the repeated whole-library bibliography with explicit per-experiment
+  references. Each experiment links to its own original manual page range; sources
+  update when switching or syncing pages. Experiments without a verified external
+  match show only their supplied manual. ORTEC Experiment 2 sections 2.2, 2.5 and
+  2.6 support dead time, efficiency geometry and counting statistics respectively.
+- Calibration now identifies extrapolation and nonphysical inferred energies;
+  resolution is undefined at nonpositive energies. Added the selected-channel
+  cursor and clarified that the manual prints 1333 keV while the model uses rounded
+  1332 keV for the upper Co-60 line. The common assumed Gaussian width is explicit.
+- Poisson histograms share a scale for observed/expected frequencies and include
+  outlying recorded counts. Powder scans include every modeled peak, including
+  reflections beyond 100 degrees at extreme slider settings.
+- Added tests for all combinations of slider endpoints, not just all-min/all-max.
+- Existing caveats remain: zero-background nonparalyzable dead time, unit-emission
+  efficiency, simplified gain and semiconductor laws, schematic SCA pulses,
+  kinematic diffraction, nonrelativistic graphite rings and conditional cooling
+  calorimetry. No real apparatus data, intensity fit or validated thermal efficiency
+  is implied. Original PDFs remain unchanged.
+
+The shared website theme uses `vibephysicsai-theme`, independent of notes/progress.
+It works across the library, About, all five lectures and both laboratories, with
+cross-tab updates and a usable session-only fallback if storage is unavailable.
+
 ## Data, state and deployment
 
 Recorded data and CSV files are explicitly labeled **SIMULATED**. Numerical values

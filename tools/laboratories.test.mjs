@@ -1,7 +1,27 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {manuals,experimentForPage} from '../laboratories/content.js';
+import {manuals,experimentForPage,referencesForExperiment} from '../laboratories/content.js';
 import {evaluate,correctedRate,observedRate,twoSourceApprox,twoSourceExact,geometry,activity,semiconductor,bragg,electron,thermoelectric,regression,calibration,poisson,statistics,RYDBERG,C} from '../laboratories/math.js';
 const near=(a,b,rel=1e-9)=>assert.ok(Math.abs(a-b)<=Math.max(1e-12,Math.abs(b)*rel),`${a} != ${b}`);
+test('References are experiment-specific, with no diffraction references in nuclear dead time',()=>{
+ for(const m of manuals)for(const e of m.experiments){const refs=referencesForExperiment(e.id);assert.equal(new Set(refs.map(r=>r[1])).size,refs.length);for(const [label,url]of refs){assert.ok(label.length>10);assert.ok(url.startsWith('https://'));}}
+ assert.match(referencesForExperiment('dead-time')[0][0],/GM resolving/);
+ assert.ok(!referencesForExperiment('dead-time').some(r=>/diffraction|Seebeck|LiF|NaI/.test(r[0])));
+ assert.ok(referencesForExperiment('electron').some(r=>/Graphite/.test(r[0])));
+ assert.deepEqual(referencesForExperiment('resistance'),[]);
+ assert.throws(()=>referencesForExperiment('missing'));
+});
+test('Every public page loads the shared theme; deployment includes its assets',()=>{
+ const pages=['index.html','about.html','reader.html',...manuals.map(m=>m.reader),...['materials-science/materials-and-bonding','laser-physics/laser-radiation','nuclear-models/basic-concepts','electromagnetic-theory/vector-analysis'].map(p=>'lessons/'+p+'/index.html')];
+ for(const page of pages){const html=fs.readFileSync(new URL('../'+page,import.meta.url),'utf8');assert.match(html,/site-theme\.js/);assert.match(html,/site-theme\.css/);}
+ const workflow=fs.readFileSync(new URL('../.github/workflows/pages.yml',import.meta.url),'utf8');assert.match(workflow,/cp site-theme\.js site-theme\.css _site\//);
+});
+test('Every mixed slider corner remains numerically safe; calibration rejects nonpositive resolution',()=>{
+ for(const m of manuals)for(const e of m.experiments)for(let bits=0;bits<2**e.controls.length;bits++){
+  const s=Object.fromEntries(e.controls.map((c,i)=>[c.key,bits&(1<<i)?c.max:c.min]));
+  for(const value of Object.values(evaluate(e.id,s)))if(typeof value==='number')assert.ok(Number.isFinite(value),e.id);
+ }
+ assert.equal(calibration(500,550,0,12).resolution,null);
+});
 test('Both complete manuals map every experiment page and define twelve finite teaching models',()=>{
  assert.deepEqual(manuals.map(m=>m.pages),[28,43]);
  for(const m of manuals){assert.equal(m.experiments.length,6);assert.ok(fs.existsSync(new URL('../'+m.reader,import.meta.url)));assert.ok(fs.existsSync(new URL('../'+m.reader.replace('index.html','assets/manual.pdf'),import.meta.url)));for(const e of m.experiments){assert.equal(e.steps.length,4);assert.ok(e.answer>=0&&e.answer<e.options.length);for(let p=e.pages[0];p<=e.pages[1];p++)assert.equal(experimentForPage(m,p).id,e.id);for(const extreme of ['value','min','max']){const s=Object.fromEntries(e.controls.map(c=>[c.key,c[extreme]]));const result=evaluate(e.id,s);for(const v of Object.values(result))if(typeof v==='number')assert.ok(Number.isFinite(v),e.id);}}}

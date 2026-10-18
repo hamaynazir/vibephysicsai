@@ -242,10 +242,9 @@ function changeZoom(delta){const next=Math.max(.7,Math.min(1.8,+(zoom+delta).toF
 $('#zoom-in').onclick=()=>changeZoom(.1);$('#zoom-out').onclick=()=>changeZoom(-.1);
 let resizeTimer=0,lastPDFWidth=0;new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(Math.abs(width-lastPDFWidth)>2){lastPDFWidth=width;clearTimeout(resizeTimer);resizeTimer=setTimeout(invalidatePDF,220);}}).observe($('#pdf-scroll'));
 
-function setTheme(theme){document.documentElement.dataset.theme=theme;document.querySelector('meta[name="theme-color"]').content=theme==='light'?'#ffffff':'#0c1220';$('#theme').textContent=theme==='dark'?'☀':'☾';$('#theme').setAttribute('aria-label',`Switch to ${theme==='dark'?'light':'dark'} mode`);storage.set('crystal-theme',theme);model.themeChanged();renderControls();}
-// Apply the requested paper appearance once to existing installations; later choices persist.
-if(storage.get('crystal-appearance-version','')!=='4'){storage.set('crystal-theme','light');storage.set('crystal-appearance-version','4');}
-setTheme(storage.get('crystal-theme','light'));$('#theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+window.addEventListener('vibe-theme-change',()=>{model.themeChanged();renderControls();});
+// Initial model colors follow the site-wide preference applied in the document head.
+model.themeChanged();
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();$('#help-dialog').onclick=e=>{if(e.target===$('#help-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
 document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('.mobile-switch button').forEach(t=>t.classList.toggle('active',t===b));model.resize();queueVisible();});
 document.addEventListener('keydown',e=>{if($('#help-dialog').open)return;if(['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName))return;if(e.key==='/'){e.preventDefault();learning?.setChapters(true);}else if(e.key==='ArrowRight'){e.preventDefault();goPage(currentPage+1);}else if(e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage-1);}});
