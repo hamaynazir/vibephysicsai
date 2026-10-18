@@ -38,17 +38,20 @@ function route(){
  const params=new URLSearchParams(location.hash.slice(1));if(params.has('page')){const reader=new URL('./reader.html',location.href);reader.search=location.search;reader.hash=location.hash;location.replace(reader.href);return;}
  const id=params.get('subject'),subject=subjects.find(s=>s.id===id),notFound=!!id&&!subject;
  const newsRoute=location.hash==='#news';
+ const exploreRoute=['#explore-more','#resources'].includes(location.hash);
  const collectionRoute=location.hash==='#uos-physics'||params.get('collection')==='uos-physics';
  const yearRoute=['#fourth-year','#laboratories','#subjects-grid'].includes(location.hash)||params.get('year')==='fourth-year';
- $('#home-view').hidden=!!id||collectionRoute||yearRoute||newsRoute;
+ $('#home-view').hidden=!!id||collectionRoute||yearRoute||newsRoute||exploreRoute;
+ $('#explore-view').hidden=!!id||!exploreRoute;$('#explore-nav').setAttribute('aria-current',exploreRoute?'page':'false');
  $('#news-view').hidden=!!id||!newsRoute;$('#news-nav').setAttribute('aria-current',newsRoute?'page':'false');
  $('#collection-view').hidden=!!id||!collectionRoute;
  $('#year-view').hidden=!!id||!yearRoute;
  $('#subject-view').hidden=!subject;$('#not-found').hidden=!notFound;
- $('#subjects-nav').setAttribute('aria-current',!id&&!collectionRoute&&!yearRoute&&!newsRoute?'page':'false');
+ $('#subjects-nav').setAttribute('aria-current',!id&&!collectionRoute&&!yearRoute&&!newsRoute&&!exploreRoute?'page':'false');
  if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':yearRoute?'Fourth Year · UOS Physics · Vibe Physics AI':collectionRoute?'UOS Physics · Vibe Physics AI':'Vibe Physics AI · A place to understand';
  renderContinue();
  if(newsRoute)document.title='News · Vibe Physics AI';
+ if(exploreRoute)document.title='Explore More · Vibe Physics AI';
  const anchor=yearRoute&&['#laboratories','#subjects-grid'].includes(location.hash)?document.querySelector(location.hash):null;
  if(anchor)anchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
 

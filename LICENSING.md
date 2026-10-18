@@ -21,5 +21,15 @@ It does **not** relicense or grant rights to:
   study collection; no affiliation, endorsement or trademark rights are granted.
 
 A public repository is not permission to redistribute excluded materials.
+The external-resource marks also retain their respective ownership and are not
+original MIT-licensed artwork: PhET’s wordmark (`assets/phet-logo.png`, from
+`https://phet.colorado.edu/assets/img/phetNavigationMenubar/phet-logo-trademarked.png`),
+Falstad’s website icon (`assets/falstad-icon.ico`, from `https://www.falstad.com/favicon.ico`),
+and myPhysicsLab’s wordmark (`assets/myphysicslab-logo.png`, from its official
+repository at `https://github.com/myphysicslab/myphysicslab/blob/master/src/images/myphysicslogo.png`).
+Feynman Interactive uses the 📐 icon selected by its creator in the Hugging Face
+Space metadata, not a new invented logo. Marks identify external links only and
+do not imply endorsement or affiliation.
+
 Obtain permission from the relevant rights holder where required. The MIT
 license grants no university or lecturer endorsement.

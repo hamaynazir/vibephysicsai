@@ -1,7 +1,8 @@
 # Vibe Physics AI
 
-News lists Feynman Interactive, PhET, Falstad Physics Applets and myPhysicsLab as
-credited external resources in horizontal cards. They do not appear among the
+Explore More lists Feynman Interactive, PhET, Falstad Physics Applets and myPhysicsLab as
+credited external resources in horizontal cards, using their own logos or site/
+project icons. News is reserved for announcements. Resources do not appear among the
 homepage collections. Dates distinguish PhET’s 2002 founding, myPhysicsLab’s 2001
 development start and Feynman’s Hugging Face Space creation on October 1, 2026.
 Falstad’s collection creation date remains unconfirmed. Each card links to its
