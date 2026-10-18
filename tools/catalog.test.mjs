@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {subjects,laboratories,collections,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
+test('Feynman is an attributed external resource with an added-here date, not a copied collection',()=>{const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),js=fs.readFileSync(new URL('../library.js',import.meta.url),'utf8');assert.match(html,/datetime="2026-10-18"/);assert.match(html,/not the project’s original release date/);assert.match(html,/mishig\/feynman-interactive/);assert.match(js,/class="collection-card external-resource"/);assert.match(js,/new tab/);assert.ok(!collections.some(c=>/feynman/i.test(c.id)));});
 test('Homepage omits resume card while retaining the separate header resume link',()=>{const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),js=fs.readFileSync(new URL('../library.js',import.meta.url),'utf8');assert.ok(!html.includes('id="continue-card"'));assert.ok(!js.includes("$('#continue-card')"));assert.match(html,/id="header-resume"/);assert.match(html,/welcome-simple/);});
 test('Main headers include News and library brand explicitly restores home',()=>{
  const home=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),about=fs.readFileSync(new URL('../about.html',import.meta.url),'utf8'),js=fs.readFileSync(new URL('../library.js',import.meta.url),'utf8');

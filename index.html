@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://vibephysicsai.com/">
   <title>Vibe Physics AI · A place to understand</title>
   <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="library.css?v=home-clean-1">
+  <link rel="stylesheet" href="library.css?v=feynman-link-1">
   <script>
     // Keep existing lecture bookmarks working after the library becomes home.
     if (new URLSearchParams(location.hash.slice(1)).has('page')) {
@@ -19,7 +19,7 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=home-clean-1"></script>
+  <script type="module" src="library.js?v=feynman-link-1"></script>
 <script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
 <body>
   <a class="skip-link" href="#main">Skip to collections</a>
@@ -67,7 +67,16 @@
       <a class="back-link" href="#">← Back to the homepage</a>
       <div class="eyebrow">VIBE PHYSICS AI</div><h1 id="news-title">News</h1>
       <p class="about-intro">Announcements and updates from this independent learning project.</p>
-      <div class="news-empty"><h2>No announcements yet.</h2><p>New announcements will appear here when they are published.</p></div>
+      <article class="news-resource" aria-labelledby="feynman-news-title">
+        <div class="eyebrow">EXTERNAL LEARNING RESOURCE</div>
+        <p class="resource-date">Added to this site: <time datetime="2026-10-18">18 October 2026</time></p>
+        <h2 id="feynman-news-title">Feynman Interactive: read the idea, then see it move.</h2>
+        <p>Explore a visual companion to chapters 1–14 of <cite>The Feynman Lectures on Physics, Volume I</cite>. Interactive wireframe demonstrations follow the reading, helping connect the written explanation with a moving, adjustable model.</p>
+        <p>Use it to explore an idea, change a control and compare what you see with what you read. It is a separate study tool—not a replacement for the lecture text or a guarantee that every model is complete.</p>
+        <p class="resource-credit">Original project: <strong>mishig/feynman-interactive</strong> on Hugging Face. This project helped inspire the idea of placing lecture pages beside interactive visualizations in Vibe Physics AI.</p>
+        <div class="resource-links"><a class="resource-open" href="https://huggingface.co/spaces/mishig/feynman-interactive" target="_blank" rel="noopener noreferrer">Open Feynman Interactive ↗</a><a href="https://github.com/hello2himel/feynman-interactive" target="_blank" rel="noopener noreferrer">Community mirror on GitHub ↗</a></div>
+        <p class="resource-note">Links open in a new tab. This is an independently maintained external resource; Vibe Physics AI does not host its simulations or lecture PDF and is not affiliated with its creator. The date above records when this link was added here, not the project’s original release date.</p>
+      </article>
     </section>
     <section id="subject-view" aria-labelledby="subject-title" hidden></section>
     <section id="not-found" hidden><a class="back-link" href="#">← All subjects</a><h1>That subject isn’t here yet.</h1><p>Choose one of the subjects in your library.</p></section>

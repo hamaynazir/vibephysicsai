@@ -1,5 +1,10 @@
 # Vibe Physics AI
 
+Feynman Interactive is listed as a credited external learning resource beside UOS
+Physics and introduced in News. Its link was added here on October 18, 2026; this
+is not its original release date. The card opens mishig’s original Hugging Face
+Space in a new tab. No Feynman simulation code or lecture PDF is copied or hosted.
+
 The homepage shows clickable study-collection cards, beginning with **UOS Physics**
 and its University of Sulaimani logo. Navigation is **collection → year → lecture
 subjects and laboratories → chapter or experiment**, rather than expanded lists
