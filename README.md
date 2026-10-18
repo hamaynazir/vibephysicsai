@@ -1,5 +1,11 @@
 # Vibe Physics AI
 
+The current content is organized as **UOS Physics → Fourth Year → lecture subjects
+and laboratories**. The year section is expandable; existing reader URLs and saved
+progress are unchanged. `collections` in `catalog.js` explicitly assigns content
+to each year so future years or other study collections can be added separately.
+The About page links to the creator’s [GitHub profile](https://github.com/hamaynazir).
+
 Appearance: use the sun/moon button on any page to switch between white light mode
 and dark mode. Your choice is shared across the library, About, all lectures and
 laboratories. Original PDF pages retain their original appearance.

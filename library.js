@@ -1,4 +1,4 @@
-import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js?v=vector-1';
+import {subjects,laboratories,collections,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js?v=uos-1';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons={
@@ -9,10 +9,11 @@ const icons={
  fields:'<path d="M3 10c5-9 10 9 15 0s10 9 15 0 M3 18c5-9 10 9 15 0s10 9 15 0 M3 26c5-9 10 9 15 0s10 9 15 0"/><path d="m29 7 4 3-4 3 M29 15l4 3-4 3 M29 23l4 3-4 3"/>'
 };
 const icon=s=>`<span class="subject-icon" style="--accent:${s.accent};--tint:${s.tint}" aria-hidden="true"><svg viewBox="0 0 36 36">${icons[s.icon]}</svg></span>`;
+const currentYear=collections[0].years[0];
 let readyOnly=false;
 const storage={getItem(key){try{return localStorage.getItem(key)}catch{return null}}};
 function renderCards(){
- const results=searchSubjects($('#subject-search').value,readyOnly);
+ const results=searchSubjects($('#subject-search').value,readyOnly).filter(s=>currentYear.subjectIds.includes(s.id));
  $('#subjects-grid').innerHTML=results.map(s=>`<article class="subject-card ${s.lessons.length?'available':''}" data-subject="${s.id}"><a href="#subject=${s.id}" aria-label="Open ${s.title}"><div class="card-top">${icon(s)}<span class="card-index">${String(subjects.indexOf(s)+1).padStart(2,'0')}</span></div><h3>${s.title}</h3><div class="card-lecturer"><span>Lecturer</span>${s.lecturer}</div><p>${s.description}</p>${s.lessons.length?`<div class="card-lesson">${s.lessons.map(l=>l.title).join(' · ')}</div>`:''}<div class="card-footer"><span>${s.lessons.length?`<span class="ready-dot"></span>${s.lessons.length} chapter${s.lessons.length===1?'':'s'} ready to explore`:'No chapters added yet'}</span><span class="card-arrow" aria-hidden="true">→</span></div></a></article>`).join('');
  $('#empty-search').hidden=results.length>0;$('#filter-all').setAttribute('aria-pressed',String(!readyOnly));$('#filter-ready').setAttribute('aria-pressed',String(readyOnly));
 }
@@ -22,11 +23,13 @@ function renderContinue(){
  const position=lessonPosition(recent,storage),url=lessonURL(recent,position||1),resume=position!==null;
  $('#continue-card').hidden=false;$('#continue-card').innerHTML=`<div class="eyebrow">${resume?'PICK UP WHERE YOU LEFT OFF':'YOUR FIRST CHAPTER IS READY'}</div><div class="continue-subject">${recent.subjectTitle}</div><h2>${recent.title}</h2><div class="position-label"><span>${resume?'Reading position':'Interactive lecture'}</span><span>${resume?`Page ${position} of ${recent.pages}`:recent.pages+' pages'}</span></div><div class="position-track" aria-hidden="true"><span style="width:${resume?position/recent.pages*100:0}%"></span></div><a class="continue-link" data-open-lesson="${recent.id}" href="${url}">${resume?'Continue learning':'Start exploring'} <span aria-hidden="true">→</span></a>`;
  $('#header-resume').hidden=!resume;$('#header-resume').href=url;$('#header-resume').dataset.openLesson=recent.id;
- $('#collection-count').textContent=`${subjects.length} subjects · ${lessons.length} chapter${lessons.length===1?'':'s'} ready`;
+ const scopedSubjects=subjects.filter(s=>currentYear.subjectIds.includes(s.id)),chapterCount=scopedSubjects.reduce((sum,s)=>sum+s.lessons.length,0);
+ $('#collection-count').textContent=`${scopedSubjects.length} subjects · ${chapterCount} chapters ready`;
+ $('#fourth-year .year-count').textContent=`${scopedSubjects.length} subjects · ${laboratories.filter(l=>currentYear.laboratoryIds.includes(l.id)).length} laboratories`;
 }
 function renderSubject(subject){
  const hasLessons=subject.lessons.length>0;
- $('#subject-view').innerHTML=`<a class="back-link" href="#">← All subjects</a><div class="subject-hero"><div><div class="eyebrow">YOUR SUBJECT LIBRARY</div><h1 id="subject-title" tabindex="-1">${subject.title}</h1><div class="subject-lecturer"><span>Lecturer</span>${subject.lecturer}</div><p>${subject.description}</p></div>${icon(subject)}</div><div class="chapter-heading"><h2>Chapters & lectures</h2><span>${hasLessons?`${subject.lessons.length} available`:'A space for what comes next'}</span></div>${hasLessons?subject.lessons.map(lesson=>{
+ $('#subject-view').innerHTML=`<nav class="collection-breadcrumb" aria-label="Collection"><a href="#uos-physics">UOS Physics</a><span> / </span><a href="#fourth-year">Fourth Year</a></nav><a class="back-link" href="#fourth-year">← Fourth Year subjects</a><div class="subject-hero"><div><div class="eyebrow">YOUR SUBJECT LIBRARY</div><h1 id="subject-title" tabindex="-1">${subject.title}</h1><div class="subject-lecturer"><span>Lecturer</span>${subject.lecturer}</div><p>${subject.description}</p></div>${icon(subject)}</div><div class="chapter-heading"><h2>Chapters & lectures</h2><span>${hasLessons?`${subject.lessons.length} available`:'A space for what comes next'}</span></div>${hasLessons?subject.lessons.map(lesson=>{
   const position=lessonPosition(lesson,storage),url=lessonURL(lesson,position||1);
   return `<article class="lesson-row" data-lesson="${lesson.id}"><a href="${url}" data-open-lesson="${lesson.id}"><span class="lesson-number" aria-hidden="true">${lesson.number}</span><div><span class="eyebrow">CHAPTER ${lesson.number} · INTERACTIVE LECTURE</span><h3>${lesson.title}</h3><div class="lesson-lecturer">Lecturer: <strong>${lesson.lecturer||subject.lecturer}</strong></div><p>${lesson.description}</p><div class="lesson-meta"><span>${lesson.pages} original pages</span><span>${lesson.topics} topics</span><span>Diagrams + guided learning</span></div></div><span class="lesson-cta">${position?'Continue':'Open chapter'} <span aria-hidden="true">→</span></span></a>${position?`<div class="lesson-resume"><span>Last reading position: page ${position} of ${lesson.pages}</span><a data-open-lesson="${lesson.id}" href="${lessonURL(lesson,1)}">Start from page 1 ↗</a></div>`:''}</article>`;
  }).join(''):`<div class="subject-empty"><div class="empty-book" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 10C16 6 9 5 4 7v24c5-2 12-1 16 3 4-4 11-5 16-3V7c-5-2-12-1-16 3ZM20 10v24"/><path d="M26 15h5 M26 21h5 M9 15h5 M9 21h5"/></svg></div><h2>The next chapter starts here.</h2><p>This space is ready for ${subject.title} lectures. As we build each chapter, its PDF, interactive diagrams and learning tools will appear here.</p><span class="empty-status">No lectures added yet</span></div>`}<p class="subject-footer-note">${hasLessons?'Each chapter keeps its own reading place and practice history on your device.':'Your available lesson is in <a href="#subject=solid-state-principles">Solid State Principles →</a>'}</p>`;
@@ -39,7 +42,8 @@ function route(){
  $('#subjects-nav').setAttribute('aria-current',id?'false':'page');
  if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':'Vibe Physics AI · A place to understand';
  renderContinue();
- const collectionAnchor=['#laboratories','#subjects-grid'].includes(location.hash)?document.querySelector(location.hash):null;
+ const collectionAnchor=['#laboratories','#subjects-grid','#uos-physics','#fourth-year'].includes(location.hash)?document.querySelector(location.hash):null;
+ if(collectionAnchor)$('#fourth-year').open=true;
  if(collectionAnchor)collectionAnchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
 }
 $('#subject-search').addEventListener('input',renderCards);
@@ -49,6 +53,6 @@ document.addEventListener('click',event=>{const link=event.target.closest('[data
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!$('#home-view').hidden){e.preventDefault();$('#subject-search').focus();}});
 window.addEventListener('hashchange',route);window.addEventListener('pageshow',()=>{renderContinue();const subject=subjects.find(s=>s.id===new URLSearchParams(location.hash.slice(1)).get('subject'));if(subject)renderSubject(subject)});window.addEventListener('storage',()=>{renderContinue();route()});
 function renderLaboratories(){
- $('#laboratories-grid').innerHTML=laboratories.map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>Explore the six experiments</summary><ol>${lab.experiments.map(e=>`<li><a href="${lab.reader}#page=${e.pages[0]}&experiment=${e.id}">${esc(e.title)}</a></li>`).join('')}</ol></details><div class="card-footer"><span>${lab.pages} original manual pages · ${lab.experiments.length} experiments</span><a class="laboratory-open" href="${lab.reader}">Open laboratory →</a></div></article>`).join('');
+ $('#laboratories-grid').innerHTML=laboratories.filter(lab=>currentYear.laboratoryIds.includes(lab.id)).map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>Explore the six experiments</summary><ol>${lab.experiments.map(e=>`<li><a href="${lab.reader}#page=${e.pages[0]}&experiment=${e.id}">${esc(e.title)}</a></li>`).join('')}</ol></details><div class="card-footer"><span>${lab.pages} original manual pages · ${lab.experiments.length} experiments</span><a class="laboratory-open" href="${lab.reader}">Open laboratory →</a></div></article>`).join('');
 }
 renderCards();renderLaboratories();route();

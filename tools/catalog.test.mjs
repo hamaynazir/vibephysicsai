@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {subjects,laboratories,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
+import {subjects,laboratories,collections,allLessons,lessonPosition,lessonURL,searchSubjects} from '../catalog.js';
+test('UOS Physics groups existing subjects and laboratories into Fourth Year without moving reader URLs',()=>{
+ assert.equal(collections[0].title,'UOS Physics');const year=collections[0].years[0];assert.equal(year.title,'Fourth Year');assert.deepEqual(year.subjectIds,subjects.map(s=>s.id));assert.deepEqual(year.laboratoryIds,laboratories.map(l=>l.id));
+ const home=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.match(home,/id="uos-physics"/);assert.match(home,/id="fourth-year"/);
+ const about=fs.readFileSync(new URL('../about.html',import.meta.url),'utf8');assert.match(about,/href="https:\/\/github.com\/hamaynazir"/);assert.match(about,/GITHUB PROFILE/);
+});
 
 test('Laboratories are distinct from lecture subjects with six prepared experiments each',()=>{
  assert.deepEqual(laboratories.map(l=>l.title),['Nuclear Laboratory','Solid State Physics Lab']);

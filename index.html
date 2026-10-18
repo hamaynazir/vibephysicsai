@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://vibephysicsai.com/">
   <title>Vibe Physics AI · A place to understand</title>
   <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="library.css?v=manuals-1">
+  <link rel="stylesheet" href="library.css?v=uos-1">
   <script>
     // Keep existing lecture bookmarks working after the library becomes home.
     if (new URLSearchParams(location.hash.slice(1)).has('page')) {
@@ -19,7 +19,7 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=vector-1"></script>
+  <script type="module" src="library.js?v=uos-1"></script>
 <script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
 <body>
   <a class="skip-link" href="#main">Skip to subjects</a>
@@ -34,7 +34,12 @@
         <div class="welcome-copy"><div class="eyebrow"><span class="small-dot"></span> YOUR PERSONAL LEARNING SPACE</div><h1 id="home-title">Your subjects.<br>A little more understood.</h1><p>Read the lecture. Explore the idea. Make it click.<br> A growing collection of interactive lessons, all in one place.</p></div>
         <aside id="continue-card" class="continue-card" aria-label="Your available lesson"></aside>
       </div>
-      <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Choose your subject</h2></div><span id="collection-count" class="collection-count">5 subjects · 5 chapters ready</span></div>
+      <section id="uos-physics" class="academic-collection" aria-labelledby="uos-title">
+      <div class="academic-heading"><span class="eyebrow">STUDY COLLECTION</span><h2 id="uos-title">UOS Physics</h2><p>University of Sulaimani · Independent study collection</p></div>
+      <details id="fourth-year" class="academic-year" open>
+      <summary><span><span class="eyebrow">UNDERGRADUATE</span><span class="year-title">Fourth Year</span></span><span class="year-count">5 subjects · 2 laboratories</span></summary>
+      <div class="year-content">
+      <div class="section-heading"><div><span class="eyebrow">LECTURE SUBJECTS</span><h2>Choose your subject</h2></div><span id="collection-count" class="collection-count">5 subjects · 5 chapters ready</span></div>
       <nav class="collection-links" aria-label="Learning collections"><a href="#subjects-grid">Lecture subjects ↓</a><a href="#laboratories">Laboratories ↓</a></nav>
       <div class="browse-toolbar"><label class="library-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="subject-search" type="search" placeholder="Find a subject or chapter…" aria-label="Search subjects and chapters"><kbd>/</kbd></label><div class="filters" role="group" aria-label="Filter subjects"><button id="filter-all" aria-pressed="true">All subjects</button><button id="filter-ready" aria-pressed="false">Ready to study</button></div></div>
       <div id="subjects-grid" class="subjects-grid" aria-label="Subjects"></div>
@@ -44,6 +49,9 @@
         <div class="section-heading"><div><span class="eyebrow">EXPERIMENTS &amp; PRACTICE</span><h2 id="laboratories-title">Laboratories</h2></div><span class="collection-count">2 laboratories · 12 experiments ready</span></div>
         <p class="laboratories-intro">A separate space for laboratory manuals and their interactive visualizations. Lecture chapters stay in the subject collection above.</p>
         <div id="laboratories-grid" class="laboratories-grid"></div>
+      </section>
+      </div></details>
+      <p class="future-collections-note">More years and study collections can be added here as their materials are prepared.</p>
       </section>
     </section>
     <section id="subject-view" aria-labelledby="subject-title" hidden></section>

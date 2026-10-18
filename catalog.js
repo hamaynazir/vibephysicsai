@@ -12,6 +12,9 @@ export const subjects=[
 ];
 // Laboratory manuals are separate from lecture chapters; add experiments only once prepared.
 export const laboratories=manuals;
+// Collections organize navigation without changing reader URLs or saved progress.
+// Add future years/collections here, then prepare their content before listing it.
+export const collections=[{id:'uos-physics',title:'UOS Physics',description:'University of Sulaimani · Independent study collection',years:[{id:'fourth-year',title:'Fourth Year',subjectIds:['materials-science','laser-physics','solid-state-principles','nuclear-models','electromagnetic-theory'],laboratoryIds:['nuclear-laboratory','solid-state-physics-lab']}]}];
 export const allLessons=()=>subjects.flatMap(subject=>subject.lessons.map(lesson=>({...lesson,subjectId:subject.id,subjectTitle:subject.title})));
 export function lessonPosition(lesson,storage){
  try{const n=Number(storage.getItem(lesson.storage.page));return Number.isFinite(n)&&n>=1?Math.min(lesson.pages,Math.floor(n)):null;}catch{return null;}
