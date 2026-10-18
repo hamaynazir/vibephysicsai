@@ -38,21 +38,30 @@ function renderSubject(subject){
 function route(){
  const params=new URLSearchParams(location.hash.slice(1));if(params.has('page')){const reader=new URL('./reader.html',location.href);reader.search=location.search;reader.hash=location.hash;location.replace(reader.href);return;}
  const id=params.get('subject'),subject=subjects.find(s=>s.id===id),notFound=!!id&&!subject;
- $('#home-view').hidden=!!id;$('#subject-view').hidden=!subject;$('#not-found').hidden=!notFound;
- $('#subjects-nav').setAttribute('aria-current',id?'false':'page');
- if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':'Vibe Physics AI · A place to understand';
+ const collectionRoute=location.hash==='#uos-physics'||params.get('collection')==='uos-physics';
+ const yearRoute=['#fourth-year','#laboratories','#subjects-grid'].includes(location.hash)||params.get('year')==='fourth-year';
+ $('#home-view').hidden=!!id||collectionRoute||yearRoute;
+ $('#collection-view').hidden=!!id||!collectionRoute;
+ $('#year-view').hidden=!!id||!yearRoute;
+ $('#subject-view').hidden=!subject;$('#not-found').hidden=!notFound;
+ $('#subjects-nav').setAttribute('aria-current',!id&&!collectionRoute&&!yearRoute?'page':'false');
+ if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':yearRoute?'Fourth Year · UOS Physics · Vibe Physics AI':collectionRoute?'UOS Physics · Vibe Physics AI':'Vibe Physics AI · A place to understand';
  renderContinue();
- const collectionAnchor=['#laboratories','#subjects-grid','#uos-physics','#fourth-year'].includes(location.hash)?document.querySelector(location.hash):null;
- if(collectionAnchor)$('#fourth-year').open=true;
- if(collectionAnchor)collectionAnchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
+ const anchor=yearRoute&&['#laboratories','#subjects-grid'].includes(location.hash)?document.querySelector(location.hash):null;
+ if(anchor)anchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
+
 }
 $('#subject-search').addEventListener('input',renderCards);
 $('#filter-all').onclick=()=>{readyOnly=false;renderCards()};$('#filter-ready').onclick=()=>{readyOnly=true;renderCards()};
 $('#clear-search').onclick=()=>{$('#subject-search').value='';readyOnly=false;renderCards();$('#subject-search').focus()};
 document.addEventListener('click',event=>{const link=event.target.closest('[data-open-lesson]');if(link)try{localStorage.setItem('study-library-last-lesson',link.dataset.openLesson)}catch{}});
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!$('#home-view').hidden){e.preventDefault();$('#subject-search').focus();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!$('#year-view').hidden){e.preventDefault();$('#subject-search').focus();}});
 window.addEventListener('hashchange',route);window.addEventListener('pageshow',()=>{renderContinue();const subject=subjects.find(s=>s.id===new URLSearchParams(location.hash.slice(1)).get('subject'));if(subject)renderSubject(subject)});window.addEventListener('storage',()=>{renderContinue();route()});
 function renderLaboratories(){
  $('#laboratories-grid').innerHTML=laboratories.filter(lab=>currentYear.laboratoryIds.includes(lab.id)).map((lab,i)=>`<article class="laboratory-card" data-laboratory="${lab.id}"><div class="card-top">${icon(lab)}<span class="card-index">LAB ${String(i+1).padStart(2,'0')}</span></div><h3>${esc(lab.title)}</h3><p>${esc(lab.description)}</p><details><summary>Explore the six experiments</summary><ol>${lab.experiments.map(e=>`<li><a href="${lab.reader}#page=${e.pages[0]}&experiment=${e.id}">${esc(e.title)}</a></li>`).join('')}</ol></details><div class="card-footer"><span>${lab.pages} original manual pages · ${lab.experiments.length} experiments</span><a class="laboratory-open" href="${lab.reader}">Open laboratory →</a></div></article>`).join('');
 }
-renderCards();renderLaboratories();route();
+function renderCollections(){
+ $('#collection-cards').innerHTML=collections.map(c=>`<article class="collection-card"><a href="#${esc(c.id)}" aria-label="Open ${esc(c.title)}"><span class="university-logo"><img src="assets/uos-logo.png" alt="University of Sulaimani logo" width="100" height="100"></span><span class="eyebrow">STUDY COLLECTION</span><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p><span class="card-footer"><span>${c.years.length} year available</span><span aria-hidden="true">→</span></span></a></article>`).join('');
+ $('#year-cards').innerHTML=collections[0].years.map(y=>`<article class="collection-card year-card"><a href="#${esc(y.id)}" aria-label="Open ${esc(y.title)}"><span class="year-emblem" aria-hidden="true">04</span><span class="eyebrow">UNDERGRADUATE</span><h3>${esc(y.title)}</h3><p>${y.subjectIds.length} subjects · ${y.laboratoryIds.length} laboratories</p><span class="card-footer"><span>Explore subjects &amp; experiments</span><span aria-hidden="true">→</span></span></a></article>`).join('');
+}
+renderCollections();renderCards();renderLaboratories();route();

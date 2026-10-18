@@ -1,7 +1,9 @@
 # Vibe Physics AI
 
-The current content is organized as **UOS Physics → Fourth Year → lecture subjects
-and laboratories**. The year section is expandable; existing reader URLs and saved
+The homepage shows clickable study-collection cards, beginning with **UOS Physics**
+and its University of Sulaimani logo. Navigation is **collection → year → lecture
+subjects and laboratories → chapter or experiment**, rather than expanded lists
+on the homepage. Existing reader URLs, old subject/laboratory bookmarks and saved
 progress are unchanged. `collections` in `catalog.js` explicitly assigns content
 to each year so future years or other study collections can be added separately.
 The About page links to the creator’s [GitHub profile](https://github.com/hamaynazir).

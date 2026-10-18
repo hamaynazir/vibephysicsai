@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://vibephysicsai.com/">
   <title>Vibe Physics AI · A place to understand</title>
   <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="library.css?v=uos-1">
+  <link rel="stylesheet" href="library.css?v=cards-1">
   <script>
     // Keep existing lecture bookmarks working after the library becomes home.
     if (new URLSearchParams(location.hash.slice(1)).has('page')) {
@@ -19,13 +19,13 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=uos-1"></script>
+  <script type="module" src="library.js?v=cards-1"></script>
 <script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
 <body>
-  <a class="skip-link" href="#main">Skip to subjects</a>
+  <a class="skip-link" href="#main">Skip to collections</a>
   <header class="site-header">
     <a class="library-brand" href="./" aria-label="Vibe Physics AI home"><img src="assets/library-mark.svg" alt="" width="28" height="28"><span>Vibe Physics AI<span class="brand-period">.</span></span></a>
-    <nav aria-label="Main navigation"><a href="#" id="subjects-nav" aria-current="page">Subjects</a><a href="about.html">About</a><a id="header-resume" href="reader.html" hidden>Continue learning <span aria-hidden="true">↗</span></a></nav>
+    <nav aria-label="Main navigation"><a href="#" id="subjects-nav" aria-current="page">Collections</a><a href="about.html">About</a><a id="header-resume" href="reader.html" hidden>Continue learning <span aria-hidden="true">↗</span></a></nav>
     <button type="button" data-theme-toggle aria-label="Switch to dark mode">☾</button><span class="header-note">A place to understand.</span>
   </header>
   <main id="main" class="library-main">
@@ -34,10 +34,21 @@
         <div class="welcome-copy"><div class="eyebrow"><span class="small-dot"></span> YOUR PERSONAL LEARNING SPACE</div><h1 id="home-title">Your subjects.<br>A little more understood.</h1><p>Read the lecture. Explore the idea. Make it click.<br> A growing collection of interactive lessons, all in one place.</p></div>
         <aside id="continue-card" class="continue-card" aria-label="Your available lesson"></aside>
       </div>
-      <section id="uos-physics" class="academic-collection" aria-labelledby="uos-title">
-      <div class="academic-heading"><span class="eyebrow">STUDY COLLECTION</span><h2 id="uos-title">UOS Physics</h2><p>University of Sulaimani · Independent study collection</p></div>
-      <details id="fourth-year" class="academic-year" open>
-      <summary><span><span class="eyebrow">UNDERGRADUATE</span><span class="year-title">Fourth Year</span></span><span class="year-count">5 subjects · 2 laboratories</span></summary>
+      <div class="section-heading"><div><span class="eyebrow">YOUR COLLECTIONS</span><h2>Choose a collection</h2></div></div>
+      <div id="collection-cards" class="collection-cards"></div>
+      <p class="future-collections-note">New study collections will appear beside UOS Physics as they are added.</p>
+    </section>
+    <section id="collection-view" aria-labelledby="uos-title" hidden>
+      <a class="back-link" href="#">← All collections</a>
+      <div class="collection-hero"><span class="university-logo"><img src="assets/uos-logo.png" alt="University of Sulaimani logo" width="100" height="100"></span><div><span class="eyebrow">STUDY COLLECTION</span><h1 id="uos-title">UOS Physics</h1><p>University of Sulaimani · Independent study collection</p></div></div>
+      <h2 class="collection-section-title">Choose your year</h2><div id="year-cards" class="collection-cards"></div>
+      <p class="future-collections-note">Other years will appear here when their materials are ready.</p>
+      <p class="collection-disclaimer">Independent student project—not an official university website or endorsement. <a href="https://univsul.edu.iq/en/university-logo/" target="_blank" rel="noopener noreferrer">University logo source ↗</a></p>
+    </section>
+    <section id="year-view" aria-labelledby="year-title" hidden>
+      <nav class="collection-breadcrumb" aria-label="Collection"><a href="#">All collections</a><span>/</span><a href="#uos-physics">UOS Physics</a><span>/</span><span aria-current="page">Fourth Year</span></nav>
+      <a class="back-link" href="#uos-physics">← Choose another year</a>
+      <div id="fourth-year"><div class="year-page-heading"><span class="eyebrow">UOS PHYSICS · UNDERGRADUATE</span><h1 id="year-title">Fourth Year</h1><p class="year-count">5 subjects · 2 laboratories</p></div>
       <div class="year-content">
       <div class="section-heading"><div><span class="eyebrow">LECTURE SUBJECTS</span><h2>Choose your subject</h2></div><span id="collection-count" class="collection-count">5 subjects · 5 chapters ready</span></div>
       <nav class="collection-links" aria-label="Learning collections"><a href="#subjects-grid">Lecture subjects ↓</a><a href="#laboratories">Laboratories ↓</a></nav>
@@ -50,9 +61,8 @@
         <p class="laboratories-intro">A separate space for laboratory manuals and their interactive visualizations. Lecture chapters stay in the subject collection above.</p>
         <div id="laboratories-grid" class="laboratories-grid"></div>
       </section>
-      </div></details>
-      <p class="future-collections-note">More years and study collections can be added here as their materials are prepared.</p>
-      </section>
+      </div>
+      </div>
     </section>
     <section id="subject-view" aria-labelledby="subject-title" hidden></section>
     <section id="not-found" hidden><a class="back-link" href="#">← All subjects</a><h1>That subject isn’t here yet.</h1><p>Choose one of the subjects in your library.</p></section>
