@@ -132,6 +132,18 @@ cross-tab updates and a usable session-only fallback if storage is unavailable.
 
 ## Data, state and deployment
 
+GM dead time alone now includes an optional live random-event panel. Exponential
+interarrival times model stationary Poisson input; each accepted event starts a
+fixed, non-extending dead interval. Source selection includes background-only,
+source 1, source 2 and both. Background defaults to zero. Counts are generated
+from events, not forced to equal the analytical expectation. Physical time and
+slowed display time are separate. Playback pauses off-screen or in hidden tabs.
+Start/Pause, one-arrival stepping, restart, duration and speed are available.
+Completed-run records retain all physical settings and are separate from the
+original deterministic table. They are session-only; this is not a real GM tube,
+hardware model or background-corrected experimental analysis. Other experiments
+do not display this new panel.
+
 Recorded data and CSV files are explicitly labeled **SIMULATED**. Numerical values
 are generated from the controls, not from apparatus. Each CSV includes control settings
 and extra values where relevant. Tables are session-only (maximum 1000 rows); export

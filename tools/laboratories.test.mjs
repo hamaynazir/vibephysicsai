@@ -1,5 +1,21 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {manuals,experimentForPage,referencesForExperiment} from '../laboratories/content.js';
+import {DeadTimeRun} from '../laboratories/dead-time-events.js';
+test('Random arrivals obey fixed non-extending dead intervals and exact one-event steps',()=>{
+ const uniforms=[1-Math.exp(-.1),1-Math.exp(-.05),1-Math.exp(-.1),1-Math.exp(-1)];let i=0;
+ const run=new DeadTimeRun({rate:1,tau:.12,duration:1},()=>uniforms[i++]??.9);
+ run.step();assert.equal(run.arrivals,1);assert.equal(run.detected,1);const ready=run.ready;
+ run.step();assert.equal(run.missed,1);assert.equal(run.ready,ready);
+ run.step();assert.equal(run.detected,2);assert.equal(run.arrivals,3);
+ run.advance(2);assert.equal(run.time,1);assert.ok(run.complete);
+});
+test('Random-run long-time rates converge and zero source/background gives no events',()=>{
+ let seed=12345;const rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return (seed+.5)/4294967296;};
+ const run=new DeadTimeRun({rate:700,tau:.0004,duration:300},rng);run.advance(300);
+ assert.ok(Math.abs(run.arrivals/300-700)/700<.015);assert.ok(Math.abs(run.detected/300-700/1.28)/(700/1.28)<.015);
+ assert.equal(run.arrivals,run.detected+run.missed);
+ const empty=new DeadTimeRun({rate:0,tau:.0004,duration:1});empty.step();assert.equal(empty.arrivals,0);assert.ok(empty.complete);
+});
 import {evaluate,correctedRate,observedRate,twoSourceApprox,twoSourceExact,geometry,activity,semiconductor,bragg,electron,thermoelectric,regression,calibration,poisson,statistics,RYDBERG,C} from '../laboratories/math.js';
 const near=(a,b,rel=1e-9)=>assert.ok(Math.abs(a-b)<=Math.max(1e-12,Math.abs(b)*rel),`${a} != ${b}`);
 test('References are experiment-specific, with no diffraction references in nuclear dead time',()=>{

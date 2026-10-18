@@ -4,3 +4,6 @@
 @media(max-width:380px){header{padding:0 12px}header strong{font-size:14px;margin-left:0}header a{font-size:11px}.companion{padding:23px 16px 50px}.navigation{padding:9px 12px}.metrics{grid-template-columns:1fr 1fr}h1{font-size:28px}}
 #scene{height:auto;aspect-ratio:760/420}.stage{overflow-x:auto}.stage.enlarged #scene{width:760px;max-width:none}.stage-caption{min-width:0}.diagram-zoom{font-size:11px;margin:8px 0 15px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+/* The random-arrival experiment is scoped to GM dead time only. */
+.random-detector{border:1px solid var(--line);border-radius:10px;padding:18px;margin:20px 0}.random-detector h2{font:400 25px/1.25 Georgia,serif;margin:0 0 12px}.random-detector p{line-height:1.7}.random-detector canvas{display:block;width:100%;height:auto;border-radius:8px}.random-detector .controls{margin:18px 0}.random-detector select,.random-detector input{width:100%;min-width:0}.random-detector .data-actions{flex-wrap:wrap}.random-detector caption{text-align:left;padding:12px 0;color:var(--muted)}
+.random-detector .controls select,.random-detector .controls input{min-height:40px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--text);font-size:13px}.random-detector .controls label{display:flex;flex-direction:column;gap:6px}
