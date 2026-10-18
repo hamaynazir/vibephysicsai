@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://vibephysicsai.com/">
   <title>Vibe Physics AI · A place to understand</title>
   <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="library.css?v=cards-1">
+  <link rel="stylesheet" href="library.css?v=news-1">
   <script>
     // Keep existing lecture bookmarks working after the library becomes home.
     if (new URLSearchParams(location.hash.slice(1)).has('page')) {
@@ -19,13 +19,13 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=cards-1"></script>
+  <script type="module" src="library.js?v=news-1"></script>
 <script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
 <body>
   <a class="skip-link" href="#main">Skip to collections</a>
   <header class="site-header">
     <a class="library-brand" href="./" aria-label="Vibe Physics AI home"><img src="assets/library-mark.svg" alt="" width="28" height="28"><span>Vibe Physics AI<span class="brand-period">.</span></span></a>
-    <nav aria-label="Main navigation"><a href="#" id="subjects-nav" aria-current="page">Collections</a><a href="about.html">About</a><a id="header-resume" href="reader.html" hidden>Continue learning <span aria-hidden="true">↗</span></a></nav>
+    <nav aria-label="Main navigation"><a href="#" id="subjects-nav" aria-current="page">Collections</a><a href="#news" id="news-nav">News</a><a href="about.html">About</a><a id="header-resume" href="reader.html" hidden>Continue learning <span aria-hidden="true">↗</span></a></nav>
     <button type="button" data-theme-toggle aria-label="Switch to dark mode">☾</button><span class="header-note">A place to understand.</span>
   </header>
   <main id="main" class="library-main">
@@ -63,6 +63,12 @@
       </section>
       </div>
       </div>
+    </section>
+    <section id="news-view" aria-labelledby="news-title" hidden>
+      <a class="back-link" href="#">← Back to the homepage</a>
+      <div class="eyebrow">VIBE PHYSICS AI</div><h1 id="news-title">News</h1>
+      <p class="about-intro">Announcements and updates from this independent learning project.</p>
+      <div class="news-empty"><h2>No announcements yet.</h2><p>New announcements will appear here when they are published.</p></div>
     </section>
     <section id="subject-view" aria-labelledby="subject-title" hidden></section>
     <section id="not-found" hidden><a class="back-link" href="#">← All subjects</a><h1>That subject isn’t here yet.</h1><p>Choose one of the subjects in your library.</p></section>

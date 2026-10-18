@@ -38,20 +38,26 @@ function renderSubject(subject){
 function route(){
  const params=new URLSearchParams(location.hash.slice(1));if(params.has('page')){const reader=new URL('./reader.html',location.href);reader.search=location.search;reader.hash=location.hash;location.replace(reader.href);return;}
  const id=params.get('subject'),subject=subjects.find(s=>s.id===id),notFound=!!id&&!subject;
+ const newsRoute=location.hash==='#news';
  const collectionRoute=location.hash==='#uos-physics'||params.get('collection')==='uos-physics';
  const yearRoute=['#fourth-year','#laboratories','#subjects-grid'].includes(location.hash)||params.get('year')==='fourth-year';
- $('#home-view').hidden=!!id||collectionRoute||yearRoute;
+ $('#home-view').hidden=!!id||collectionRoute||yearRoute||newsRoute;
+ $('#news-view').hidden=!!id||!newsRoute;$('#news-nav').setAttribute('aria-current',newsRoute?'page':'false');
  $('#collection-view').hidden=!!id||!collectionRoute;
  $('#year-view').hidden=!!id||!yearRoute;
  $('#subject-view').hidden=!subject;$('#not-found').hidden=!notFound;
- $('#subjects-nav').setAttribute('aria-current',!id&&!collectionRoute&&!yearRoute?'page':'false');
+ $('#subjects-nav').setAttribute('aria-current',!id&&!collectionRoute&&!yearRoute&&!newsRoute?'page':'false');
  if(subject)renderSubject(subject);else document.title=notFound?'Subject not found · Vibe Physics AI':yearRoute?'Fourth Year · UOS Physics · Vibe Physics AI':collectionRoute?'UOS Physics · Vibe Physics AI':'Vibe Physics AI · A place to understand';
  renderContinue();
+ if(newsRoute)document.title='News · Vibe Physics AI';
  const anchor=yearRoute&&['#laboratories','#subjects-grid'].includes(location.hash)?document.querySelector(location.hash):null;
  if(anchor)anchor.scrollIntoView({behavior:'instant',block:'start'});else window.scrollTo({top:0,behavior:'instant'});
 
 }
 $('#subject-search').addEventListener('input',renderCards);
+// A brand click always returns to the first view and top, even from home itself.
+$('.library-brand').addEventListener('click',event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();history.pushState(null,'',new URL('./',location.href).pathname);route();window.scrollTo({top:0,behavior:'instant'});});
+window.addEventListener('popstate',route);
 $('#filter-all').onclick=()=>{readyOnly=false;renderCards()};$('#filter-ready').onclick=()=>{readyOnly=true;renderCards()};
 $('#clear-search').onclick=()=>{$('#subject-search').value='';readyOnly=false;renderCards();$('#subject-search').focus()};
 document.addEventListener('click',event=>{const link=event.target.closest('[data-open-lesson]');if(link)try{localStorage.setItem('study-library-last-lesson',link.dataset.openLesson)}catch{}});
