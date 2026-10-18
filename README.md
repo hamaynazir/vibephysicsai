@@ -1,9 +1,11 @@
 # Vibe Physics AI
 
-Feynman Interactive is listed as a credited external learning resource beside UOS
-Physics and introduced in News. Its link was added here on October 18, 2026; this
-is not its original release date. The card opens mishig’s original Hugging Face
-Space in a new tab. No Feynman simulation code or lecture PDF is copied or hosted.
+News lists Feynman Interactive, PhET, Falstad Physics Applets and myPhysicsLab as
+credited external resources in horizontal cards. They do not appear among the
+homepage collections. Dates distinguish PhET’s 2002 founding, myPhysicsLab’s 2001
+development start and Feynman’s Hugging Face Space creation on October 1, 2026.
+Falstad’s collection creation date remains unconfirmed. Each card links to its
+creator’s site; no external simulation code or lecture PDF is copied or hosted.
 
 The homepage shows clickable study-collection cards, beginning with **UOS Physics**
 and its University of Sulaimani logo. Navigation is **collection → year → lecture

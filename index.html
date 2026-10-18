@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://vibephysicsai.com/">
   <title>Vibe Physics AI · A place to understand</title>
   <link rel="icon" href="assets/library-mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="library.css?v=feynman-link-1">
+  <link rel="stylesheet" href="library.css?v=news-resources-1">
   <script>
     // Keep existing lecture bookmarks working after the library becomes home.
     if (new URLSearchParams(location.hash.slice(1)).has('page')) {
@@ -19,7 +19,7 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=feynman-link-1"></script>
+  <script type="module" src="library.js?v=news-resources-1"></script>
 <script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
 <body>
   <a class="skip-link" href="#main">Skip to collections</a>
@@ -67,16 +67,40 @@
       <a class="back-link" href="#">← Back to the homepage</a>
       <div class="eyebrow">VIBE PHYSICS AI</div><h1 id="news-title">News</h1>
       <p class="about-intro">Announcements and updates from this independent learning project.</p>
-      <article class="news-resource" aria-labelledby="feynman-news-title">
-        <div class="eyebrow">EXTERNAL LEARNING RESOURCE</div>
-        <p class="resource-date">Added to this site: <time datetime="2026-10-18">18 October 2026</time></p>
-        <h2 id="feynman-news-title">Feynman Interactive: read the idea, then see it move.</h2>
-        <p>Explore a visual companion to chapters 1–14 of <cite>The Feynman Lectures on Physics, Volume I</cite>. Interactive wireframe demonstrations follow the reading, helping connect the written explanation with a moving, adjustable model.</p>
-        <p>Use it to explore an idea, change a control and compare what you see with what you read. It is a separate study tool—not a replacement for the lecture text or a guarantee that every model is complete.</p>
-        <p class="resource-credit">Original project: <strong>mishig/feynman-interactive</strong> on Hugging Face. This project helped inspire the idea of placing lecture pages beside interactive visualizations in Vibe Physics AI.</p>
-        <div class="resource-links"><a class="resource-open" href="https://huggingface.co/spaces/mishig/feynman-interactive" target="_blank" rel="noopener noreferrer">Open Feynman Interactive ↗</a><a href="https://github.com/hello2himel/feynman-interactive" target="_blank" rel="noopener noreferrer">Community mirror on GitHub ↗</a></div>
-        <p class="resource-note">Links open in a new tab. This is an independently maintained external resource; Vibe Physics AI does not host its simulations or lecture PDF and is not affiliated with its creator. The date above records when this link was added here, not the project’s original release date.</p>
-      </article>
+
+      <p class="resource-list-note">External learning resources · Listed here on <time datetime="2026-10-18">18 October 2026</time>. Project dates below distinguish founding, development start and hosting creation; unknown dates are not guessed.</p>
+      <div class="news-resource-list">
+        <article class="news-resource resource-row" aria-labelledby="feynman-news-title">
+          <span class="resource-monogram" aria-hidden="true">f</span>
+          <div class="resource-body"><span class="eyebrow">LECTURE COMPANION · MISHIG</span><h2 id="feynman-news-title">Feynman Interactive</h2>
+          <p>A visual companion to chapters 1–14 of <cite>The Feynman Lectures on Physics, Volume I</cite>. Scroll-synced wireframe demonstrations connect the reading with moving, adjustable models. Its lecture-plus-visual approach helped inspire Vibe Physics AI.</p>
+          <p class="project-date">Hugging Face Space created: <time datetime="2026-10-01">1 October 2026</time>. <a href="https://huggingface.co/api/spaces/mishig/feynman-interactive" target="_blank" rel="noopener noreferrer">Hosting metadata ↗</a><br><span>This is the Space creation date, not a verified original project release date.</span></p>
+          <a class="resource-secondary" href="https://github.com/hello2himel/feynman-interactive" target="_blank" rel="noopener noreferrer">Community mirror on GitHub ↗</a></div>
+          <a class="resource-open" href="https://huggingface.co/spaces/mishig/feynman-interactive" target="_blank" rel="noopener noreferrer">Explore project ↗</a>
+        </article>
+        <article class="news-resource resource-row" aria-labelledby="phet-news-title">
+          <span class="resource-monogram" aria-hidden="true">P</span>
+          <div class="resource-body"><span class="eyebrow">INTERACTIVE SCIENCE · UNIVERSITY OF COLORADO BOULDER</span><h2 id="phet-news-title">PhET Interactive Simulations</h2>
+          <p>Research-based science and mathematics simulations built around exploration. Change a setting, move an object or use a virtual measuring tool to investigate cause and effect. A useful companion for building intuition before working through calculations.</p>
+          <p class="project-date">Founded: <time datetime="2002">2002</time>, by Carl Wieman. <a href="https://phet.colorado.edu/en/?locale=en_gb" target="_blank" rel="noopener noreferrer">Official history source ↗</a></p></div>
+          <a class="resource-open" href="https://phet.colorado.edu/" target="_blank" rel="noopener noreferrer">Explore project ↗</a>
+        </article>
+        <article class="news-resource resource-row" aria-labelledby="falstad-news-title">
+          <span class="resource-monogram" aria-hidden="true">F</span>
+          <div class="resource-body"><span class="eyebrow">MATH, PHYSICS &amp; ENGINEERING · PAUL FALSTAD</span><h2 id="falstad-news-title">Falstad Physics Applets</h2>
+          <p>Visual demonstrations of waves, electric and magnetic fields, circuits, optics and quantum mechanics. Explore how changing a parameter changes the behavior. The collection began with Java applets, many of which have since been converted to JavaScript.</p>
+          <p class="project-date">Collection creation date: <strong>not confirmed</strong>.<br><span>The official collection page does not state a single founding date; individual applet dates are not treated as the start of the whole collection.</span></p></div>
+          <a class="resource-open" href="https://www.falstad.com/mathphysics.html" target="_blank" rel="noopener noreferrer">Explore project ↗</a>
+        </article>
+        <article class="news-resource resource-row" aria-labelledby="myphysicslab-news-title">
+          <span class="resource-monogram" aria-hidden="true">m</span>
+          <div class="resource-body"><span class="eyebrow">MECHANICS &amp; NUMERICAL MODELS · ERIK NEUMANN</span><h2 id="myphysicslab-news-title">myPhysicsLab</h2>
+          <p>Interactive mechanics simulations covering springs, pendulums, collisions and rigid bodies. Drag objects, change parameters such as gravity and damping, and connect the motion with the mathematical model. Many simulations include explanations of the underlying equations.</p>
+          <p class="project-date">Development started: <time datetime="2001">2001</time>. <a href="https://www.myphysicslab.com/#about" target="_blank" rel="noopener noreferrer">Author’s account ↗</a></p></div>
+          <a class="resource-open" href="https://www.myphysicslab.com/" target="_blank" rel="noopener noreferrer">Explore project ↗</a>
+        </article>
+      </div>
+      <p class="resource-note resource-disclaimer">All links open in a new tab. These are independently maintained external resources, not Vibe Physics AI collections or endorsements. Their simulations and PDFs are not copied or hosted here; their creators retain their own ownership and licensing terms.</p>
     </section>
     <section id="subject-view" aria-labelledby="subject-title" hidden></section>
     <section id="not-found" hidden><a class="back-link" href="#">← All subjects</a><h1>That subject isn’t here yet.</h1><p>Choose one of the subjects in your library.</p></section>
