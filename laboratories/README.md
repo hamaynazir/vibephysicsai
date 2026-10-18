@@ -132,6 +132,23 @@ cross-tab updates and a usable session-only fallback if storage is unavailable.
 
 ## Data, state and deployment
 
+### Nuclear visual-first layout
+
+All six Nuclear companions now lead with a large code-native SVG apparatus view:
+counting source/detector/scaler, NaI(Tl)/photomultiplier, Co-60/pulse-height analyzer,
+electronic pulse chain, GM cross-section and source/window geometry. Play/Step and
+the existing physical controls update these views. Enlarge visual permits readable
+inspection on small screens. The GM cross-section follows accepted Poisson events
+from the live counting model, with schematic electron and positive-ion motion.
+It is not a microscopic gas simulation; effective fixed dead time is not equated
+to a calculated ion transit time. Display sizes, multiplication and ray density
+are illustrative, not quantitative transport or pulse-shape predictions.
+
+Original plots, deterministic data recording/CSV, equations and assumptions remain
+under **Graphs, equations & calculated data**. Manuals, notes, quizzes, practice,
+page synchronization, light/dark mode and full-screen remain available. The Solid
+State layout and models are unchanged.
+
 GM dead time alone now includes an optional live random-event panel. Exponential
 interarrival times model stationary Poisson input; each accepted event starts a
 fixed, non-extending dead interval. Source selection includes background-only,

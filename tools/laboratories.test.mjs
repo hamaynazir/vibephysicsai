@@ -1,6 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {manuals,experimentForPage,referencesForExperiment} from '../laboratories/content.js';
 import {DeadTimeRun} from '../laboratories/dead-time-events.js';
+import {nuclearScene,tubeScene} from '../laboratories/nuclear-apparatus.js';
+test('Nuclear apparatus views cover all six experiments with finite SVG coordinates and correct labels',()=>{
+ for(const e of manuals[0].experiments){if(e.id==='dead-time')continue;for(const endpoint of ['min','value','max']){const s=Object.fromEntries(e.controls.map(c=>[c.key,c[endpoint]]));const svg=nuclearScene(e.id,s,1);assert.match(svg,/<svg/);assert.ok(!/NaN|Infinity|undefined/.test(svg),e.id);assert.notEqual(svg,nuclearScene(e.id,s,2),e.id+' changes with playback');}}
+ const ready=tubeScene(),recovering=tubeScene({time:.0001,ready:.0004,tau:.0004,events:[{at:0,accepted:true}]});assert.match(ready,/READY/);assert.match(recovering,/RECOVERING/);assert.match(recovering,/Cathode \(−\)/);assert.match(recovering,/positive ions/);assert.ok(!/paralyzed|efficiency/i.test(recovering));
+});
 test('Random arrivals obey fixed non-extending dead intervals and exact one-event steps',()=>{
  const uniforms=[1-Math.exp(-.1),1-Math.exp(-.05),1-Math.exp(-.1),1-Math.exp(-1)];let i=0;
  const run=new DeadTimeRun({rate:1,tau:.12,duration:1},()=>uniforms[i++]??.9);
