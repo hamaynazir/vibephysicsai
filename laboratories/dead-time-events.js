@@ -1,4 +1,4 @@
-import {tubeScene,addVisualZoom} from './nuclear-apparatus.js?v=nuclear-visual-1';
+import {tubeScene,gmReplayScene,addVisualZoom} from './nuclear-apparatus.js?v=causal-1';
 // Homogeneous Poisson arrivals, fixed non-extending dead intervals; seconds throughout.
 export class DeadTimeRun {
  constructor({rate,tau,duration},random=Math.random){this.rate=rate;this.tau=tau;this.duration=duration;this.random=random;this.time=0;this.ready=0;this.arrivals=0;this.detected=0;this.events=[];this.next=this.wait();}
@@ -18,7 +18,12 @@ export function installDeadTimeEvents(anchor,getSettings){
  const timeline=document.createElement('details');timeline.innerHTML='<summary>Arrival timeline & run records</summary>';timeline.append(panel.querySelector('[data-live]'),panel.querySelector('[data-runs]'));panel.append(timeline);
  const notes=panel.querySelectorAll('p.note');advanced.append(notes[0]);timeline.append(notes[1]);notes[0].textContent='Open settings to change source strengths, background, dead time and duration. Physical changes restart a paused run; playback speed changes only display time. Background defaults to zero. Short runs fluctuate around the long-run expectation. All motion is schematic and slowed.';
  const counters=panel.querySelector('[data-counts]');visual.before(counters);const rates=document.createElement('p');rates.className='note';advanced.append(rates);
- const $=s=>panel.querySelector(s);let run,playing=false,last=null,active=false;const rows=[];
+ const $=s=>panel.querySelector(s);let run,playing=false,last=null,active=false,guided=true,replay=0,replayPlaying=false;const rows=[];
+ const views=document.createElement('div');views.className='data-actions';views.innerHTML='<button data-view="guided" aria-pressed="true">Understand one event</button><button data-view="counting" aria-pressed="false">Random counting run</button>';visual.before(views);
+ const guideControls=document.createElement('div');guideControls.className='data-actions';guideControls.innerHTML='<button data-replay-play>Play event</button><button data-replay-step>Next stage</button><button data-replay-reset>Replay from start</button><label>Event outcome <select data-outcome><option value="detected">Detected</option><option value="missed">During dead time: missed</option></select></label>';visual.after(guideControls);
+ const liveActions=$('[data-start]').closest('.data-actions');
+ views.onclick=e=>{const mode=e.target.dataset.view;if(!mode)return;guided=mode==='guided';playing=false;replayPlaying=false;last=null;render();};
+ $('[data-replay-play]').onclick=()=>{if(replay>=.999)replay=0;replayPlaying=!replayPlaying;render();};$('[data-replay-step]').onclick=()=>{replayPlaying=false;replay=Math.min(.999,(Math.floor(replay*5)+1)/5);render();};$('[data-replay-reset]').onclick=()=>{replay=0;replayPlaying=false;render();};$('[data-outcome]').onchange=()=>{replay=0;replayPlaying=false;render();};
  function settings(){const s=getSettings(),source=$('[data-source]').value,background=Math.min(100,Math.max(0,Number($('[data-background]').value)||0));return {source,background,source1:s.source1,source2:s.source2,tau:s.dead*1e-6,duration:Number($('[data-duration]').value),rate:background+(source==='one'||source==='both'?s.source1:0)+(source==='two'||source==='both'?s.source2:0)};}
  let config;
  function reset(){config=settings();run=new DeadTimeRun(config);playing=false;last=null;render();}
@@ -27,7 +32,11 @@ export function installDeadTimeEvents(anchor,getSettings){
  $('[data-status]').textContent=(run.complete?'Run complete':playing?'Running':'Paused')+` · ${f(run.time)} / ${config.duration} physical s · detector ${run.time<run.ready?'DEAD':'READY'}`;
  const values=[['Arrivals',run.arrivals],['Detected',run.detected],['Missed',run.missed],['Measured detected rate (s⁻¹)',run.time>0?f(run.detected/run.time):'—'],['Expected long-run rate (s⁻¹)',f(config.rate/(1+config.rate*config.tau))]];
  $('[data-counts]').innerHTML=values.slice(0,3).map(([label,v])=>`<div class="metric"><strong>${v}</strong><span>${label}</span></div>`).join('');rates.textContent=values.slice(3).map(([label,v])=>`${label}: ${v}`).join(' · ');
- visual.innerHTML=tubeScene(run);
+ counters.hidden=guided;guideControls.hidden=!guided;liveActions.hidden=guided;advanced.hidden=guided;timeline.hidden=guided;$('[data-status]').hidden=guided;
+ panel.querySelector('p').textContent=guided?'Watch one beta event in slow stages. Choose Detected or During dead time: missed. This conceptual replay does not add counts to a run.':'Random arrivals generate detections and misses. Missed events do not extend the fixed dead interval. Slow the playback or use the event replay to inspect the mechanism.';
+ views.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.view==='guided')===guided)));
+ $('[data-replay-play]').textContent=replayPlaying?'Pause event':'Play event';
+ visual.innerHTML=guided?gmReplayScene(replay,$('[data-outcome]').value==='detected'):tubeScene(run);
  const canvas=$('[data-live]'),ctx=canvas.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2);canvas.width=760*dpr;canvas.height=250*dpr;ctx.scale(dpr,dpr);ctx.fillStyle=dark?'#1e2833':'#f7f9fa';ctx.fillRect(0,0,760,250);ctx.font='16px system-ui';ctx.fillStyle=ink;ctx.fillText('RANDOM EVENT STREAM · SLOWED DISPLAY',24,30);
  const dead=run.time<run.ready;ctx.fillStyle=dead?purple:teal;ctx.fillRect(24,55,160,54);ctx.fillStyle=dark?'#151c25':'#fff';ctx.fillText(dead?'DETECTOR: DEAD':'DETECTOR: READY',32,88);ctx.fillStyle=ink;ctx.font='14px system-ui';ctx.fillText(`τ = ${f(config.tau*1e6)} μs · true arrival rate ${config.rate} s⁻¹`,205,87);
  const span=Math.max(.02,config.tau*12),end=Math.max(span,run.time),begin=end-span,px=t=>35+(t-begin)/span*690;
@@ -40,7 +49,7 @@ export function installDeadTimeEvents(anchor,getSettings){
  $('[data-speed]').onchange=()=>{last=null;};
  function table(){const box=$('[data-runs]');if(!rows.length){box.innerHTML='<p>No random-run results recorded yet.</p>';return;}box.innerHTML='<table><caption>SIMULATED random-run measurements (not apparatus data)</caption><thead><tr>'+['Sources','Source 1 / 2 (s⁻¹)','Background (s⁻¹)','τ (μs)','Gate (s)','Arrivals','Detected','Missed','Detected rate (s⁻¹)'].map(s=>`<th>${s}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+[r.source,`${r.source1} / ${r.source2}`,r.background,r.tau*1e6,r.duration,r.arrivals,r.detected,r.missed,(r.detected/r.duration).toFixed(2)].map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</tbody></table>';}
  $('[data-record]').onclick=()=>{if(!run.complete||run.recorded)return;run.recorded=true;rows.push({...config,arrivals:run.arrivals,detected:run.detected,missed:run.missed});if(rows.length>100)rows.shift();table();$('[data-record]').disabled=true;};$('[data-clear]').onclick=()=>{rows.length=0;table();};
- function frame(now){const rect=panel.getBoundingClientRect(),visible=active&&!document.hidden&&rect.width>0&&rect.bottom>0&&rect.top<innerHeight;if(playing&&visible){if(last!==null)run.advance(run.time+Math.min(.05,(now-last)/1000)*Number($('[data-speed]').value));if(run.complete)playing=false;render();}last=visible?now:null;requestAnimationFrame(frame);}requestAnimationFrame(frame);
+ function frame(now){const rect=panel.getBoundingClientRect(),visible=active&&!document.hidden&&rect.width>0&&rect.bottom>0&&rect.top<innerHeight;if(guided&&replayPlaying&&visible){if(last!==null)replay=Math.min(.999,replay+Math.min(.05,(now-last)/1000)/8);if(replay>=.999)replayPlaying=false;render();}else if(playing&&visible){if(last!==null)run.advance(run.time+Math.min(.05,(now-last)/1000)*Number($('[data-speed]').value));if(run.complete)playing=false;render();}last=visible?now:null;requestAnimationFrame(frame);}requestAnimationFrame(frame);
  window.addEventListener('vibe-theme-change',render);
  return {panel,select(id){active=id==='dead-time';panel.hidden=!active;playing=false;last=null;if(active)reset();},reset(){if(active)reset();}};
 }

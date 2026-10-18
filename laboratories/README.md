@@ -134,6 +134,25 @@ cross-tab updates and a usable session-only fallback if storage is unavailable.
 
 ### Nuclear visual-first layout
 
+#### Causal-sequence review
+
+Reviewed all six nuclear apparatus presentations for missing event-to-signal links.
+Counting, voltage, calibration, electronics and efficiency now use named, ordered
+presentation stages rather than independently looping packets. Scintillator light
+reaches the photocathode before photoelectrons enter the multiplication chain.
+Efficiency distinguishes missing the geometric window from failing to count an
+incident quantum. Example paths/outcomes are pedagogical, not empirical samples.
+
+GM defaults to a separate **Understand one event** replay: an incoming beta enters
+the tube, ionizes gas, electrons drift inward, an avalanche yields a pulse and
+positive ions drift outward. The missed-event option shows entry without a new
+counted pulse and explicitly does not extend dead time. This conceptual replay
+does not increment counters, compute ion transport or use calibrated timing.
+**Random counting run** retains the independent Poisson/nonparalyzable model and
+its measurements; approaching beta markers are now visible before modeled arrival.
+Neither visual claims all entering particles interact, nor that missed particles
+are physically blocked. Formulas and original manual pages are unchanged.
+
 All six Nuclear companions now lead with a large code-native SVG apparatus view:
 counting source/detector/scaler, NaI(Tl)/photomultiplier, Co-60/pulse-height analyzer,
 electronic pulse chain, GM cross-section and source/window geometry. Play/Step and

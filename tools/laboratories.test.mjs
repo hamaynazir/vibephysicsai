@@ -1,7 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {manuals,experimentForPage,referencesForExperiment} from '../laboratories/content.js';
 import {DeadTimeRun} from '../laboratories/dead-time-events.js';
-import {nuclearScene,tubeScene} from '../laboratories/nuclear-apparatus.js';
+import {nuclearScene,tubeScene,gmReplayScene} from '../laboratories/nuclear-apparatus.js';
+import {sequenceAt,gmPhase,sequences} from '../laboratories/nuclear-sequences.js';
+test('Every nuclear presentation has ordered causal stages; GM missed replay never claims a counted avalanche',()=>{
+ for(const [id,labels]of Object.entries(sequences))for(let i=0;i<labels.length;i++){const stage=sequenceAt(id,(i+.1)*8/labels.length);assert.equal(stage.index,i);assert.equal(stage.label,labels[i]);}
+ for(let i=0;i<5;i++){assert.equal(gmPhase((i+.1)/5).index,i);const svg=gmReplayScene((i+.1)/5,false);assert.ok(!svg.includes('Counted pulse'));assert.ok(!svg.includes('Avalanche →'));assert.ok(!/NaN|Infinity/.test(svg));}
+ assert.match(gmReplayScene(.01),/β \(beta\)/);assert.match(gmReplayScene(.31),/Ionization creates/);assert.match(gmReplayScene(.71),/Counted pulse/);assert.match(gmReplayScene(.91,false),/not extended/);
+});
 test('Nuclear apparatus views cover all six experiments with finite SVG coordinates and correct labels',()=>{
  for(const e of manuals[0].experiments){if(e.id==='dead-time')continue;for(const endpoint of ['min','value','max']){const s=Object.fromEntries(e.controls.map(c=>[c.key,c[endpoint]]));const svg=nuclearScene(e.id,s,1);assert.match(svg,/<svg/);assert.ok(!/NaN|Infinity|undefined/.test(svg),e.id);assert.notEqual(svg,nuclearScene(e.id,s,2),e.id+' changes with playback');}}
  const ready=tubeScene(),recovering=tubeScene({time:.0001,ready:.0004,tau:.0004,events:[{at:0,accepted:true}]});assert.match(ready,/READY/);assert.match(recovering,/RECOVERING/);assert.match(recovering,/Cathode \(−\)/);assert.match(recovering,/positive ions/);assert.ok(!/paralyzed|efficiency/i.test(recovering));
