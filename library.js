@@ -19,9 +19,8 @@ function renderCards(){
 }
 function renderContinue(){
  const lessons=allLessons(),recentId=storage.getItem('study-library-last-lesson'),recent=lessons.find(l=>l.id===recentId)||lessons.find(l=>lessonPosition(l,storage))||lessons[0];
- if(!recent){$('#continue-card').hidden=true;$('#header-resume').hidden=true;return;}
+ if(!recent){$('#header-resume').hidden=true;return;}
  const position=lessonPosition(recent,storage),url=lessonURL(recent,position||1),resume=position!==null;
- $('#continue-card').hidden=false;$('#continue-card').innerHTML=`<div class="eyebrow">${resume?'PICK UP WHERE YOU LEFT OFF':'YOUR FIRST CHAPTER IS READY'}</div><div class="continue-subject">${recent.subjectTitle}</div><h2>${recent.title}</h2><div class="position-label"><span>${resume?'Reading position':'Interactive lecture'}</span><span>${resume?`Page ${position} of ${recent.pages}`:recent.pages+' pages'}</span></div><div class="position-track" aria-hidden="true"><span style="width:${resume?position/recent.pages*100:0}%"></span></div><a class="continue-link" data-open-lesson="${recent.id}" href="${url}">${resume?'Continue learning':'Start exploring'} <span aria-hidden="true">→</span></a>`;
  $('#header-resume').hidden=!resume;$('#header-resume').href=url;$('#header-resume').dataset.openLesson=recent.id;
  const scopedSubjects=subjects.filter(s=>currentYear.subjectIds.includes(s.id)),chapterCount=scopedSubjects.reduce((sum,s)=>sum+s.lessons.length,0);
  $('#collection-count').textContent=`${scopedSubjects.length} subjects · ${chapterCount} chapters ready`;
