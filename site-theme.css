@@ -12,4 +12,4 @@ html[data-theme=dark]:has(.library-main),html[data-theme=dark]:has(.about-main){
 [data-theme=dark] .subject-icon{background:#27333f;color:#a8e1dc}
 [data-theme=dark] .about-main a,[data-theme=dark] .collection-links a{color:#6bd3d3}
 [data-theme=dark] .card-lecturer,[data-theme=dark] .lesson-lecturer,[data-theme=dark] .lesson-lecturer strong,[data-theme=dark] .creator-credit a,[data-theme=dark] .library-footer{color:#b4c1ce}
-@media(max-width:480px){.site-header{flex-wrap:wrap;gap:12px}.site-header nav{gap:14px}.site-header [data-theme-toggle]{margin-left:auto}}
+@media(max-width:480px){.site-header{height:auto;min-height:82px;flex-wrap:wrap;gap:8px 12px;padding-top:12px;padding-bottom:12px}.site-header nav{order:1;width:100%;height:30px;margin-left:0;gap:20px}.site-header [data-theme-toggle]{margin-left:auto}}
