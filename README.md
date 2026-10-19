@@ -248,3 +248,13 @@ Vibe Physics AI was developed with assistance from **OpenAI Codex**, using **GPT
 - [PDF.js](https://mozilla.github.io/pdf.js/) 3.11.174, Apache-2.0 license in `vendor/PDFJS-LICENSE.txt`. PDF scripting/evaluation is disabled for the supplied lecture viewer.
 
 Use a current browser with WebGL and hardware acceleration for 3D. If WebGL is unavailable, the original lecture, notes and calculators remain usable. Reduced-motion preferences disable continuous animation.
+## Optional visitor analytics
+
+All nine website pages share Google Analytics tag `G-081CN8GZGQ` through
+`site-analytics.js`. Google is contacted only after the visitor accepts
+analytics, and only on vibephysicsai.com or www.vibephysicsai.com.
+The on-page Privacy settings button allows refusal or withdrawal; advertising
+features are disabled. Consent is saved locally, separately from study progress.
+Local previews do not send analytics. Check accepted visits in GA4 Realtime;
+ad blockers and refused consent mean not every visit will be counted.
+
