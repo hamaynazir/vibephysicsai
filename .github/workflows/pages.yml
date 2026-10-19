@@ -33,7 +33,7 @@ jobs:
           cp reader-navigation.js _site/
           cp simulation-fullscreen.js simulation-fullscreen.css _site/
           cp site-theme.js site-theme.css _site/
-          cp site-analytics.js site-analytics.css _site/
+          cp site-analytics.js _site/
           cp LICENSE LICENSING.md _site/
           if [ -d lessons ]; then cp -r lessons _site/; fi
           cp -r laboratories _site/
