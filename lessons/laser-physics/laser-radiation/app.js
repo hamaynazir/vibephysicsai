@@ -1,5 +1,5 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=simple-1';
+import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=dynamics-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=compare-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
 import {LaserDiagram} from './visuals.js?v=compare-1';

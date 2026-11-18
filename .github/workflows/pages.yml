@@ -39,7 +39,7 @@ jobs:
           cp index.html about.html reader.html CNAME library.css library.js catalog.js styles.css reader.css app.js lecture-data.js crystal-math.js visuals.js teaching.js teaching-math.js teaching-visuals.js learning.js learning-data.js learning-memory.js README.md .nojekyll _site/
           rsync -a --exclude='*.[pP][dD][fF]' assets vendor _site/
           cp study-motion.js _site/
-          cp study-focus.js study-focus.css lecture-review.js lecture-experiments.js lecture-observations.js _site/
+          cp study-focus.js study-focus.css lecture-review.js lecture-experiments.js lecture-observations.js lecture-dynamics.js _site/
           cp reader-navigation.js scrolling-reader.js interface.css _site/
           cp simulation-fullscreen.js simulation-fullscreen.css _site/
           cp site-theme.js site-theme.css _site/

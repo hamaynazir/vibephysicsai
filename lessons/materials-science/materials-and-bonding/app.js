@@ -1,5 +1,5 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=simple-1';
+import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=dynamics-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js';
 import {bondVectors,bondAngle,pairEnergy,pairForce,cubeSurfaceRatio,compositeBounds,atoms} from './math.js';
 import {MaterialsDiagram} from './visuals.js?v=study-motion-1';

@@ -1,4 +1,5 @@
 import {experimentFor} from './lecture-experiments.js';
+import {dynamicsFor} from './lecture-dynamics.js';
 import {observations} from './lecture-observations.js';
 
 function element(tag, text) {
@@ -119,7 +120,7 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
   tools.querySelector('summary').after(review);
   tools.append(prediction);
   const resetReadings = setupReadings(tools);
-  let current, experiment, refreshIndex;
+  let current, experiment, dynamics, refreshIndex;
   function updateCount() {
     const passed = sections.filter(s => previousAnswer(s)===true).length;
     summary.textContent = 'Chapter review · '+passed+' of '+sections.length+' checked';
@@ -140,6 +141,9 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
     observation.textContent = observations[course][current];
     prediction.open = false;
     experiment?.remove();
+    dynamics?.remove();
+    dynamics = dynamicsFor(course,current);
+    if(dynamics)review.before(dynamics);
     experiment = experimentFor(course,current);
     if (experiment) {
       experiment.name = 'lecture-study-tool';

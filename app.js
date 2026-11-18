@@ -1,5 +1,5 @@
 import {createScrollReader} from './scrolling-reader.js';
-import {installLectureReview} from './lecture-review.js?v=simple-1';
+import {installLectureReview} from './lecture-review.js?v=dynamics-1';
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
 import {Visualizer} from './visuals.js?v=study-motion-1';
 import {Teaching} from './teaching.js';
