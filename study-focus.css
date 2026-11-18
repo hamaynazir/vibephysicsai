@@ -1,0 +1,21 @@
+.study-focus .study-intro { border-inline-start: 3px solid var(--accent, #187d79); padding-inline-start: .8rem; margin-block: .6rem .8rem; }
+.study-focus .study-intro > p { font-weight: 600; line-height: 1.45; margin: 0; }
+.study-focus .study-context, .study-focus .study-more-controls, .study-focus .study-equation { margin-block: .35rem; padding: .35rem 0; border: 0; background: transparent; }
+.study-focus .study-context > summary, .study-focus .study-more-controls > summary, .study-focus .study-equation > summary { cursor: pointer; font-size: .85rem; color: var(--muted, inherit); }
+.study-focus .study-context > p { margin: .4rem 0 0; }
+.study-focus .study-more-controls { grid-column: 1 / -1; flex-basis: 100%; align-self: start; }
+.study-focus .study-extra-fields { margin: .5rem 0 0; }
+.study-focus #controls { margin-block: .6rem; }
+.study-focus #controls:empty { display: none; }
+.study-focus .companion > .mode { margin-block: .65rem; }
+.study-focus .companion > #page-context { margin-block: .35rem; }
+.study-focus .study-intro [hidden] { display: none !important; }
+@media (max-width: 800px) {
+  .study-focus .companion { padding-block-start: 16px; }
+  .study-focus .companion > h1 { font-size: clamp(22px, 6vw, 28px); margin-block: .35rem .2rem; }
+  .study-focus .companion > .credit { margin-block: .2rem; }
+  .study-focus .study-intro { margin-block: .4rem; }
+  .study-focus .study-context { margin-block: .1rem; }
+  .study-focus .companion > .mode { margin-block: .4rem; }
+  .study-focus body[data-manual] .companion > .eyebrow { display: none; }
+}

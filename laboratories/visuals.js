@@ -64,7 +64,42 @@ export function draw(canvas,exp,s,time,records,step){
   const peaks=families.map((h,i)=>({angle:2*bragg(s.wavelength,s.lattice/Math.hypot(...h)),height:1-i*.1}));graph(sample(10,Math.max(100,...peaks.map(p=>p.angle+5)),x=>peaks.reduce((sum,p)=>sum+p.height*Math.exp(-.5*((x-p.angle)/.5)**2),0),900),'Detector scattering angle 2θ (degrees)','Arbitrary synthetic peak heights');break;
  }
  case 'electron':{
-  const cx=410,cy=118,scale=4;for(const [r,color] of [[result.inner,teal],[result.outer,purple]]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r*scale,0,Math.PI*2);ctx.stroke();const a=time*.8;dot(cx+r*scale*Math.cos(a),cy+r*scale*Math.sin(a),color,4);}text('Screen view',35,62);text('Inner: d = 213 pm',35,103,14,teal);text('Outer: d = 123 pm',35,132,14,purple);text('Moving dots are guides, not trajectories.',35,185,12,muted);
+  const axis = 125, graphite = 154, screen = 388, ringCenter = 565;
+  const scale = 2.6;
+  text('TUBE SIDE VIEW', 35, 53, 12, muted);
+  text('FLUORESCENT SCREEN', 491, 53, 12, muted);
+  ctx.strokeStyle = muted;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(278, axis, 113, 59, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  box('Electron gun', 32, axis - 19, 96);
+  line(128, axis, graphite, axis, ink);
+  line(graphite, axis - 16, graphite, axis + 16, ink, 4);
+  text('Graphite', 135, 168, 12);
+
+  // The side view shows cone cross sections. The front view uses the same radius scale for both rings.
+  for (const [radius, color] of [[result.outer, purple], [result.inner, teal]]) {
+    const offset = radius * scale;
+    const hitX = 278 + 113 * Math.sqrt(Math.max(0, 1 - (offset / 59) ** 2));
+    for (const sign of [-1, 1]) {
+      const y = axis + sign * offset;
+      line(graphite, axis, hitX, y, color, 1.5);
+      packet(graphite, axis, hitX, y, sign === 1 ? .18 : .36, color);
+      dot(hitX, y, color, 3);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(ringCenter, axis, offset, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  packet(126, axis, graphite, axis, 0, ink);
+  dot(screen, axis, muted, 2);
+  dot(ringCenter, axis, muted, 2);
+  text('Cone cross sections · schematic', 231, 202, 12, muted);
+  text('Inner · 213 pm', 635, 118, 12, teal);
+  text('Outer · 123 pm', 635, 141, 12, purple);
   graph(sample(4,6.5,U=>evaluate('electron',{...s,voltage:U}).inner),'Accelerating voltage (kV)','Inner-ring radius (mm)',[s.voltage,result.inner]);break;
  }
  case 'thermoelectric':{
