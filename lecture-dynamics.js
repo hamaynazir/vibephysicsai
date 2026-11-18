@@ -1,9 +1,12 @@
+import {mathMarkup} from './formula-notation.js';
+
 // One fixed-size physics step per tick. Render speed and model time are separate.
-const models = {
+export const numericalModels = {
   'emt-vector-analysis/overview': {
     title: 'Watch a pulse meet a boundary',
     control: 'Wave speed on the right', min: .3, max: 1, value: .5,
-    hint: 'Compare speed 1 with speed 0.5. This one-dimensional wave model uses normalized units. Stop before the ends send waves back.',
+    hint: 'Compare speed 1 with speed 0.5. This model describes a string with constant tension and different mass densities on either side. The line marks the boundary. The fixed ends also reflect the pulse when it reaches them.',
+    equation: String.raw`\frac{\partial^2 y}{\partial t^2}=c(x)^2\frac{\partial^2 y}{\partial x^2}`,
     create(speed) {
       const size = 200;
       const pulse = x => Math.exp(-((x - 38) ** 2) / 55);
@@ -27,6 +30,7 @@ const models = {
     title: 'Send a vibration through a lattice',
     control: 'Mass of every second site', min: 1, max: 4, value: 1,
     hint: 'Compare equal and alternating masses. Springs couple neighboring sites. The ends are fixed and will eventually reflect the disturbance.',
+    equation: String.raw`m_j\ddot{x}_j=k(x_{j-1}-2x_j+x_{j+1})`,
     create(mass) {
       const displacement = Array(45).fill(0);
       const velocity = displacement.map((_,i) => .45*Math.exp(-((i-8)**2)/5));
@@ -43,6 +47,7 @@ const models = {
     title: 'Watch a displaced bond vibrate',
     control: 'Damping rate', min: 0, max: 1, value: .2,
     hint: 'Compare zero damping with stronger damping. The plot shows relative displacement over time in the small-displacement, harmonic approximation.',
+    equation: String.raw`\ddot{x}+\gamma\dot{x}+\omega_0^2 x=0`,
     create(damping) {
       let x=1, v=0;
       const history=[x];
@@ -59,7 +64,8 @@ const models = {
   'laser-radiation/pumping': {
     title: 'Watch a pumped population build up',
     control: 'Pump rate relative to decay', min: 0, max: 4, value: 2,
-    hint: 'This idealized pump feeds the upper state at rate P(1 − n), and decay removes population at rate n. The plot tracks the upper-state fraction n.',
+    hint: 'An external pump fills the upper state as spontaneous decay empties it. Time is measured in upper-state lifetimes. The model assumes a constant pump and omits stimulated emission.',
+    equation: String.raw`\frac{\mathrm dn}{\mathrm dt}=P(1-n)-n`,
     create(pump) {
       let fraction=0;
       const history=[0];
@@ -76,6 +82,7 @@ const models = {
     title: 'Run a random radioactive decay trial',
     control: 'Initial nuclei', min: 20, max: 200, value: 80, increment: 20,
     hint: 'Each step lasts one twentieth of a half-life. Restart at the same settings and compare two runs with the smooth expected survival curve.',
+    equation: String.raw`\mathbb{E}[N(t)]=N_0\,2^{-t/T_{1/2}}`,
     create(total) {
       let count=total;
       const history=[1];
@@ -95,7 +102,7 @@ const models = {
 };
 
 export function dynamicsFor(course, topic) {
-  const model=models[course+'/'+topic];
+  const model=numericalModels[course+'/'+topic];
   if(!model)return null;
   const panel=document.createElement('details');
   panel.className='review-experiment lecture-dynamics';
@@ -104,6 +111,9 @@ export function dynamicsFor(course, topic) {
   summary.textContent=model.title;
   const hint=document.createElement('p');
   hint.textContent=model.hint;
+  const equation=document.createElement('div');
+  equation.className='model-math';
+  equation.innerHTML=mathMarkup(model.equation);
   const canvas=document.createElement('canvas');
   canvas.width=640; canvas.height=220;
   canvas.style.cssText='display:block;width:100%;height:auto';
@@ -117,6 +127,11 @@ export function dynamicsFor(course, topic) {
   const setting=document.createElement('span');
   label.append(setting,input);
   const status=document.createElement('p');
+  const speed=document.createElement('select');
+  for(const value of [.25,.5,1,2,4])speed.add(new Option(value+'×',value,value===1,value===1));
+  speed.setAttribute('aria-label','Playback speed');
+  const speedLabel=document.createElement('label');
+  speedLabel.append('Playback speed ',speed);
   let simulation, tick=0, timer;
   function draw() {
     const ctx=canvas.getContext('2d');
@@ -162,17 +177,19 @@ export function dynamicsFor(course, topic) {
   }
   function pause(){clearInterval(timer);timer=undefined;play.textContent='Play';}
   function reset(){pause();tick=0;simulation=model.create(Number(input.value));setting.textContent=model.control+' · '+input.value+' ';draw();}
-  const play=makeButton('Play',()=>{
-    if(timer){pause();return;}
+  function start() {
     if(tick>=simulation.limit)reset();
-    play.textContent='Pause';timer=setInterval(advance,32);
-  });
+    play.textContent='Pause';
+    timer=setInterval(advance,32/Number(speed.value));
+  }
+  const play=makeButton('Play',()=>{if(timer)pause();else start();});
+  speed.onchange=()=>{if(timer){pause();start();}};
   const actions=document.createElement('div');
   actions.className='action-row';
-  actions.append(play,makeButton('Step',()=>{pause();advance();}),makeButton('Restart',reset));
+  actions.append(play,makeButton('Step',()=>{pause();advance();}),makeButton('Restart',reset),speedLabel);
   input.oninput=reset;
   panel.addEventListener('toggle',()=>{if(panel.open)draw();else pause();});
-  panel.append(summary,hint,canvas,label,actions,status);
+  panel.append(summary,hint,equation,canvas,label,actions,status);
   reset();
   return panel;
 }

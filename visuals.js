@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {StudyMotion,pathPoint,ionicTransfer} from './study-motion.js';
+import {StudyMotion,pathPoint,ionicTransfer} from './study-motion.js?v=speed-4';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {systems,basisVectors,fractional,unitSites,cubicInfo,cellEdges,cubeCorners,add,sub,mul,norm,unit,dot,planePolygon,reciprocal,wignerSeitz,madelungShells,potential,radialForce,atomDisplayGroup} from './crystal-math.js';
 import {drawTeaching} from './teaching-visuals.js?v=study-motion-1';

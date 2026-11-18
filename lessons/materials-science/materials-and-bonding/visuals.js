@@ -1,5 +1,5 @@
 import {bondVectors,bondAngle,pairEnergy,atoms} from './math.js';
-import {StudyMotion,ionicTransfer} from '../../../study-motion.js';
+import {StudyMotion,ionicTransfer} from '../../../study-motion.js?v=speed-4';
 const colors=['#187f72','#8451ba','#ba7b1e','#bf526f'];
 export class MaterialsDiagram{
  constructor(canvas,onInspect){

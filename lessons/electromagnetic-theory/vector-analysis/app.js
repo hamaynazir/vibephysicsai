@@ -1,9 +1,9 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview} from '../../../lecture-review.js?v=dynamics-1';
+import {installLectureReview} from '../../../lecture-review.js?v=math-1';
 import {lesson,sections,pageSections,defaults,guide,challenges,sources,sectionDefaults} from './content.js?v=scroll-1';
 import {metricEntries} from './math.js?v=scroll-1';
 import {draw,moving} from './visuals.js?v=scroll-1';
-import {StudyMotion} from '../../../study-motion.js';
+import {StudyMotion} from '../../../study-motion.js?v=speed-4';
 import {installReaderNavigation} from '../../../reader-navigation.js?v=restored-1';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>n===null?'Not defined':typeof n==='number'?Number(n.toPrecision(5)).toString():String(n);
 const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch{return false}}};

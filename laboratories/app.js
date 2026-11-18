@@ -1,10 +1,11 @@
+import '../formula-notation.js?v=math-1';
 import {createScrollReader} from '../scrolling-reader.js';
 import {manuals,experimentForPage,referencesForExperiment} from './content.js?v=sources-2';
 import {evaluate,statistics,poisson,regression,RYDBERG} from './math.js?v=sources-2';
 import {draw} from './visuals.js?v=study-focus-1';
-import {installDeadTimeEvents} from './dead-time-events.js?v=causal-1';
+import {installDeadTimeEvents} from './dead-time-events.js?v=speed-4';
 import {installNuclearApparatus} from './nuclear-apparatus.js?v=causal-1';
-import {StudyMotion} from '../study-motion.js';
+import {StudyMotion} from '../study-motion.js?v=speed-4';
 const manual=manuals.find(m=>m.slug===document.body.dataset.manual),$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=v=>v===null?'Not defined':typeof v==='number'?Number(v.toPrecision(5)).toString():String(v),key=`vibe:lab:${manual.id}:v1`;
 let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{};}catch{}
 if(typeof saved!=='object'||Array.isArray(saved))saved={};

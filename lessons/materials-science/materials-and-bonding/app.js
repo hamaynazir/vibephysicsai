@@ -1,8 +1,8 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=dynamics-1';
+import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=math-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js';
 import {bondVectors,bondAngle,pairEnergy,pairForce,cubeSurfaceRatio,compositeBounds,atoms} from './math.js';
-import {MaterialsDiagram} from './visuals.js?v=study-motion-1';
+import {MaterialsDiagram} from './visuals.js?v=speed-4';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get(key){try{return localStorage.getItem(key)}catch{return null}},set(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}};
 let progress={records:{},guide:0},memoryAvailable=true;
