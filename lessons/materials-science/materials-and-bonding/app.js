@@ -1,5 +1,5 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview} from '../../../lecture-review.js?v=scroll-1';
+import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=simple-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js';
 import {bondVectors,bondAngle,pairEnergy,pairForce,cubeSurfaceRatio,compositeBounds,atoms} from './math.js';
 import {MaterialsDiagram} from './visuals.js?v=study-motion-1';
@@ -9,9 +9,10 @@ let progress={records:{},guide:0},memoryAvailable=true;
 try{const saved=JSON.parse(store.get(lesson.learningKey));if(saved&&typeof saved.records==='object'&&saved.records!==null&&!Array.isArray(saved.records)){progress.records=saved.records;progress.guide=Number.isInteger(saved.guide)?Math.max(0,Math.min(guide.length-1,saved.guide)):0;progress.guideComplete=saved.guideComplete===true;}}catch{}
 const defaults={sample:'transparent',family:'Metals',links:0,fraction:.5,Ef:70,Em:3,property:'Stiffness',doping:'Intrinsic',application:'Implant',smartType:'Piezoelectric',stimulus:0,divisions:5,element:'C',distance:1,depth:1,transfer:0,hybrid:'sp3',orbitalStage:'Geometry',field:0,dipoleType:'London',orientation:'Aligned',separation:1,polarization:.2};
 const patches={ceramics:{family:'Ceramics'},metals:{family:'Metals'},sp2:{hybrid:'sp2'},sp3:{hybrid:'sp3'},alumina:{sample:'translucent'}};
-let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,zoom=1;
+let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,sync=true,zoom=1;
 const states=new Map();
-const diagram=new MaterialsDiagram($('#scene'),(title,text)=>{inspection={title,text};mode='explain';$('#learning-mode').value=mode;renderLearning();});
+const showSelection=diagramSelection($('#visual-stage'));
+const diagram=new MaterialsDiagram($('#scene'),showSelection);
 $('#animate').hidden=true;
 diagram.onFrame=()=>{if(current.mode==='ionic'&&diagram.transferPhase){const p=diagram.transferPhase,values=$('#metrics').querySelectorAll('strong');if(values[0])values[0].textContent=p.na+' + '+p.cl+(p.free?' + 1 in transit':'');if(values[2])values[2].textContent=p.stage==='neutral'?'Neutral':p.stage==='transfer'?'Transferring':'Na⁺ · Cl⁻';}};
 diagram.onBond=()=>renderMetrics();
@@ -33,7 +34,7 @@ $('#visual-previous').onclick=()=>goSection(sections[sections.indexOf(current)-1
 $('#visual-next').onclick=()=>goSection(sections[sections.indexOf(current)+1]?.id);
 $('#next-topic').onclick=()=>goSection(sections[(sections.indexOf(current)+1)%sections.length].id);
 function selectSection(section,keepMode=false){
- if(section.id!==current.id){states.set(current.id,{...s});current=section;s=states.get(section.id)||{...defaults,...patches[section.id]};if(!keepMode){mode='explore';guideActive=false;answered=null;revealed=false;inspection=null;$('#learning-mode').value=mode;}}
+ if(section.id!==current.id){showSelection();states.set(current.id,{...s});current=section;s=states.get(section.id)||{...defaults,...patches[section.id]};if(!keepMode){mode='explore';guideActive=false;answered=null;revealed=false;$('#learning-mode').value=mode;}}
  $('#visual-section').value=current.id;$('#visual-previous').disabled=current===sections[0];$('#visual-next').disabled=current===sections.at(-1);
  $('#section-label').textContent=current.title.toUpperCase();$('#lab-title').textContent=current.heading;$('#lab-description').textContent=current.description;
  $('#scene-label').textContent=({hybrid:s.hybrid.toUpperCase()+' · BOND DIRECTIONS',energy:'PAIR ENERGY · NORMALIZED MODEL',nano:'SIZE & EXPOSED SURFACE'}[current.mode]||current.mode.toUpperCase()+' · TEACHING SCHEMATIC');
@@ -110,7 +111,7 @@ function renderLearning(){
  const notes=mode==='notes',quiz=mode==='quiz',review=mode==='review';$('#notes-view').hidden=!notes;$('#question-view').hidden=!quiz;$('#model-area').hidden=notes||quiz||review||(mode==='predict'&&!revealed);$('#learning-activity').hidden=['explore','notes','quiz'].includes(mode);
  if(quiz)$('#question-view').innerHTML=questionHTML(current.quiz);else $('#question-view').replaceChildren();
  let html='';
- if(mode==='explain')html=inspection?`<div class="eyebrow">YOU SELECTED</div><h3>${esc(inspection.title)}</h3><p>${esc(inspection.text)}</p>`:'<p>Click a labeled atom, bond, stage or diagram region to read what it means. Carbon bond numbers are also available as keyboard-accessible buttons.</p>';
+ if(mode==='explain')html='<p>Click a labeled atom, bond, stage or diagram region to read what it means. Carbon bond numbers are also available as keyboard-accessible buttons.</p>';
  if(mode==='predict')html='<div class="eyebrow">PREDICT BEFORE REVEALING</div>'+questionHTML(current.quiz)+(answered!==null?'<button class="small-button" id="reveal">Show the diagram</button>':'<p class="progress-note">The diagram stays hidden until you answer and choose to reveal it.</p>');
  if(mode==='guide'){const n=progress.guide;html=`<div class="eyebrow">FROM ZERO · ${n+1} OF ${guide.length}</div><h3>${esc(current.title)}</h3><p>${esc(current.ideas[0][1])}</p><p>Explore the controls, then explain: ${esc(current.quiz.question)}</p><div class="action-row"><button id="guide-back" ${n===0?'disabled':''}>← Back</button><button id="guide-next">${n===guide.length-1?'Finish path ✓':'Next idea →'}</button></div><p class="progress-note">${progress.guideComplete?'Path completed. Revisit any step.':'Your place is saved in this browser.'}</p>`;}
  if(mode==='build'){const c=challenges[challengeIndex];html=`<div class="eyebrow">PRACTICE A CALCULATION</div><select id="challenge-select" aria-label="Choose calculation">${challenges.map((c,i)=>`<option value="${i}" ${i===challengeIndex?'selected':''}>${esc(c.title)}</option>`).join('')}</select><h3>${esc(c.title)}</h3><p>${esc(c.question)}</p><label>Your answer <input id="numeric-answer" type="number" step="any" value="${esc(numericValue)}" aria-label="Your numerical answer"> ${esc(c.unit)}</label><div class="action-row"><button id="check-number">Check &amp; explain</button></div>${numericFeedback?`<p role="status" class="learning-feedback ${numericFeedback.ok?'success':'retry'}">${numericFeedback.ok?'Correct.':'Try again.'} ${esc(c.why)}</p>`:''}`;}
@@ -119,7 +120,7 @@ function renderLearning(){
  $('#learning-activity').innerHTML=html;renderCount();
 }
 function startChallenge(){const c=challenges[challengeIndex];numericValue='';numericFeedback=null;goSection(c.section,true);if(c.id==='nano-area')s.divisions=10;if(c.id==='ion-electrons')s.transfer='1';if(c.id==='bond-energy')s.depth=2;renderControls();renderMetrics();renderLearning();}
-$('#learning-mode').onchange=e=>{mode=e.target.value;answered=null;revealed=false;inspection=null;reviewId=null;numericFeedback=null;guideActive=mode==='guide';if(mode==='guide')goSection(guide[progress.guide],true);if(mode==='build')startChallenge();renderLearning();$('.lab-scroll').scrollTop=0;};
+$('#learning-mode').onchange=e=>{mode=e.target.value;answered=null;revealed=false;reviewId=null;numericFeedback=null;guideActive=mode==='guide';if(mode==='guide')goSection(guide[progress.guide],true);if(mode==='build')startChallenge();renderLearning();$('.lab-scroll').scrollTop=0;};
 function handleLearning(e){const b=e.target.closest('button');if(!b)return;
  if(b.dataset.answer!==undefined){const q=mode==='review'?sections.find(t=>t.quiz.id===reviewId)?.quiz:current.quiz;if(!q)return;answered=+b.dataset.answer;record(q.id,answered===q.answer);renderLearning();}
  if(b.id==='reveal'){revealed=true;renderLearning();diagram.draw();}

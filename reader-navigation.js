@@ -13,7 +13,12 @@ export function installReaderNavigation(nav){
  const chapterSelect=document.createElement('select');chapterSelect.id='reader-chapter';chapterSelect.setAttribute('aria-label','Choose chapter');chapterLabel.append(chapterSelect);
  const populate=subject=>{chapterSelect.replaceChildren(...subject.lessons.map(l=>new Option(l.number+'. '+l.title,l.id)));chapterSelect.value=subject.id===current.subjectId?current.id:preferredChapter(subject,storage.getItem('study-library-last-lesson'))?.id;};
  const open=lesson=>{if(!lesson||lesson.id===current.id)return;const page=Number(document.querySelector('#page-input')?.value);if(Number.isFinite(page)&&page>=1)try{localStorage.setItem(current.storage.page,String(Math.min(current.pages,Math.floor(page))));}catch{}location.assign(resumeReaderURL(lesson,storage,new URL('./',import.meta.url)));};
- populate(subjects.find(s=>s.id===current.subjectId));nav.prepend(subjectLabel,chapterLabel);nav.classList.add('has-reader-switcher');
+ populate(subjects.find(s=>s.id===current.subjectId));
+ const switcher=document.createElement('details');switcher.className='reader-switcher';
+ const summary=document.createElement('summary');summary.textContent='Change lecture';
+ const fields=document.createElement('div');fields.append(subjectLabel,chapterLabel);
+ switcher.append(summary,fields);nav.append(switcher);nav.classList.add('has-reader-switcher','compact-reader-navigation');
+ nav.querySelector('.visual-section-arrows').hidden=true;
  subjectSelect.onchange=()=>{const subject=subjects.find(s=>s.id===subjectSelect.value);if(!subject?.lessons.length)return;populate(subject);open(preferredChapter(subject,storage.getItem('study-library-last-lesson')));};
  chapterSelect.onchange=()=>open(allLessons().find(l=>l.id===chapterSelect.value));
 }

@@ -1,5 +1,5 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
-import {installLectureReview} from '../../../lecture-review.js?v=scroll-1';
+import {installLectureReview,diagramSelection} from '../../../lecture-review.js?v=simple-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=compare-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
 import {LaserDiagram} from './visuals.js?v=compare-1';
@@ -12,9 +12,10 @@ try{const saved=JSON.parse(store.get(lesson.learningKey));if(saved&&typeof saved
 const defaults={lambda:632.8,amplitude:1,polarization:0,milestone:'3',logLambda:-6.2,lower:'1',upper:'2',power:2,process:'Stimulated',width:.05,index:1,delay:.5,relation:'Stable',phase:0,duration:.05,shape:'Estimate',waist:.5,distance:100,diameter:1.3,medium:'He–Ne',upperFraction:.8,reflectivity:.95};
 Object.assign(defaults,comparisonDefaults);
 const patches={intensity:{power:20},pulse:{lambda:623.8}};
-let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,zoom=1;
+let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,sync=true,zoom=1;
 const states=new Map();
-const diagram=new LaserDiagram($('#scene'),(title,text)=>{inspection={title,text};mode='explain';$('#learning-mode').value=mode;renderLearning();});
+const showSelection=diagramSelection($('#visual-stage'));
+const diagram=new LaserDiagram($('#scene'),showSelection);
 diagram.onFrame=renderMotion;
 function renderMotion(){const active=movingModes.has(current.mode);$('#motion-controls').hidden=!active;$('#motion-status').hidden=!active;$('#animate').textContent=diagram.running?'Ⅱ Pause':'▷ Play';$('#animate').setAttribute('aria-pressed',String(diagram.running));$('#animate').setAttribute('aria-label',diagram.running?'Pause simulation':'Play simulation');$('#motion-status').textContent=(diagram.running?'Playing · ':'Paused · ')+(diagram.motionText||'Slowed teaching model, not real optical speed');}
 const fmt=(n,d=3)=>Number(n.toFixed(d)).toString();
@@ -35,7 +36,7 @@ $('#visual-previous').onclick=()=>goSection(sections[sections.indexOf(current)-1
 $('#visual-next').onclick=()=>goSection(sections[sections.indexOf(current)+1]?.id);
 $('#next-topic').onclick=()=>goSection(sections[(sections.indexOf(current)+1)%sections.length].id);
 function selectSection(section,keepMode=false){
- if(section.id!==current.id){states.set(current.id,{...s});current=section;s=states.get(section.id)||{...defaults,...patches[section.id]};if(!keepMode){mode='explore';guideActive=false;answered=null;revealed=false;inspection=null;$('#learning-mode').value=mode;}}
+ if(section.id!==current.id){showSelection();states.set(current.id,{...s});current=section;s=states.get(section.id)||{...defaults,...patches[section.id]};if(!keepMode){mode='explore';guideActive=false;answered=null;revealed=false;$('#learning-mode').value=mode;}}
  $('#visual-section').value=current.id;$('#visual-previous').disabled=current===sections[0];$('#visual-next').disabled=current===sections.at(-1);
  $('#section-label').textContent=current.title.toUpperCase();$('#lab-title').textContent=current.heading;$('#lab-description').textContent=current.description;
  $('#scene-label').textContent=current.title.toUpperCase()+' · TEACHING MODEL';
@@ -78,7 +79,7 @@ function renderControls(){let html='';const m=current.mode;
 }
 $('#controls').oninput=e=>{const key=e.target.dataset.key;if(!key||e.target.tagName==='SELECT')return;if(!e.target.checkValidity()||e.target.value==='')return;s[key]=+e.target.value;const out=$('[data-output="'+key+'"]');if(out)out.textContent=fmt(s[key]);renderMetrics();};
 $('#controls').onchange=e=>{const key=e.target.dataset.key;if(!key||e.target.tagName!=='SELECT')return;s[key]=e.target.value;if(+s.lower>=+s.upper){if(key==='lower')s.upper=String(+s.lower+1);else s.lower=String(+s.upper-1);}renderControls();renderMetrics();};
-$('#controls').onclick=e=>{const key=e.target.closest('[data-compare-feature]')?.dataset.compareFeature;if(key){s.compareFeature=key;inspection=null;renderControls();renderMetrics();renderLearning();}if(e.target.id==='open-feature-section')goSection(comparisonFeatures[s.compareFeature].target);};
+$('#controls').onclick=e=>{const key=e.target.closest('[data-compare-feature]')?.dataset.compareFeature;if(key){s.compareFeature=key;showSelection();renderControls();renderMetrics();renderLearning();}if(e.target.id==='open-feature-section')goSection(comparisonFeatures[s.compareFeature].target);};
 function metric(v,label){return '<div class="metric"><strong>'+esc(v)+'</strong><small>'+esc(label)+'</small></div>';}
 const sci=(n,d=3)=>n.toExponential(d).replace('e+',' × 10^').replace('e-',' × 10^−');
 function renderMetrics(){const m=current.mode,l=light(+s.lambda);let values=[],insight=current.formula;
@@ -108,7 +109,7 @@ function renderLearning(){
  const notes=mode==='notes',quiz=mode==='quiz',review=mode==='review';$('#notes-view').hidden=!notes;$('#question-view').hidden=!quiz;$('#model-area').hidden=notes||quiz||review||(mode==='predict'&&!revealed);$('#learning-activity').hidden=['explore','notes','quiz'].includes(mode);
  if(quiz)$('#question-view').innerHTML=questionHTML(current.quiz);else $('#question-view').replaceChildren();
  let html='';
- if(mode==='explain')html=inspection?`<div class="eyebrow">YOU SELECTED</div><h3>${esc(inspection.title)}</h3><p>${esc(inspection.text)}</p>`:'<p>Click a labeled field, transition, beam or component to read what it means.</p>';
+ if(mode==='explain')html='<p>Click a labeled field, transition, beam or component to read what it means.</p>';
  if(mode==='predict')html='<div class="eyebrow">PREDICT BEFORE REVEALING</div>'+questionHTML(current.quiz)+(answered!==null?'<button class="small-button" id="reveal">Show the diagram</button>':'<p class="progress-note">The diagram stays hidden until you answer and choose to reveal it.</p>');
  if(mode==='guide'){const n=progress.guide;html=`<div class="eyebrow">FROM ZERO · ${n+1} OF ${guide.length}</div><h3>${esc(current.title)}</h3><p>${esc(current.ideas[0][1])}</p><p>Explore the controls, then explain: ${esc(current.quiz.question)}</p><div class="action-row"><button id="guide-back" ${n===0?'disabled':''}>← Back</button><button id="guide-next">${n===guide.length-1?'Finish path ✓':'Next idea →'}</button></div><p class="progress-note">${progress.guideComplete?'Path completed. Revisit any step.':'Your place is saved in this browser.'}</p>`;}
  if(mode==='build'){const c=challenges[challengeIndex];html=`<div class="eyebrow">PRACTICE A CALCULATION</div><select id="challenge-select" aria-label="Choose calculation">${challenges.map((c,i)=>`<option value="${i}" ${i===challengeIndex?'selected':''}>${esc(c.title)}</option>`).join('')}</select><h3>${esc(c.title)}</h3><p>${esc(c.question)}</p><label>Your answer <input id="numeric-answer" type="number" step="any" value="${esc(numericValue)}" aria-label="Your numerical answer"> ${esc(c.unit)}</label><div class="action-row"><button id="check-number">Check &amp; explain</button></div>${numericFeedback?`<p role="status" class="learning-feedback ${numericFeedback.ok?'success':'retry'}">${numericFeedback.ok?'Correct.':'Try again.'} ${esc(c.why)}</p>`:''}`;}
@@ -117,7 +118,7 @@ function renderLearning(){
  $('#learning-activity').innerHTML=html;renderCount();
 }
 function startChallenge(){const c=challenges[challengeIndex];numericValue='';numericFeedback=null;goSection(c.section,true);renderControls();renderMetrics();renderLearning();}
-$('#learning-mode').onchange=e=>{mode=e.target.value;answered=null;revealed=false;inspection=null;reviewId=null;numericFeedback=null;guideActive=mode==='guide';if(mode==='guide')goSection(guide[progress.guide],true);if(mode==='build')startChallenge();renderLearning();$('.lab-scroll').scrollTop=0;};
+$('#learning-mode').onchange=e=>{mode=e.target.value;answered=null;revealed=false;reviewId=null;numericFeedback=null;guideActive=mode==='guide';if(mode==='guide')goSection(guide[progress.guide],true);if(mode==='build')startChallenge();renderLearning();$('.lab-scroll').scrollTop=0;};
 function handleLearning(e){const b=e.target.closest('button');if(!b)return;
  if(b.dataset.answer!==undefined){const q=mode==='review'?sections.find(t=>t.quiz.id===reviewId)?.quiz:current.quiz;if(!q)return;answered=+b.dataset.answer;record(q.id,answered===q.answer);renderLearning();}
  if(b.id==='reveal'){revealed=true;renderLearning();diagram.draw();}

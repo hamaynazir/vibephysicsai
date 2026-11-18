@@ -33,6 +33,75 @@
 .reading-comparison table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .9rem; }
 .reading-comparison :is(th,td) { padding: .3rem; border-bottom: 1px solid var(--line, #74898c70); text-align: start; overflow-wrap: anywhere; }
 .reading-comparison caption { text-align: start; margin-block: .5rem; }
+
+body .visual-navigation.has-reader-switcher.compact-reader-navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  padding-block: .5rem;
+}
+.visual-navigation.has-reader-switcher.compact-reader-navigation .visual-section-field { grid-area: 1 / 1; }
+.compact-reader-navigation .visual-section-arrows[hidden] { display: none; }
+.compact-reader-navigation .reader-switcher { display: contents; }
+.reader-switcher > summary {
+  grid-area: 1 / 2;
+  cursor: pointer;
+  border: 1px solid var(--ui-line);
+  border-radius: 8px;
+  padding: .38rem .55rem;
+  min-height: 36px;
+  box-sizing: border-box;
+  align-content: center;
+  color: var(--ui-ink);
+  font-size: .82rem;
+}
+.reader-switcher:not([open]) > div { display: none; }
+.reader-switcher[open] > div {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: .5rem;
+  padding-block-start: .25rem;
+}
+.study-focus .simple-lecture .study-intro {
+  margin-block: .4rem .65rem;
+  padding: 0;
+  border: 0;
+}
+.study-focus .simple-lecture .study-intro > p { font-weight: 400; }
+.simple-lecture .lab-heading { margin-bottom: 0; }
+.simple-lecture #section-label[hidden] { display: none; }
+.simple-lecture #controls:not(:empty) { margin-block: .6rem; }
+.simple-lecture .lecture-tools {
+  display: block;
+  margin-block: .85rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 8px;
+  padding: .6rem .8rem;
+}
+.lecture-tools summary { cursor: pointer; }
+.lecture-tools > summary { font-weight: 650; color: var(--ui-ink); }
+.lecture-tools > details { margin-block: .55rem; }
+.lecture-tools > :is(.lecture-review, .review-experiment, .lecture-practice) {
+  border: 0;
+  border-top: 1px solid var(--ui-line);
+  border-radius: 0;
+  padding: .6rem 0 0;
+}
+.lecture-practice .lab-tabs { margin-block: .5rem; }
+.lecture-tools .study-context { color: inherit; }
+.lecture-playback-options { border: 0; padding: 0; margin: 0; background: transparent; }
+.lecture-playback-options summary { cursor: pointer; color: var(--muted); }
+.lecture-playback-options[open] { flex-basis: 100%; }
+.lecture-playback-options > div { display: flex; flex-wrap: wrap; gap: .4rem; margin-block-start: .35rem; }
+.diagram-selection:empty { display: none; }
+.diagram-selection {
+  margin-block: .5rem;
+  background: var(--ui-panel);
+  border-inline-start: 2px solid var(--ui-accent);
+  padding: .5rem .65rem;
+}
+.diagram-selection p { margin: .15rem 0 0; }
 @media (max-width: 800px) {
   .study-focus .companion { padding-block-start: 16px; }
   .study-focus .companion > h1 { font-size: clamp(22px, 6vw, 28px); margin-block: .35rem .2rem; }

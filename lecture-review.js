@@ -14,11 +14,23 @@ function button(text, action) {
   return node;
 }
 
-function setupReadings() {
+export function diagramSelection(stage) {
+  const note = element('div');
+  note.className = 'diagram-selection';
+  note.setAttribute('role', 'status');
+  stage.after(note);
+  return (title, text) => {
+    note.replaceChildren();
+    if (title && text) note.append(element('strong', title), element('p', text));
+  };
+}
+
+function setupReadings(tools) {
   const controls = document.querySelector('#controls');
   const metrics = document.querySelector('#metrics');
   const panel = element('details');
   panel.className = 'reading-comparison';
+  panel.name = 'lecture-study-tool';
   const summary = element('summary','Compare two settings');
   const hint = element('p','Save a reading, change one setting in the diagram, then compare.');
   const readings = element('div');
@@ -76,7 +88,7 @@ function setupReadings() {
     hint.textContent = 'Save a reading, change one setting in the diagram, then compare.';
   }
   panel.append(summary,hint,capture,reset,readings);
-  metrics.after(panel);
+  tools.append(panel);
   function available() {
     panel.hidden = !controls.querySelector('input,select,button') || !metrics.querySelector('.metric');
   }
@@ -91,19 +103,22 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
     return;
   }
   const selector = document.querySelector('#visual-section');
+  const tools = document.querySelector('.lecture-tools');
   const course = selector.closest('nav').dataset.lesson;
   const review = element('details');
   review.className = 'lecture-review';
+  review.name = 'lecture-study-tool';
   const summary = element('summary');
   const body = element('div');
   review.append(summary,body);
   const prediction = element('details');
   prediction.className = 'prediction-check';
+  prediction.name = 'lecture-study-tool';
   const observation = element('p');
   prediction.append(element('summary','Check your prediction'),observation);
-  intro.querySelector('p').after(prediction);
-  intro.append(review);
-  const resetReadings = setupReadings();
+  tools.querySelector('summary').after(review);
+  tools.append(prediction);
+  const resetReadings = setupReadings(tools);
   let current, experiment, refreshIndex;
   function updateCount() {
     const passed = sections.filter(s => previousAnswer(s)===true).length;
@@ -126,7 +141,10 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
     prediction.open = false;
     experiment?.remove();
     experiment = experimentFor(course,current);
-    if (experiment) review.before(experiment);
+    if (experiment) {
+      experiment.name = 'lecture-study-tool';
+      review.before(experiment);
+    }
     body.replaceChildren();
     const index = element('select');
     const topicLabel = element('label','Review a topic ');

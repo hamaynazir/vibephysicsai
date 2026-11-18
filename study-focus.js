@@ -130,6 +130,61 @@ function disclosure(label, className) {
   return details;
 }
 
+function installLectureTools(stage, intro, context) {
+  const scroll = stage.closest('.lab-scroll, .companion');
+  const model = stage.closest('#explore-view, #model-area, #model');
+  const tools = disclosure('Study tools', 'lecture-tools');
+  model.after(tools);
+  const practice = disclosure('Practice and notes', 'lecture-practice');
+  practice.name = 'lecture-study-tool';
+  const mode = document.querySelector('#learning-mode');
+  const picker = mode?.closest('.learning-nav, .mode');
+  const reviewCount = document.querySelector('#review-count');
+  const tabs = document.querySelector('.lab-tabs');
+  practice.append(...[picker, picker?.contains(reviewCount) ? null : reviewCount, tabs, ...document.querySelectorAll('#learning-activity, #activity, #notes-view, #question-view, #ideas-view, #practice-view')].filter(Boolean));
+  const back = () => {
+    if (mode && mode.value !== 'explore') {
+      mode.value = 'explore';
+      mode.dispatchEvent(new Event('change', {bubbles: true}));
+    } else if (tabs && tabs.querySelector('[aria-selected=true]')?.id !== 'tab-explore') {
+      tabs.querySelector('#tab-explore').click();
+    }
+  };
+  tools.addEventListener('toggle', () => { if (!tools.open) back(); });
+  practice.addEventListener('toggle', () => { if (!practice.open && tools.open) back(); });
+  mode?.addEventListener('change', () => {
+    if (tools.open && practice.open) requestAnimationFrame(() => {
+      practice.querySelector('summary').scrollIntoView({block: 'nearest'});
+    });
+  });
+  const heading = intro.parentElement;
+  context.append(...heading.querySelectorAll(':scope > .reader-chapter-context, :scope > .section-context, :scope > .lecture-lecturer, :scope > .credit'));
+  heading.querySelector(':scope > #section-label').hidden = true;
+  tools.append(practice);
+  let notes = scroll.querySelector('#diagram-details');
+  const notesContent = scroll.querySelector('#model-notes');
+  if (!notes && notesContent) {
+    notes = disclosure('Diagram notes', 'study-context');
+    notes.append(notesContent);
+  }
+  const sources = scroll.querySelector('.sources-panel');
+  for (const item of [context, model.querySelector('.study-equation'), notes, sources]) {
+    if (item) {
+      item.name = 'lecture-study-tool';
+      tools.append(item);
+    }
+  }
+  const playback = model.querySelector('.study-motion-actions');
+  if (playback) {
+    const extras = disclosure('Playback options', 'lecture-playback-options');
+    const actions = document.createElement('div');
+    actions.append(...playback.querySelectorAll('[data-motion=step], [data-motion=reset], label'));
+    extras.append(actions);
+    playback.append(extras);
+  }
+  scroll.classList.add('simple-lecture');
+}
+
 function installStudyFocus() {
   const controls = document.querySelector('#controls');
   const stage = document.querySelector('#visual-stage, #stage');
@@ -159,7 +214,6 @@ function installStudyFocus() {
   new MutationObserver(updatePrompt).observe(description, {childList: true, characterData: true, subtree: true});
   section.addEventListener('change', updatePrompt);
   updatePrompt();
-  if (!lab) document.dispatchEvent(new Event('study-focus-ready'));
 
   if (!nuclearLab) {
     if (stage.parentElement === controls.parentElement) {
@@ -215,6 +269,10 @@ function installStudyFocus() {
     observer.observe(controls, {childList: true});
   }
   groupControls();
+  if (!lab) {
+    installLectureTools(stage, compactIntro, context);
+    document.dispatchEvent(new Event('study-focus-ready'));
+  }
   document.documentElement.classList.add('study-focus');
   return true;
 }

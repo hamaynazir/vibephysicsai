@@ -55,7 +55,7 @@ export class Learning{
  startBuild(){const c=buildChallenges[this.buildIndex];this.preview=null;this.buildFeedback=null;this.setup({...c,teach:{enabled:false}});document.querySelector('#diagram-settings').open=false;}
  render(){
   if(!this.context)return;
-  if(this.mode==='explain'&&this.detail)document.querySelector('#visual-stage').after(this.activity);else document.querySelector('#controls').before(this.activity);
+  if(this.mode==='explain'&&this.detail)document.querySelector('#visual-stage').after(this.activity);else this.nav.after(this.activity);
   let html='';
   if(this.mode==='explain')html=this.detail?this.inspectorHTML():`<div class="eyebrow">POINT TO SOMETHING</div><h3>What are you looking at?</h3><p>Click an atom, a cell-axis arrow or a plane to see what it means. For angles and primitive vectors, open <strong>Diagram controls</strong> below the model and enable the teaching overlay.</p>`;
   if(this.mode==='build'){
