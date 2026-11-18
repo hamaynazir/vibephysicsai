@@ -34,35 +34,6 @@
 .reading-comparison :is(th,td) { padding: .3rem; border-bottom: 1px solid var(--line, #74898c70); text-align: start; overflow-wrap: anywhere; }
 .reading-comparison caption { text-align: start; margin-block: .5rem; }
 
-body .visual-navigation.has-reader-switcher.compact-reader-navigation {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  padding-block: .5rem;
-}
-.visual-navigation.has-reader-switcher.compact-reader-navigation .visual-section-field { grid-area: 1 / 1; }
-.compact-reader-navigation .visual-section-arrows[hidden] { display: none; }
-.compact-reader-navigation .reader-switcher { display: contents; }
-.reader-switcher > summary {
-  grid-area: 1 / 2;
-  cursor: pointer;
-  border: 1px solid var(--ui-line);
-  border-radius: 8px;
-  padding: .38rem .55rem;
-  min-height: 36px;
-  box-sizing: border-box;
-  align-content: center;
-  color: var(--ui-ink);
-  font-size: .82rem;
-}
-.reader-switcher:not([open]) > div { display: none; }
-.reader-switcher[open] > div {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-  gap: .5rem;
-  padding-block-start: .25rem;
-}
 .study-focus .simple-lecture .study-intro {
   margin-block: .4rem .65rem;
   padding: 0;
