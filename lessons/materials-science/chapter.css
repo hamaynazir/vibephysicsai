@@ -1,0 +1,53 @@
+.chapter-simulation {
+  --mat-teal: #087f80;
+  --mat-violet: #8a53b4;
+  --mat-orange: #b25b20;
+  --mat-grid: #cadcdd;
+  --mat-panel: #f2f7f7;
+}
+:root[data-theme=dark] .chapter-simulation {
+  --mat-teal: #69dac8;
+  --mat-violet: #c3a2f2;
+  --mat-orange: #ffbe84;
+  --mat-grid: #405760;
+  --mat-panel: #19262f;
+}
+.chapter-simulation #visual-stage.chapter-stage {
+  position: relative;
+  display: grid;
+  align-items: center;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  background: var(--mat-panel);
+}
+.chapter-stage svg { display: block; width: 100%; aspect-ratio: 640 / 342; font-family: var(--ui-sans, system-ui); }
+.chapter-stage > button { position: absolute; inset: 5px 5px auto auto; background: var(--surface, #fff); }
+.chapter-stage text { fill: var(--text); font-size: 16px; }
+.chapter-stage .title { font-size: 19px; font-weight: 650; }
+.chapter-stage .reading { font-weight: 650; }
+.chapter-stage .tick { font-size: 14px; }
+.chapter-stage .grid { stroke: var(--mat-grid); stroke-width: 1; }
+.chapter-stage .axis { stroke: var(--text); stroke-width: 1.2; }
+.chapter-stage .host { fill: var(--mat-teal); }
+.chapter-stage .solute,.chapter-stage .point { fill: var(--mat-violet); }
+.chapter-stage .point { stroke: var(--mat-panel); stroke-width: 2; }
+.chapter-stage .bond,.chapter-stage .wire { fill: none; stroke: var(--mat-teal); stroke-width: 2; }
+.chapter-stage .crosslink { stroke: var(--mat-violet); stroke-width: 3; }
+.chapter-stage .atom-label { fill: var(--mat-panel); font-weight: 750; }
+.chapter-stage .load { stroke: var(--mat-orange); stroke-width: 3; }
+.chapter-stage .load-head { fill: var(--mat-orange); }
+.chapter-stage .measurement { stroke: var(--mat-panel); stroke-width: 3; stroke-dasharray: 5 4; }
+.chapter-stage .area,.chapter-stage .specimen { fill: var(--mat-teal); fill-opacity: .19; }
+.chapter-stage .specimen { stroke: var(--mat-teal); stroke-width: 2; }
+.chapter-stage .track,.chapter-stage .card { fill: var(--surface); stroke: var(--mat-grid); }
+.chapter-simulation #controls label { align-self: start; gap: .3rem; }
+.chapter-simulation #controls output { font-size: .85rem; color: var(--accent); }
+.chapter-simulation #metrics .metric strong { overflow-wrap: anywhere; font-size: clamp(1rem, 2vw, 1.6rem); }
+.chapter-simulation .chapter-exercise { display: grid; grid-template-columns: minmax(0, 1fr); gap: .5rem; padding-top: .6rem; }
+.chapter-exercise > :is(h3,p) { margin: 0; }
+.chapter-exercise label { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.chapter-exercise input { width: 8rem; min-width: 0; }
+.chapter-exercise select { max-width: 100%; }
+.chapter-exercise > button { justify-self: start; }
+.chapter-simulation .chapter-heading h1 { overflow-wrap: anywhere; }

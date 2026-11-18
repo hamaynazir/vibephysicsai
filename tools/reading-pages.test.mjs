@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {allLessons,laboratories} from '../catalog.js';
 
-test('all seven readers include a complete web preview for every page',()=>{
+test('all lecture and manual readers include a complete web preview for every page',()=>{
   for(const book of [...allLessons(),...laboratories]){
     const reader=new URL('../'+book.reader,import.meta.url);
     const location=new URL('assets/reading/',reader);

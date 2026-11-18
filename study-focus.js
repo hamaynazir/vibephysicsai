@@ -209,7 +209,8 @@ function installStudyFocus() {
     currentSection = id;
     const prompt = questions[course]?.[id];
     question.textContent = prompt || description.textContent;
-    context.hidden = !prompt;
+    context.hidden = !prompt && Boolean(lab);
+    description.hidden = !prompt && !lab;
   }
   new MutationObserver(updatePrompt).observe(description, {childList: true, characterData: true, subtree: true});
   section.addEventListener('change', updatePrompt);

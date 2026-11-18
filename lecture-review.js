@@ -138,7 +138,7 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
     if (!topic || current === topic.id) return;
     current = topic.id;
     resetReadings();
-    observation.textContent = observations[course][current];
+    observation.textContent = observations[course]?.[current] ?? topic.notes?.[0] ?? topic.description;
     prediction.open = false;
     experiment?.remove();
     dynamics?.remove();

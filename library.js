@@ -1,4 +1,4 @@
-import {subjects,laboratories,collections,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js?v=uos-1';
+import {subjects,laboratories,collections,allLessons,lessonPosition,lessonURL,searchSubjects} from './catalog.js?v=materials-3';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons={
