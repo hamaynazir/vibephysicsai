@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="reader.css?v=switcher-1">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
-  <script src="vendor/pdf.min.js" defer></script>
-  <script src="app.js?v=lecture-review-1" type="module"></script>
+
+  <script src="app.js?v=scroll-1" type="module"></script>
  <script src="reader-navigation.js?v=vector-1" type="module"></script>
  <script src="simulation-fullscreen.js" type="module"></script>
-<script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"><link rel="stylesheet" href="study-focus.css?v=2"><script type="module" src="study-focus.js?v=2"></script></head>
+<script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"><link rel="stylesheet" href="study-focus.css?v=2"><script type="module" src="study-focus.js?v=3"></script><link rel="stylesheet" href="interface.css?v=1"></head>
 <body class="solid-reader">
   <a class="skip" href="#workspace">Skip to lecture</a>
   <header class="topbar">
@@ -30,11 +30,11 @@
       <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a topic…" aria-label="Find a lecture topic"><kbd>/</kbd></label>
       <div class="toc-label">CHAPTER CONTENTS <span>16</span></div>
       <nav id="toc"></nav><p id="no-results" hidden>No matching topics.</p>
-      <div class="sidebar-bottom"><div class="progress-label"><span>Reading position</span><span id="progress-text">1 / 40</span></div><div class="progress-track"><div id="progress"></div></div><a href="assets/lecture.pdf" target="_blank" rel="noopener">↗ Open original PDF</a></div>
+      <div class="sidebar-bottom"><div class="progress-label"><span>Reading position</span><span id="progress-text">1 / 40</span></div><div class="progress-track"><div id="progress"></div></div></div>
     </aside>
     <main id="workspace" class="workspace">
       <div class="workspace-heading"><div><div class="eyebrow">READ. ROTATE. UNDERSTAND.</div><h2>Your lecture, <span>in another dimension.</span></h2></div><span class="chapter-pill">CHAPTER 01 <span>↗</span></span></div>
-      <div class="mobile-switch" role="group" aria-label="Mobile panel"><button data-panel="lecture" class="active">Lecture</button><button data-panel="lab">Interactive lab</button></div>
+      <div class="mobile-switch" role="group" aria-label="Mobile panel"><button data-panel="lecture" class="active">Lecture</button><button data-panel="lab">Simulation</button></div>
       <div class="study-grid">
         <section class="lecture-panel panel" aria-label="Lecture PDF">
           <div class="panel-toolbar"><div class="panel-title"><span class="tiny-icon">▤</span> THE LECTURE</div><div class="pdf-actions"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-label">Fit</span><button id="zoom-in" aria-label="Zoom in">+</button><span class="toolbar-divider"></span><button id="prev-page" aria-label="Previous page">‹</button><label class="page-control"><input id="page-input" type="number" min="1" max="40" value="1" aria-label="PDF page"> / 40</label><button id="next-page" aria-label="Next page">›</button></div></div>

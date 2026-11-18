@@ -19,8 +19,8 @@
       location.replace(reader.href);
     }
   </script>
-  <script type="module" src="library.js?v=explore-1"></script>
-<script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"></head>
+  <script type="module" src="library.js?v=scroll-1"></script>
+<script src="site-theme.js?v=1"></script><link rel="stylesheet" href="site-theme.css?v=1"><link rel="stylesheet" href="interface.css?v=1"></head>
 <body>
   <a class="skip-link" href="#main">Skip to collections</a>
   <header class="site-header">
@@ -31,11 +31,11 @@
   <main id="main" class="library-main">
     <section id="home-view" aria-labelledby="home-title">
       <div class="welcome-grid welcome-simple">
-        <div class="welcome-copy"><div class="eyebrow"><span class="small-dot"></span> YOUR PERSONAL LEARNING SPACE</div><h1 id="home-title">Your subjects.<br>A little more understood.</h1><p>Read the lecture. Explore the idea. Make it click.<br> A growing collection of interactive lessons, all in one place.</p></div>
+        <div class="welcome-copy"><h1 id="home-title">Explore physics.</h1><p>Study a lecture, change a simulation, and test your understanding.</p></div>
+        <figure class="wave-preview"><canvas id="wave-preview" width="840" height="270" aria-label="Sinusoidal wave across a six-micrometre interval"></canvas><label>Wavelength <input id="preview-wavelength" type="range" min="400" max="700" value="550" step="10"><output for="preview-wavelength">550 nm</output></label></figure>
       </div>
       <div class="section-heading"><div><span class="eyebrow">YOUR COLLECTIONS</span><h2>Choose a collection</h2></div></div>
       <div id="collection-cards" class="collection-cards"></div>
-      <p class="future-collections-note">New study collections will appear beside UOS Physics as they are added.</p>
     </section>
     <section id="collection-view" aria-labelledby="uos-title" hidden>
       <a class="back-link" href="#">← All collections</a>

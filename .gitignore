@@ -7,3 +7,4 @@ Thumbs.db
 *.log
 Vibe-Physics-AI-GitHub/
 tools/*browser-check.mjs
+**/assets/reading/

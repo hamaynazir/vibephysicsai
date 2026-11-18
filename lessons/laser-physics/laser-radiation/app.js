@@ -1,4 +1,5 @@
-import {installLectureReview} from '../../../lecture-review.js';
+import {createScrollReader} from '../../../scrolling-reader.js';
+import {installLectureReview} from '../../../lecture-review.js?v=scroll-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=compare-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
 import {LaserDiagram} from './visuals.js?v=compare-1';
@@ -11,8 +12,8 @@ try{const saved=JSON.parse(store.get(lesson.learningKey));if(saved&&typeof saved
 const defaults={lambda:632.8,amplitude:1,polarization:0,milestone:'3',logLambda:-6.2,lower:'1',upper:'2',power:2,process:'Stimulated',width:.05,index:1,delay:.5,relation:'Stable',phase:0,duration:.05,shape:'Estimate',waist:.5,distance:100,diameter:1.3,medium:'He–Ne',upperFraction:.8,reflectivity:.95};
 Object.assign(defaults,comparisonDefaults);
 const patches={intensity:{power:20},pulse:{lambda:623.8}};
-let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,pdf=null,zoom=1,rendering=false,epoch=0;
-const states=new Map(),queue=new Set();
+let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,zoom=1;
+const states=new Map();
 const diagram=new LaserDiagram($('#scene'),(title,text)=>{inspection={title,text};mode='explain';$('#learning-mode').value=mode;renderLearning();});
 diagram.onFrame=renderMotion;
 function renderMotion(){const active=movingModes.has(current.mode);$('#motion-controls').hidden=!active;$('#motion-status').hidden=!active;$('#animate').textContent=diagram.running?'Ⅱ Pause':'▷ Play';$('#animate').setAttribute('aria-pressed',String(diagram.running));$('#animate').setAttribute('aria-label',diagram.running?'Pause simulation':'Play simulation');$('#motion-status').textContent=(diagram.running?'Playing · ':'Paused · ')+(diagram.motionText||'Slowed teaching model, not real optical speed');}
@@ -48,7 +49,7 @@ function updatePage(page,section=null,keepMode=false){currentPage=Math.max(1,Mat
  $('#page-context').textContent=(sync?'COMPANION TO PAGE ':'LAB PINNED · READING PAGE ')+currentPage;
  history.replaceState(null,'',`#page=${currentPage}&topic=${current.id}`);store.set(lesson.pageKey,String(currentPage));store.set('study-library-last-lesson',lesson.id);
 }
-function goPage(page,section=null,keepMode=false){const n=Math.max(1,Math.min(lesson.pages,Math.round(page)||1)),el=$('#page-'+n);if(el)$('#pdf-scroll').scrollTop=el.offsetTop-$('#pdf-pages').offsetTop;updatePage(n,section,keepMode);queueVisible();}
+function goPage(page,section=null,keepMode=false){const n=Math.max(1,Math.min(lesson.pages,Math.round(page)||1));reading.go(n);updatePage(n,section,keepMode);}
 $('#page-input').onchange=e=>goPage(+e.target.value);$('#page-input').onkeydown=e=>{if(e.key==='Enter')goPage(+e.target.value);};
 $('#prev-page').onclick=()=>goPage(currentPage-1);$('#next-page').onclick=()=>goPage(currentPage+1);
 $('#sync').onclick=()=>{sync=!sync;$('#sync').setAttribute('aria-pressed',String(sync));$('#sync').textContent=sync?'Sync on':'Sync off';$('#sync-label').textContent=sync?'Diagrams follow your page':'Keep this diagram while reading';if(sync)updatePage(currentPage,sections.find(x=>x.id===pageSections[currentPage-1]));};
@@ -101,7 +102,7 @@ function renderMetrics(){const m=current.mode,l=light(+s.lambda);let values=[],i
  $('#model-notes').innerHTML=current.ideas.map(([a,b])=>'<p><strong>'+esc(a)+'.</strong> '+esc(b)+'</p>').join('');diagram.set(current.mode,s);
 }
 function renderNotes(){$('#notes-view').innerHTML=`<div class="eyebrow">ORIGINAL LECTURE · PAGE${current.page===current.end?'':'S'} ${current.page}${current.page===current.end?'':'–'+current.end}</div><p class="notes-formula">${esc(current.formula)}</p>${current.ideas.map(([title,body])=>`<div class="idea-block"><h3>${esc(title)}</h3><p>${esc(body)}</p></div>`).join('')}<p class="materials-note">Explain it yourself: ${esc(current.quiz.question)} Try the chapter question, then justify your answer without looking.</p>`;}
-$('#sources').innerHTML=sources.map(([title,url,note])=>`<p><a href="${url}" target="_blank" rel="noopener">${esc(title)} ↗</a><br>${esc(note)}</p>`).join('')+'<p>Supplementary formulas and caveats are identified as additions. Diagrams are teaching models, not full electromagnetic or quantum simulations. Added formulas, corrections and assumptions are stated alongside the lecture. Never look into a laser or a reflection; this is not a laser-safety assessment.</p>';
+$('#sources').innerHTML=sources.map(([title,url,note])=>!url?`<p>${esc(title)} · in this reader<br>${esc(note)}</p>`:`<p><a href="${url}" target="_blank" rel="noopener">${esc(title)} ↗</a><br>${esc(note)}</p>`).join('')+'<p>Supplementary formulas and caveats are identified as additions. Diagrams are teaching models, not full electromagnetic or quantum simulations. Added formulas, corrections and assumptions are stated alongside the lecture. Never look into a laser or a reflection; this is not a laser-safety assessment.</p>';
 function questionHTML(q){return `<h3>${esc(q.title)}</h3><p class="study-prompt">${esc(q.question)}</p><div class="quiz-options">${q.options.map((v,i)=>`<button data-answer="${i}" ${answered!==null?'disabled':''} class="${answered===null?'':i===q.answer?'correct':i===answered?'incorrect':''}">${esc(v)}</button>`).join('')}</div>${answered!==null?`<p class="learning-feedback ${answered===q.answer?'success':'retry'}">${answered===q.answer?'Correct.':'Let’s work through it.'} ${esc(q.why)}</p>`:''}`;}
 function renderLearning(){
  const notes=mode==='notes',quiz=mode==='quiz',review=mode==='review';$('#notes-view').hidden=!notes;$('#question-view').hidden=!quiz;$('#model-area').hidden=notes||quiz||review||(mode==='predict'&&!revealed);$('#learning-activity').hidden=['explore','notes','quiz'].includes(mode);
@@ -135,16 +136,18 @@ $('#step').onclick=()=>diagram.step();
 $('#motion-speed').onchange=e=>{diagram.speed=+e.target.value;renderMotion();};
 window.addEventListener('vibe-theme-change',()=>diagram.draw());
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();
-document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();queueVisible();};});
+document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();};});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#chapter-sidebar').inert){chapterDrawer(false);return;}if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {e.preventDefault();chapterDrawer(true);return;}if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement.tagName)||$('#workspace').inert||$('#help-dialog').open)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage+(e.key==='ArrowRight'?1:-1));}});
-async function openPDF(){try{if(!window.pdfjsLib)throw Error('PDF viewer unavailable.');pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('../../../vendor/pdf.worker.min.js',import.meta.url).href;pdf=await pdfjsLib.getDocument({url:new URL('assets/lecture.pdf',import.meta.url).href,isEvalSupported:false,enableScripting:false}).promise;if(pdf.numPages!==lesson.pages)throw Error('Unexpected lecture page count.');const first=await pdf.getPage(1),view=first.getViewport({scale:1});$('#pdf-pages').innerHTML=Array.from({length:lesson.pages},(_,i)=>`<div class="pdf-page" id="page-${i+1}" data-page="${i+1}" style="aspect-ratio:${view.width}/${view.height}" role="img" aria-label="Original Laser Physics lecture, page ${i+1}"><span class="page-placeholder">Page ${i+1}</span></div>`).join('');$('#pdf-status').hidden=true;const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)queuePage(+e.target.dataset.page);}),{root:$('#pdf-scroll'),rootMargin:'500px 0px'});document.querySelectorAll('.pdf-page').forEach(p=>observer.observe(p));const hash=new URLSearchParams(location.hash.slice(1));goPage(+hash.get('page')||+store.get(lesson.pageKey)||1,sections.find(t=>t.id===hash.get('topic'))||null);queueVisible();}catch(e){$('#pdf-status').innerHTML=`Could not open the PDF viewer: ${esc(e.message)}. <a href="assets/lecture.pdf" target="_blank" rel="noopener">Open the original PDF ↗</a>`;}}
-function queuePage(n){if(!pdf||$('#page-'+n)?.dataset.rendered==='true')return;queue.add(n);drain();}
-async function drain(){if(rendering)return;rendering=true;try{while(queue.size){const n=queue.values().next().value;queue.delete(n);const el=$('#page-'+n);if(!el||el.dataset.rendered==='true'||!el.clientWidth)continue;const version=epoch;try{const p=await pdf.getPage(n),base=p.getViewport({scale:1}),view=p.getViewport({scale:el.clientWidth/base.width*Math.min(devicePixelRatio,1.75)}),canvas=document.createElement('canvas');canvas.width=Math.ceil(view.width);canvas.height=Math.ceil(view.height);await p.render({canvasContext:canvas.getContext('2d'),viewport:view}).promise;if(version!==epoch)continue;el.querySelector('canvas')?.remove();el.append(canvas);el.dataset.rendered='true';}catch(e){el.querySelector('.page-placeholder').textContent='Rendering unavailable. Use Open original PDF.';}}}finally{rendering=false;}}
-function queueVisible(){if(!pdf)return;const r=$('#pdf-scroll').getBoundingClientRect();document.querySelectorAll('.pdf-page').forEach(el=>{const a=el.getBoundingClientRect();if(a.bottom>r.top-450&&a.top<r.bottom+450)queuePage(+el.dataset.page);});}
-let frame=0;$('#pdf-scroll').addEventListener('scroll',()=>{if(frame)return;frame=requestAnimationFrame(()=>{frame=0;const r=$('#pdf-scroll').getBoundingClientRect(),marker=r.top+Math.min(r.height*.28,150);for(const el of document.querySelectorAll('.pdf-page')){const a=el.getBoundingClientRect();if(a.top<=marker&&a.bottom>=marker){if(+el.dataset.page!==currentPage)updatePage(+el.dataset.page);break;}}queueVisible();});},{passive:true});
-function invalidate(){epoch++;document.querySelectorAll('.pdf-page').forEach(el=>{el.dataset.rendered='false';el.querySelector('canvas')?.remove();});queueVisible();}
-function changeZoom(delta){zoom=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));document.querySelectorAll('.pdf-page').forEach(el=>el.style.width=zoom*100+'%');$('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';invalidate();goPage(currentPage,current,true);}
+const reading = createScrollReader(lesson.pages, n => updatePage(n));
+function restoreReading() {
+ const route = new URLSearchParams(location.hash.slice(1));
+ goPage(Number(route.get('page')) || Number(store.get(lesson.pageKey)) || 1, sections.find(s=>s.id===route.get('topic')) || null);
+}
+function changeZoom(delta) {
+ zoom=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));
+ $('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';
+ reading.zoom(zoom);
+}
 $('#zoom-out').onclick=()=>changeZoom(-.1);$('#zoom-in').onclick=()=>changeZoom(.1);
-let resizeTimer;new ResizeObserver(()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(invalidate,180);}).observe($('#pdf-scroll'));
 window.addEventListener('hashchange',()=>{const hash=new URLSearchParams(location.hash.slice(1));goPage(+hash.get('page')||1,sections.find(t=>t.id===hash.get('topic'))||null);});
-selectSection(current);openPDF();
+selectSection(current);restoreReading();

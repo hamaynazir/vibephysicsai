@@ -47,4 +47,4 @@ Dynamic geometry, interaction conservation and cavity losses are checked in `too
 
 References are linked in the reader: NIST, OpenStax, and authored RP Photonics articles. All diagrams are original Canvas drawings, not copied source images. Numerical correctness is checked in `tools/laser.test.mjs`; browser checks cover PDF pages, all sections, controls, learning interactions, resume and mobile overflow.
 
-HTML, CSS and native JavaScript; uses the existing local PDF.js viewer and shared reader styles. GitHub Pages automatically includes this directory. Open `index.html` through the project server, not directly as a file URL.
+HTML, CSS and native JavaScript; uses the shared continuous page reader and shared reader styles. GitHub Pages automatically includes this directory. Open `index.html` through the project server, not directly as a file URL.

@@ -1,6 +1,6 @@
 # Laboratory experiment companions
 
-Two independent manual readers share a white responsive interface, PDF.js viewer,
+Two independent manual readers share a white responsive interface, continuous page reader,
 Canvas teaching diagrams, playback controls, procedure steps, calculation practice,
 one conceptual question per experiment and browser-local notes/answers. All original
 manual pages remain accessible. These are study companions, not validated digital
@@ -163,7 +163,7 @@ It is not a microscopic gas simulation; effective fixed dead time is not equated
 to a calculated ion transit time. Display sizes, multiplication and ray density
 are illustrative, not quantitative transport or pulse-shape predictions.
 
-Original plots, deterministic data recording/CSV, equations and assumptions remain
+Original plots, deterministic on-screen data recording, equations and assumptions remain
 under **Graphs, equations & calculated data**. Manuals, notes, quizzes, practice,
 page synchronization, light/dark mode and full-screen remain available. The Solid
 State layout and models are unchanged.
@@ -180,10 +180,8 @@ original deterministic table. They are session-only; this is not a real GM tube,
 hardware model or background-corrected experimental analysis. Other experiments
 do not display this new panel.
 
-Recorded data and CSV files are explicitly labeled **SIMULATED**. Numerical values
-are generated from the controls, not from apparatus. Each CSV includes control settings
-and extra values where relevant. Tables are session-only (maximum 1000 rows); export
-to keep them. Changing non-axis assumptions clears the current table to prevent mixing
+Recorded data are explicitly labeled **SIMULATED**. Numerical values
+are generated from the controls, not from apparatus. Each reading stores its control settings and extra values where relevant. Tables last for the current session (maximum 1000 rows). Changing non-axis assumptions clears the current table to prevent mixing
 different populations/models. Repeated points alone cannot establish a slope.
 
 Reading position, per-experiment notes and conceptual-answer selections use independent

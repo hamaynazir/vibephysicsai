@@ -1,4 +1,5 @@
-import {installLectureReview} from '../../../lecture-review.js';
+import {createScrollReader} from '../../../scrolling-reader.js';
+import {installLectureReview} from '../../../lecture-review.js?v=scroll-1';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js';
 import {bondVectors,bondAngle,pairEnergy,pairForce,cubeSurfaceRatio,compositeBounds,atoms} from './math.js';
 import {MaterialsDiagram} from './visuals.js?v=study-motion-1';
@@ -8,8 +9,8 @@ let progress={records:{},guide:0},memoryAvailable=true;
 try{const saved=JSON.parse(store.get(lesson.learningKey));if(saved&&typeof saved.records==='object'&&saved.records!==null&&!Array.isArray(saved.records)){progress.records=saved.records;progress.guide=Number.isInteger(saved.guide)?Math.max(0,Math.min(guide.length-1,saved.guide)):0;progress.guideComplete=saved.guideComplete===true;}}catch{}
 const defaults={sample:'transparent',family:'Metals',links:0,fraction:.5,Ef:70,Em:3,property:'Stiffness',doping:'Intrinsic',application:'Implant',smartType:'Piezoelectric',stimulus:0,divisions:5,element:'C',distance:1,depth:1,transfer:0,hybrid:'sp3',orbitalStage:'Geometry',field:0,dipoleType:'London',orientation:'Aligned',separation:1,polarization:.2};
 const patches={ceramics:{family:'Ceramics'},metals:{family:'Metals'},sp2:{hybrid:'sp2'},sp3:{hybrid:'sp3'},alumina:{sample:'translucent'}};
-let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,pdf=null,zoom=1,rendering=false,epoch=0;
-const states=new Map(),queue=new Set();
+let current=sections[0],currentPage=1,s={...defaults},mode='explore',answered=null,revealed=false,guideActive=false,challengeIndex=0,numericValue='',numericFeedback=null,reviewId=null,inspection=null,sync=true,zoom=1;
+const states=new Map();
 const diagram=new MaterialsDiagram($('#scene'),(title,text)=>{inspection={title,text};mode='explain';$('#learning-mode').value=mode;renderLearning();});
 $('#animate').hidden=true;
 diagram.onFrame=()=>{if(current.mode==='ionic'&&diagram.transferPhase){const p=diagram.transferPhase,values=$('#metrics').querySelectorAll('strong');if(values[0])values[0].textContent=p.na+' + '+p.cl+(p.free?' + 1 in transit':'');if(values[2])values[2].textContent=p.stage==='neutral'?'Neutral':p.stage==='transfer'?'Transferring':'Na⁺ · Cl⁻';}};
@@ -46,7 +47,7 @@ function updatePage(page,section=null,keepMode=false){currentPage=Math.max(1,Mat
  $('#page-context').textContent=(sync?'COMPANION TO PAGE ':'LAB PINNED · READING PAGE ')+currentPage;
  history.replaceState(null,'',`#page=${currentPage}&topic=${current.id}`);store.set(lesson.pageKey,String(currentPage));store.set('study-library-last-lesson',lesson.id);
 }
-function goPage(page,section=null,keepMode=false){const n=Math.max(1,Math.min(lesson.pages,Math.round(page)||1)),el=$('#page-'+n);if(el)$('#pdf-scroll').scrollTop=el.offsetTop-$('#pdf-pages').offsetTop;updatePage(n,section,keepMode);queueVisible();}
+function goPage(page,section=null,keepMode=false){const n=Math.max(1,Math.min(lesson.pages,Math.round(page)||1));reading.go(n);updatePage(n,section,keepMode);}
 $('#page-input').onchange=e=>goPage(+e.target.value);$('#page-input').onkeydown=e=>{if(e.key==='Enter')goPage(+e.target.value);};
 $('#prev-page').onclick=()=>goPage(currentPage-1);$('#next-page').onclick=()=>goPage(currentPage+1);
 $('#sync').onclick=()=>{sync=!sync;$('#sync').setAttribute('aria-pressed',String(sync));$('#sync').textContent=sync?'Sync on':'Sync off';$('#sync-label').textContent=sync?'Diagrams follow your page':'Keep this diagram while reading';if(sync)updatePage(currentPage,sections.find(x=>x.id===pageSections[currentPage-1]));};
@@ -103,7 +104,7 @@ function renderMetrics(){
  diagram.set(current.mode,s);
 }
 function renderNotes(){$('#notes-view').innerHTML=`<div class="eyebrow">ORIGINAL LECTURE · PAGE${current.page===current.end?'':'S'} ${current.page}${current.page===current.end?'':'–'+current.end}</div><p class="notes-formula">${esc(current.formula)}</p>${current.ideas.map(([title,body])=>`<div class="idea-block"><h3>${esc(title)}</h3><p>${esc(body)}</p></div>`).join('')}<p class="materials-note">Explain it yourself: ${esc(current.quiz.question)} Try the chapter question, then justify your answer without looking.</p>`;}
-$('#sources').innerHTML=sources.map(([title,url,note])=>`<p><a href="${url}" target="_blank" rel="noopener">${esc(title)} ↗</a><br>${esc(note)}</p>`).join('')+'<p>Supplementary formulas and caveats are identified as additions. Small spheres, clouds, paths and deformation are conceptual; no quantum or material-specific property simulation is claimed.</p>';
+$('#sources').innerHTML=sources.map(([title,url,note])=>!url?`<p>${esc(title)} · in this reader<br>${esc(note)}</p>`:`<p><a href="${url}" target="_blank" rel="noopener">${esc(title)} ↗</a><br>${esc(note)}</p>`).join('')+'<p>Supplementary formulas and caveats are identified as additions. Small spheres, clouds, paths and deformation are conceptual; no quantum or material-specific property simulation is claimed.</p>';
 function questionHTML(q){return `<h3>${esc(q.title)}</h3><p class="study-prompt">${esc(q.question)}</p><div class="quiz-options">${q.options.map((v,i)=>`<button data-answer="${i}" ${answered!==null?'disabled':''} class="${answered===null?'':i===q.answer?'correct':i===answered?'incorrect':''}">${esc(v)}</button>`).join('')}</div>${answered!==null?`<p class="learning-feedback ${answered===q.answer?'success':'retry'}">${answered===q.answer?'Correct.':'Let’s work through it.'} ${esc(q.why)}</p>`:''}`;}
 function renderLearning(){
  const notes=mode==='notes',quiz=mode==='quiz',review=mode==='review';$('#notes-view').hidden=!notes;$('#question-view').hidden=!quiz;$('#model-area').hidden=notes||quiz||review||(mode==='predict'&&!revealed);$('#learning-activity').hidden=['explore','notes','quiz'].includes(mode);
@@ -135,16 +136,18 @@ $('#reset').onclick=()=>{s={...defaults,...patches[current.id]};states.set(curre
 $('#animate').onclick=()=>diagram.motion.toggle();
 window.addEventListener('vibe-theme-change',()=>diagram.draw());
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();
-document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();queueVisible();};});
+document.querySelectorAll('[data-panel]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('button[data-panel]').forEach(x=>x.classList.toggle('active',x===b));diagram.draw();};});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#chapter-sidebar').inert){chapterDrawer(false);return;}if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {e.preventDefault();chapterDrawer(true);return;}if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement.tagName)||$('#workspace').inert||$('#help-dialog').open)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage+(e.key==='ArrowRight'?1:-1));}});
-async function openPDF(){try{if(!window.pdfjsLib)throw Error('PDF viewer unavailable.');pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('../../../vendor/pdf.worker.min.js',import.meta.url).href;pdf=await pdfjsLib.getDocument({url:new URL('assets/lecture.pdf',import.meta.url).href,isEvalSupported:false,enableScripting:false}).promise;if(pdf.numPages!==lesson.pages)throw Error('Unexpected lecture page count.');const first=await pdf.getPage(1),view=first.getViewport({scale:1});$('#pdf-pages').innerHTML=Array.from({length:lesson.pages},(_,i)=>`<div class="pdf-page" id="page-${i+1}" data-page="${i+1}" style="aspect-ratio:${view.width}/${view.height}" role="img" aria-label="Original Materials Science lecture, page ${i+1}"><span class="page-placeholder">Page ${i+1}</span></div>`).join('');$('#pdf-status').hidden=true;const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)queuePage(+e.target.dataset.page);}),{root:$('#pdf-scroll'),rootMargin:'500px 0px'});document.querySelectorAll('.pdf-page').forEach(p=>observer.observe(p));const hash=new URLSearchParams(location.hash.slice(1));goPage(+hash.get('page')||+store.get(lesson.pageKey)||1,sections.find(t=>t.id===hash.get('topic'))||null);queueVisible();}catch(e){$('#pdf-status').innerHTML=`Could not open the PDF viewer: ${esc(e.message)}. <a href="assets/lecture.pdf" target="_blank" rel="noopener">Open the original PDF ↗</a>`;}}
-function queuePage(n){if(!pdf||$('#page-'+n)?.dataset.rendered==='true')return;queue.add(n);drain();}
-async function drain(){if(rendering)return;rendering=true;try{while(queue.size){const n=queue.values().next().value;queue.delete(n);const el=$('#page-'+n);if(!el||el.dataset.rendered==='true'||!el.clientWidth)continue;const version=epoch;try{const p=await pdf.getPage(n),base=p.getViewport({scale:1}),view=p.getViewport({scale:el.clientWidth/base.width*Math.min(devicePixelRatio,1.75)}),canvas=document.createElement('canvas');canvas.width=Math.ceil(view.width);canvas.height=Math.ceil(view.height);await p.render({canvasContext:canvas.getContext('2d'),viewport:view}).promise;if(version!==epoch)continue;el.querySelector('canvas')?.remove();el.append(canvas);el.dataset.rendered='true';}catch(e){el.querySelector('.page-placeholder').textContent='Rendering unavailable. Use Open original PDF.';}}}finally{rendering=false;}}
-function queueVisible(){if(!pdf)return;const r=$('#pdf-scroll').getBoundingClientRect();document.querySelectorAll('.pdf-page').forEach(el=>{const a=el.getBoundingClientRect();if(a.bottom>r.top-450&&a.top<r.bottom+450)queuePage(+el.dataset.page);});}
-let frame=0;$('#pdf-scroll').addEventListener('scroll',()=>{if(frame)return;frame=requestAnimationFrame(()=>{frame=0;const r=$('#pdf-scroll').getBoundingClientRect(),marker=r.top+Math.min(r.height*.28,150);for(const el of document.querySelectorAll('.pdf-page')){const a=el.getBoundingClientRect();if(a.top<=marker&&a.bottom>=marker){if(+el.dataset.page!==currentPage)updatePage(+el.dataset.page);break;}}queueVisible();});},{passive:true});
-function invalidate(){epoch++;document.querySelectorAll('.pdf-page').forEach(el=>{el.dataset.rendered='false';el.querySelector('canvas')?.remove();});queueVisible();}
-function changeZoom(delta){zoom=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));document.querySelectorAll('.pdf-page').forEach(el=>el.style.width=zoom*100+'%');$('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';invalidate();goPage(currentPage,current,true);}
+const reading = createScrollReader(lesson.pages, n => updatePage(n));
+function restoreReading() {
+ const route = new URLSearchParams(location.hash.slice(1));
+ goPage(Number(route.get('page')) || Number(store.get(lesson.pageKey)) || 1, sections.find(s=>s.id===route.get('topic')) || null);
+}
+function changeZoom(delta) {
+ zoom=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));
+ $('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';
+ reading.zoom(zoom);
+}
 $('#zoom-out').onclick=()=>changeZoom(-.1);$('#zoom-in').onclick=()=>changeZoom(.1);
-let resizeTimer;new ResizeObserver(()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(invalidate,180);}).observe($('#pdf-scroll'));
 window.addEventListener('hashchange',()=>{const hash=new URLSearchParams(location.hash.slice(1));goPage(+hash.get('page')||1,sections.find(t=>t.id===hash.get('topic'))||null);});
-selectSection(current);openPDF();
+selectSection(current);restoreReading();

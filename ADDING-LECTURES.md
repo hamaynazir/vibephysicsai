@@ -79,3 +79,7 @@ Do not label synthetic readings as measured data or treat a study simulation as
 hardware operating instructions. See `laboratories/README.md` for the current model
 scope, provenance and examples. Run `npm test`; the deployment workflow includes the
 entire `laboratories/` folder.
+
+## Reader assets
+
+After adding or replacing an original lecture or manual, run `python tools/prepare-reading-pages.py` to regenerate your local preview. Install the renderer with `python -m pip install -r tools/reading-requirements.txt`. GitHub Pages generates the preview assets during deployment and excludes the original PDFs from the website.

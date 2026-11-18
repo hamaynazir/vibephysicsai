@@ -33,11 +33,15 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 ## Current experience
 
+Scroll through all 115 lecture pages and 71 manual pages. The simulation follows the page when Sync is on. GitHub Pages generates individual previews and excludes the original PDFs from the live site. The public repository still contains the source documents, and any visible web page can be captured.
+
+Source Sans 3 and STIX Two Text are served locally. Their SIL Open Font Licenses are included in `assets/fonts/`.
+
 Each of the 95 lecture sections opens with a question. Use the diagram, then open **Check your prediction** to compare your reasoning. In adjustable diagrams, **Compare two settings** puts two sets of readings side by side. **Chapter review** lists each topic and its PDF pages, gives feedback on answers, and remembers which topics to revisit in this browser. Seven additional models explore lattice cell area, hexagonal basal axes, stiffness and fracture strength, excitation by light or collision, neutron survival, helium mass references, and Cartesian basis products.
 
 All five lecture readers and both laboratories have a **Full-screen simulation** button (⛶ on small screens). It hides the PDF and expands the interactive companion, keeping model controls, playback and learning tools available. Use **Back to lecture/manual** or Escape to return. Supported browsers use native full screen; otherwise a full-page focus view provides the same PDF-free layout. Models and saved progress are not recreated or cleared.
 
-The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, synthetic data recording/CSV export, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
+The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, an on-screen table of simulated readings, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
 
 The lecture library has **five available chapters, 115 original PDF pages and 95 companion sections**. All five subjects now have a prepared first chapter. The separate Laboratories collection has two manuals, 71 original manual pages and twelve experiment companions.
 
@@ -53,7 +57,7 @@ The lecture library has **five available chapters, 115 original PDF pages and 95
 - Responsive white and optional dark layouts support phones and computers. Guided paths, predictions, questions, numerical exercises and saved review complement the lecture pages.
 - No account, database, API key or paid AI service is required. Reading positions and practice history stay in the browser, not a cloud account. The explanations are prepared teaching content—not a live AI tutor.
 
-The website uses **HTML, CSS and JavaScript**, with **Canvas** for 2D diagrams, **Three.js/WebGL** for 3D and **PDF.js** for lecture viewing. The main diagrams are not SVG animations. Models are idealized teaching tools, not full quantum or molecular-dynamics simulations; assumptions and scientific qualifications are described in each chapter.
+The website uses **HTML, CSS and JavaScript**, with **Canvas** for 2D diagrams, **Three.js/WebGL** for 3D and **continuously scrolling web page images** for lecture viewing. The main diagrams are not SVG animations. Models are idealized teaching tools, not full quantum or molecular-dynamics simulations; assumptions and scientific qualifications are described in each chapter.
 
 ## Open source, ownership and contributions
 
@@ -75,21 +79,15 @@ The homepage is `index.html`; the existing interactive chapter is now `reader.ht
 
 Visitors can use [the published website](https://vibephysicsai.com/) without installing anything. These instructions are only for running a local copy.
 
-On Windows, double-click **START-STUDY-LIBRARY.cmd**. Node.js must be installed. Keep the server window open and visit **http://localhost:4173**. The older `START-CRYSTAL-LAB.cmd` shortcut also works.
-
-Or run these commands in this folder:
+With Python and Node.js installed, run these commands in this folder to prepare the reading pages and start the site:
 
 ```sh
+python -m pip install -r tools/reading-requirements.txt
+python tools/prepare-reading-pages.py
 npm start
 ```
 
-No package installation is necessary. An alternative, with Python installed:
-
-```sh
-python -m http.server 4173 --bind 127.0.0.1
-```
-
-Open **http://localhost:4173**. Opening `index.html` directly as a file will not work because browser security requires an HTTP server for modules and PDFs.
+Open **http://localhost:4173**. On Windows, you can use **START-STUDY-LIBRARY.cmd** to restart the server after generating the pages.
 
 ## Use it
 

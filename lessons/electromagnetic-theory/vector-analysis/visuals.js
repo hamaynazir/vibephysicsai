@@ -1,4 +1,4 @@
-import {evaluate,vectorField,gradient,potential,spherical,cylindrical,add,scale,norm} from './math.js';
+import {evaluate,vectorField,gradient,potential,spherical,cylindrical,add,scale,norm} from './math.js?v=scroll-1';
 export const moving=new Set(['addition','components','direction','position','gradient','divergence','curl','gradient-theorem','gauss','stokes','spherical','cylindrical','classification']);
 const fmt=n=>Number(n.toPrecision(4)).toString();
 export function draw(canvas,id,s,t){
@@ -44,7 +44,7 @@ export function draw(canvas,id,s,t){
   text('V = (x²y, xy², z²)',90,98,25,teal);const values=[['grad(div V)',r.gradDiv],['vector Laplacian',r.lapV],['curl(curl V)',r.curlCurl]];values.forEach(([label,v],i)=>{text(label,70,175+i*65,20);text('('+v.map(fmt).join(', ')+')',390,175+i*65,24,[teal,purple,gold][i]);});text('Subtract the second row from the first to get the third.',65,402,18,muted);break;
  }
  case 'gradient-theorem':{
-  field((x,y)=>gradient(x,y,0,s.a,s.b,0));const start=r.start,end=r.end,bend=[end[0],start[1],0];line(...xy(start[0],start[1]),...xy(end[0],end[1]),gold,3);line(...xy(start[0],start[1]),...xy(bend[0],bend[1]),purple,2);line(...xy(bend[0],bend[1]),...xy(end[0],end[1]),purple,2);const u=t*.15%1,direct=start.map((v,i)=>v+(end[i]-v)*u);dot(...xy(direct[0],direct[1]),gold,6);const seg=u<.5?[start,bend,u*2]:[bend,end,(u-.5)*2],p=seg[0].map((v,i)=>v+(seg[1][i]-v)*seg[2]);dot(...xy(p[0],p[1]),purple,5);text(`Both analytic integrals = ${fmt(r.delta)}`,145,421,22,gold);break;
+  field((x,y)=>gradient(x,y,0,s.a,s.b,0));const start=r.start,end=r.end,bend=r.bend;line(...xy(start[0],start[1]),...xy(end[0],end[1]),gold,3);line(...xy(start[0],start[1]),...xy(bend[0],bend[1]),purple,2);line(...xy(bend[0],bend[1]),...xy(end[0],end[1]),purple,2);const u=t*.15%1,direct=start.map((v,i)=>v+(end[i]-v)*u);dot(...xy(direct[0],direct[1]),gold,6);const seg=u<.5?[start,bend,u*2]:[bend,end,(u-.5)*2],p=seg[0].map((v,i)=>v+(seg[1][i]-v)*seg[2]);dot(...xy(p[0],p[1]),purple,5);for(const [point,name,color] of [[bend,'Bend',purple],[end,'End',gold],[start,'Start',teal]]){const [px,py]=xy(point[0],point[1]);dot(px,py,color,7);text(name,px+9,py-8,15,color);}text(`Both analytic integrals = ${fmt(r.delta)}`,145,421,22,gold);break;
  }
  case 'gauss':{
   const rr=s.radius*45,cx=380,cy=235;g.strokeStyle=teal;g.lineWidth=3;g.beginPath();g.arc(cx,cy,rr,0,2*Math.PI);g.stroke();for(let i=0;i<16;i++){const a=i*Math.PI/8,x=cx+rr*Math.cos(a),y=cy+rr*Math.sin(a);arrow(x,y,x+20*Math.cos(a),y+20*Math.sin(a),purple);}const a=t*.7;dot(cx+rr*Math.cos(a),cy+rr*Math.sin(a),gold,6);text('Sphere cross-section · violet arrows = outward normals',60,76,18);text(`∮ F·dS = ∫ div F dV = ${fmt(r.flux)}`,100,415,23,gold);break;

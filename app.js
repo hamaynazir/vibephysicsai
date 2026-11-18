@@ -1,4 +1,5 @@
-import {installLectureReview} from './lecture-review.js';
+import {createScrollReader} from './scrolling-reader.js';
+import {installLectureReview} from './lecture-review.js?v=scroll-1';
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
 import {Visualizer} from './visuals.js?v=study-motion-1';
 import {Teaching} from './teaching.js';
@@ -13,8 +14,7 @@ const teaching=new Teaching(()=>refresh());
 let learning;
 model.onAtomSelected=p=>{if(learning?.mode==='build')return;teaching.setSelection(p);learning?.inspect({kind:'atom',p:[...p]});};
 model.onInspect=detail=>learning?.inspect(detail);
-let currentPage=1,currentSection=sections[0],sync=true,tab='explore',zoom=1,pdf=null,pdfEpoch=0,rendering=false;
-const renderQueue=new Set();
+let currentPage=1,currentSection=sections[0],sync=true,tab='explore',zoom=1;
 const defaults={
  order:{disorder:0,cell:true,basis:false},translation:{disorder:0,shift:0,cell:true},
  lattice:{structure:'FCC',primitive:true,axes:true,atomScale:.7,bonds:false,repeat:false},
@@ -73,7 +73,7 @@ function updatePage(page,section=null){
  else $('#page-context').textContent=`LAB PINNED · READING PAGE ${currentPage}`;
  const hash=`#page=${currentPage}${section?'&topic='+section.id:''}`;history.replaceState(null,'',hash);storage.set('crystal-page',String(currentPage));
 }
-function goPage(page,section=null){const target=Math.max(1,Math.min(40,Math.round(page)));const el=$(`#page-${target}`),root=$('#pdf-scroll');if(el)root.scrollTop=el.offsetTop-$('#pdf-pages').offsetTop;updatePage(target,section);queueVisible();}
+function goPage(page,section=null){const target=Math.max(1,Math.min(40,Math.round(page)));reading.go(target);updatePage(target,section);}
 $('#prev-page').onclick=()=>goPage(currentPage-1);$('#next-page').onclick=()=>goPage(currentPage+1);
 $('#page-input').onchange=e=>{const p=+e.target.value;if(Number.isFinite(p)&&p>=1&&p<=40)goPage(p);else e.target.value=currentPage;};
 $('#next-topic').onclick=()=>{const i=sections.indexOf(currentSection),next=sections[(i+1)%sections.length];goPage(next.pages[0],next);};
@@ -218,36 +218,23 @@ for(const name of ['explore','ideas','practice'])$(`#tab-${name}`).onclick=()=>s
 $('.lab-tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();e.stopPropagation();const tabs=['explore','ideas','practice'];switchTab(tabs[(tabs.indexOf(tab)+(e.key==='ArrowRight'?1:2))%3]);$(`#tab-${tab}`).focus();});
 
 // Render original pages lazily. The page containers remain stable for scroll sync.
-async function openPDF(){
- const status=$('#pdf-status');
- try{
-  if(!window.pdfjsLib)throw new Error('The local PDF viewer could not load.');pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('./vendor/pdf.worker.min.js',import.meta.url).href;
-  pdf=await pdfjsLib.getDocument({url:new URL('./assets/lecture.pdf',import.meta.url).href,isEvalSupported:false}).promise;
-  if(pdf.numPages!==40)throw new Error('This companion expects the original 40-page lecture.');
-  const first=await pdf.getPage(1),vp=first.getViewport({scale:1});
-  $('#pdf-pages').innerHTML=Array.from({length:40},(_,i)=>`<div class="pdf-page" id="page-${i+1}" data-page="${i+1}" style="aspect-ratio:${vp.width}/${vp.height}" role="img" aria-label="Original lecture, page ${i+1}"><span class="page-placeholder">Page ${i+1}</span></div>`).join('');status.hidden=true;
-  const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)queuePage(+entry.target.dataset.page);});},{root:$('#pdf-scroll'),rootMargin:'600px 0px'});document.querySelectorAll('.pdf-page').forEach(p=>observer.observe(p));
-  const params=new URLSearchParams(location.hash.slice(1)),start=Number(params.get('page'))||Number(storage.get('crystal-page',1))||1;goPage(start,sections.find(s=>s.id===params.get('topic'))||null);
- }catch(error){status.className='error-message';status.innerHTML=`The PDF viewer could not open the lecture. ${escapeHTML(error.message)}<br><a href="assets/lecture.pdf" target="_blank" rel="noopener">Open the original PDF directly ↗</a><br>Run this folder through the included local server, rather than double-clicking index.html.`;}
+const reading = createScrollReader(40, n => updatePage(n));
+function restoreReading() {
+ const route = new URLSearchParams(location.hash.slice(1));
+ goPage(Number(route.get('page')) || Number(storage.get('crystal-page',1)) || 1, sections.find(s=>s.id===route.get('topic')) || null);
 }
-function queuePage(page){const el=$(`#page-${page}`);if(!pdf||!el||el.dataset.rendered==='true')return;renderQueue.add(page);drainQueue();}
-async function drainQueue(){
- if(rendering)return;rendering=true;
- try{while(renderQueue.size){const page=renderQueue.values().next().value;renderQueue.delete(page);const el=$(`#page-${page}`);if(!el||el.dataset.rendered==='true')continue;const epoch=pdfEpoch;try{const p=await pdf.getPage(page),base=p.getViewport({scale:1}),width=el.clientWidth;if(!width)continue;const viewport=p.getViewport({scale:width/base.width*Math.min(devicePixelRatio,1.75)}),canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await p.render({canvasContext:canvas.getContext('2d'),viewport}).promise;if(epoch!==pdfEpoch)continue;el.querySelector('canvas')?.remove();el.append(canvas);el.dataset.rendered='true';}catch(error){el.querySelector('.page-placeholder').textContent=`Page ${page} could not render. Open the original PDF above.`;console.error(error);}}}finally{rendering=false;}
+function changeZoom(delta) {
+ zoom=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));
+ $('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';
+ reading.zoom(zoom);
 }
-function queueVisible(){if(!pdf)return;const root=$('#pdf-scroll').getBoundingClientRect();document.querySelectorAll('.pdf-page').forEach(p=>{const r=p.getBoundingClientRect();if(r.bottom>root.top-500&&r.top<root.bottom+500)queuePage(+p.dataset.page);});}
-let scrollFrame=0;
-$('#pdf-scroll').addEventListener('scroll',()=>{if(scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;const root=$('#pdf-scroll').getBoundingClientRect(),marker=root.top+Math.min(root.height*.28,160);let best=currentPage;for(const p of document.querySelectorAll('.pdf-page')){const r=p.getBoundingClientRect();if(r.top<=marker&&r.bottom>=marker){best=+p.dataset.page;break;}}if(best!==currentPage)updatePage(best);queueVisible();});},{passive:true});
-function invalidatePDF(){pdfEpoch++;document.querySelectorAll('.pdf-page').forEach(p=>{p.dataset.rendered='false';p.querySelector('canvas')?.remove();});queueVisible();}
-function changeZoom(delta){const next=Math.max(.7,Math.min(1.8,+(zoom+delta).toFixed(1)));if(next===zoom)return;zoom=next;document.querySelectorAll('.pdf-page').forEach(p=>p.style.width=`${zoom*100}%`);$('#zoom-label').textContent=zoom===1?'Fit':Math.round(zoom*100)+'%';invalidatePDF();goPage(currentPage);}
 $('#zoom-in').onclick=()=>changeZoom(.1);$('#zoom-out').onclick=()=>changeZoom(-.1);
-let resizeTimer=0,lastPDFWidth=0;new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(Math.abs(width-lastPDFWidth)>2){lastPDFWidth=width;clearTimeout(resizeTimer);resizeTimer=setTimeout(invalidatePDF,220);}}).observe($('#pdf-scroll'));
 
 window.addEventListener('vibe-theme-change',()=>{model.themeChanged();renderControls();});
 // Initial model colors follow the site-wide preference applied in the document head.
 model.themeChanged();
 $('#help').onclick=()=>$('#help-dialog').showModal();$('#close-help').onclick=()=>$('#help-dialog').close();$('#help-dialog').onclick=e=>{if(e.target===$('#help-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
-document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('.mobile-switch button').forEach(t=>t.classList.toggle('active',t===b));model.resize();queueVisible();});
+document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>{$('#workspace').dataset.panel=b.dataset.panel;document.querySelectorAll('.mobile-switch button').forEach(t=>t.classList.toggle('active',t===b));model.resize();});
 document.addEventListener('keydown',e=>{if($('#help-dialog').open)return;if(['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName))return;if(e.key==='/'){e.preventDefault();learning?.setChapters(true);}else if(e.key==='ArrowRight'){e.preventDefault();goPage(currentPage+1);}else if(e.key==='ArrowLeft'){e.preventDefault();goPage(currentPage-1);}});
 learning=new Learning({teaching,showTab:switchTab,refresh:()=>refresh(),patch:values=>{Object.assign(state,values);renderControls();refresh();},navigate:id=>{const section=sections.find(s=>s.id===id)||sections[0];goPage(section.pages[0],section);},setup:config=>{
  const section=sections.find(s=>s.id===config.section)||sections[0];goPage(config.page||section.pages[0],section);
@@ -255,4 +242,4 @@ learning=new Learning({teaching,showTab:switchTab,refresh:()=>refresh(),patch:va
 }});
 installLectureReview(sections, topic => learning.progress.records['quiz-'+topic.id]?.resolved,
   (topic, correct) => learning.recordQuiz(topic, correct));
-buildToc();setSection(sections[0],{preset:false});switchTab('explore');openPDF();
+buildToc();setSection(sections[0],{preset:false});switchTab('explore');restoreReading();

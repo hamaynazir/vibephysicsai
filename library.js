@@ -73,3 +73,26 @@ function renderCollections(){
  $('#year-cards').innerHTML=collections[0].years.map(y=>`<article class="collection-card year-card"><a href="#${esc(y.id)}" aria-label="Open ${esc(y.title)}"><span class="year-emblem" aria-hidden="true">04</span><span class="eyebrow">UNDERGRADUATE</span><h3>${esc(y.title)}</h3><p>${y.subjectIds.length} subjects · ${y.laboratoryIds.length} laboratories</p><span class="card-footer"><span>Explore subjects &amp; experiments</span><span aria-hidden="true">→</span></span></a></article>`).join('');
 }
 renderCollections();renderCards();renderLaboratories();route();
+function drawWavePreview() {
+  const canvas=document.querySelector('#wave-preview');
+  const input=document.querySelector('#preview-wavelength');
+  if (!canvas || !input) return;
+  const draw=()=>{
+    const ctx=canvas.getContext('2d');
+    const width=canvas.width, height=canvas.height, ink=getComputedStyle(canvas).color;
+    ctx.clearRect(0,0,width,height);ctx.strokeStyle=ink;
+    ctx.globalAlpha=.13;ctx.lineWidth=2;ctx.beginPath();
+    for(let i=0;i<=12;i++){ctx.moveTo(width*i/12,0);ctx.lineTo(width*i/12,height);}
+    for(let j=1;j<6;j++){ctx.moveTo(0,height*j/6);ctx.lineTo(width,height*j/6);}
+    ctx.stroke();ctx.globalAlpha=1;ctx.lineWidth=4;ctx.beginPath();
+    for(let x=0;x<=width;x++){
+      const y=height*(.5-.32*Math.sin(2*Math.PI*x/width*6000/Number(input.value)));
+      if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();input.nextElementSibling.textContent=input.value+' nm';
+  };
+  input.addEventListener('input',draw);
+  new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  draw();
+}
+drawWavePreview();

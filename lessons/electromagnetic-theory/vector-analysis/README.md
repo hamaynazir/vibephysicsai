@@ -105,7 +105,7 @@ not attributed to the lecturer.
 
 ## Implementation and verification
 
-Static HTML/CSS/JavaScript, Canvas projection and local PDF.js. Interface/playback
+Static HTML/CSS/JavaScript, Canvas projection and the continuous page reader. Interface/playback
 patterns reuse the Nuclear chapter, with independent content, controls and storage.
 The layout stylesheet is copied from the same minimal reader design, not a dependency
 on nuclear-specific calculations. Shared laboratory styles provide the PDF/panel shell;

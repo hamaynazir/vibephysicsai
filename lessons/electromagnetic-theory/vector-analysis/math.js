@@ -24,7 +24,13 @@ export function evaluate(id,s){const A=[s.ax,s.ay,s.az],B=[s.bx,s.by,s.bz],P=[s.
  case 'gradient':return {value:potential(...P,s.a,s.b,s.c),gradient:gradient(...P,s.a,s.b,s.c),directional:dot(gradient(...P,s.a,s.b,s.c),[Math.cos(s.heading*RAD),Math.sin(s.heading*RAD),0])};
  case 'divergence':case 'curl':case 'classification':return {field:vectorField(...P,s.a,s.b,s.c),divergence:2*s.a+s.c,curl:[0,0,2*s.b],uniform:s.a===0&&s.b===0&&s.c===0};
  case 'identities':return {V:[s.x*s.x*s.y,s.x*s.y*s.y,s.z*s.z],div:4*s.x*s.y+2*s.z,gradDiv:[4*s.y,4*s.x,2],lapV:[2*s.y,2*s.x,2],curlCurl:[2*s.y,2*s.x,0],lapScalar:6,curlGrad:[0,0,0],divCurl:0};
- case 'gradient-theorem':{const start=[-1,0,0],end=[s.x,s.y,0],delta=potential(...end,s.a,s.b,0)-potential(...start,s.a,s.b,0);return {start,end,delta,straight:delta,bent:delta};}
+ case 'gradient-theorem':{
+  const start=[-1,0,0],end=[s.x,s.y,0],bend=[s.bendX??0,s.bendY??1.5,0];
+  // A linear field integrates exactly using the midpoint of each segment.
+  const segment=(p,q)=>dot(gradient(...scale(add(p,q),.5),s.a,s.b,0),sub(q,p));
+  const delta=potential(...end,s.a,s.b,0)-potential(...start,s.a,s.b,0);
+  return {start,end,bend,delta,straight:segment(start,end),bent:segment(start,bend)+segment(bend,end)};
+ }
  case 'gauss':{const volume=4*Math.PI*s.radius**3/3,div=s.a+s.b+s.c;return {volume,div,flux:div*volume,integral:div*volume};}
  case 'stokes':{const area=Math.PI*s.radius**2,curlZ=2*s.b*s.orientation;return {area,curlZ,circulation:curlZ*area,flux:curlZ*area};}
  case 'coordinates':return inverse(P);

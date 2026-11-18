@@ -167,10 +167,13 @@ export function installLectureReview(sections, previousAnswer, recordAnswer) {
       else feedback.textContent = previousAnswer(topic)===true?'You have checked every topic in this chapter.':'Answer this last question to finish the chapter.';
     });
     const [first,last] = topic.pages ?? [topic.page,topic.end];
-    const source = element('a',first===last?'Read lecture page '+first:'Read lecture pages '+first+'–'+last);
-    source.href = 'assets/lecture.pdf#page='+first;
-    source.target = '_blank';
-    source.rel = 'noopener';
+    const source = button(first===last?'Read lecture page '+first:'Read lecture pages '+first+'–'+last,()=>{
+      document.querySelector('button[data-panel="lecture"],button[data-panel="manual"]')?.click();
+      const input = document.querySelector('#page-input');
+      input.value = first;
+      input.dispatchEvent(new Event('change',{bubbles:true}));
+      document.querySelector('#pdf-scroll,.pdf-scroll')?.focus();
+    });
     body.append(topicLabel,source,question,feedback,next);
   }
   updateCount();

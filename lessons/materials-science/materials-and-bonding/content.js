@@ -122,7 +122,7 @@ export const challenges=[
  {id:'bond-energy',section:'forces',title:'Find the energy needed to separate a pair',question:'Use U(∞) = 0. If U(r₀) = −2 model energy units, how much energy separates the pair to infinity?',unit:'model energy units',answer:2,tolerance:.001,why:'The required energy is ΔU = 0 − (−2) = +2. The negative minimum is not a negative separation-energy cost.'}
 ];
 export const sources=[
- ['Original lecture','assets/lecture.pdf','[Chap.1] Materals Science.pdf, supplied 16-page chapter; unchanged.'],
+ ['Original lecture',null,'[Chap.1] Materals Science.pdf, supplied 16-page chapter; unchanged.'],
  ['OpenStax · Hybrid atomic orbitals','https://openstax.org/books/chemistry-2e/pages/8-2-hybrid-atomic-orbitals','sp²/sp³ geometry and limits of the hybridization model.'],
  ['IUPAC · Hydrogen bond','https://goldbook.iupac.org/terms/view/H02899','Donor/acceptor interaction; inter- and intramolecular cases.'],
  ['IUPAC · Van der Waals forces','https://goldbook.iupac.org/terms/view/V06597','Dispersion, induction and dipole interactions.'],

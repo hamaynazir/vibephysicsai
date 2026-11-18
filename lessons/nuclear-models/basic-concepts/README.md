@@ -86,7 +86,7 @@ own explanations are separated from the unchanged source, not attributed to the 
 
 ## Interface and implementation
 
-HTML/CSS/JavaScript, Canvas and locally served PDF.js; shared `StudyMotion` respects
+HTML/CSS/JavaScript, Canvas and scrollable original pages; shared `StudyMotion` respects
 reduced-motion preferences. Circle geometry retains aspect ratio on mobile; diagrams
 can be enlarged inside their panel. Nuclear uses the shared laboratory layout styles
 for its single-page PDF preview, but has independent lecture content, navigation and

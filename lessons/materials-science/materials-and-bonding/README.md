@@ -20,7 +20,7 @@ Page mapping: 1 overview; 2 alumina optics/metals; 3 ceramics/polymers; 4 compos
 
 Learning modes: explore, click to explain, five numerical exercises, prediction before diagram reveal, a ten-step foundation path, saved incorrect answers, complete companion notes and one chapter question for each of the 22 sections. Weak-point review records actual attempts, not mastery. Reading position and answers use separate Materials Science keys and do not overwrite Crystal Structures progress.
 
-The white interface uses responsive Canvas diagrams and original PDF.js pages. The carbon direction model supports drag rotation, zoom, keyboard-accessible bond selections and true 3D angles. Atomic-orbital views show ground-state bookkeeping, the promoted bonding model and sp³/sp² hybrid orbitals. These are qualitative bonding models, not time-resolved electron transitions or quantum probability-density calculations.
+The white interface uses responsive Canvas diagrams and scrollable original pages. The carbon direction model supports drag rotation, zoom, keyboard-accessible bond selections and true 3D angles. Atomic-orbital views show ground-state bookkeeping, the promoted bonding model and sp³/sp² hybrid orbitals. These are qualitative bonding models, not time-resolved electron transitions or quantum probability-density calculations.
 
 Numerical models:
 

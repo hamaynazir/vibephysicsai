@@ -1,0 +1,41 @@
+@font-face{font-family:"Source Sans 3";src:url("assets/fonts/sourcesans3.ttf") format("truetype");font-weight:200 900;font-display:swap}
+@font-face{font-family:"STIX Two Text";src:url("assets/fonts/stixtwotext.ttf") format("truetype");font-weight:400 700;font-display:swap}
+:root{--ui-sans:"Source Sans 3",system-ui,sans-serif;--ui-serif:"STIX Two Text",Georgia,serif;--ui-accent:#086c72;--ui-line:#cddfe0;--ui-panel:#f1f7f7;--ui-ink:#153a42}
+:root[data-theme=dark]{--ui-accent:#74e0ce;--ui-line:#35515a;--ui-panel:#182c34;--ui-ink:#ecf6f6}
+html body,body :is(button,input,select,textarea){font-family:var(--ui-sans)}
+body :is(h1,h2,h3,.library-brand,.library-brand span,.lab-heading h2,.collection-card h2,.subject-card h3,.equation,.formula){font-family:var(--ui-serif)}
+body :is(button,select,input[type=range]){accent-color:var(--ui-accent)}
+body :is(button,select){min-height:36px}
+body :focus-visible{outline:3px solid var(--ui-accent);outline-offset:3px}
+.site-header nav a,.site-footer a,.back-link{font-size:.9rem}
+.library-main .welcome-grid.welcome-simple{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(220px,.85fr);align-items:center;gap:clamp(1rem,5vw,5rem);padding:clamp(1.35rem,4vw,3.5rem);margin:1.5rem 0 2rem;border:1px solid var(--ui-line);border-radius:18px;background:linear-gradient(115deg,transparent 30%,var(--ui-panel));}
+.welcome-grid #home-title{font:500 clamp(2rem,4.5vw,4rem)/1.01 var(--ui-serif);letter-spacing:-.045em;margin:.4rem 0 1rem;color:var(--ui-ink)}
+.welcome-grid .welcome-copy p{font-size:1.05rem;max-width:39ch;margin:0}
+.wave-preview{margin:0;min-width:0;color:var(--ui-accent)}
+.wave-preview canvas{display:block;width:100%;height:auto;border-bottom:1px solid var(--ui-line)}
+.wave-preview label{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding-top:.65rem;font-size:.9rem}
+.wave-preview input{flex:1;min-width:70px;width:30%}.wave-preview output{font-variant-numeric:tabular-nums}
+.library-main :is(.collection-card,.subject-card,.resource-card,.year-card),.about-main .contact-card{border-radius:14px;border-color:var(--ui-line);box-shadow:0 3px 14px rgb(16 72 77/.045)}
+.library-main :is(.collection-card,.subject-card,.resource-card,.year-card):hover,.about-main .contact-card:hover{border-color:var(--ui-accent)}
+.library-main .subject-card p,.about-main p{font-size:max(.92rem,14px)}
+body :is(.navigation,.visual-navigation){background:var(--ui-panel);border-color:var(--ui-line)}
+body :is(.navigation,.visual-navigation) select{border:1px solid var(--ui-line);border-radius:8px;color:var(--ui-ink);font-weight:550}
+body :is(.controls,#controls,.experiment-inputs) label{font-size:.92rem}
+body :is(.controls,#controls) output,.metrics strong{font-variant-numeric:tabular-nums}
+body :is(.visual-stage,#stage){border:1px solid var(--ui-line);border-radius:12px;overflow:hidden}
+.study-focus .study-intro{border-inline-start:3px solid var(--ui-accent);padding:.3rem .75rem;margin:.6rem 0}
+body .pdf-scroll{scrollbar-color:var(--ui-line) transparent;background:var(--ui-panel);overscroll-behavior:contain;overflow-anchor:none}
+.reading-strip{display:block;margin:0 auto;max-width:none}
+.workspace .manual-panel{min-height:0}
+.workspace:has(.manual-panel){grid-template-rows:minmax(0,1fr)}
+.reading-page{position:relative;margin:0 auto 16px;background:#fff;box-shadow:0 1px 5px #15333b24;border-radius:2px}
+.reading-page img{display:block;width:100%;height:auto}
+.reading-progress{display:block;width:100%;height:3px;border:0;flex:0 0 3px;appearance:none;background:var(--ui-line);color:var(--ui-accent)}
+.reading-progress::-webkit-progress-bar{background:var(--ui-line)}
+.reading-progress::-webkit-progress-value{background:var(--ui-accent)}
+.reading-progress::-moz-progress-bar{background:var(--ui-accent)}
+.reading-page button{position:absolute;inset:30% auto auto 25%}
+.reading-transcript{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:pre-wrap}
+.pdf-toolbar::after{content:"Scroll to read";color:var(--ui-accent);font-size:.85rem}
+@media(max-width:650px){.library-main .welcome-grid.welcome-simple{grid-template-columns:1fr;gap:1rem}.wave-preview{width:min(100%,340px)}.wave-preview canvas{max-height:100px}.pdf-toolbar::after{font-size:.75rem}body .pdf-scroll{padding:8px}}
+@media(prefers-reduced-motion:reduce){.library-main :is(.collection-card,.subject-card,.resource-card,.year-card){transition:none}}

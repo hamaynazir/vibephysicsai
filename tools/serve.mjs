@@ -9,6 +9,7 @@ const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8'
 const server=http.createServer((req,res)=>{
   let pathname;try{pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname)}catch{res.writeHead(400);res.end('Bad request');return;}
   const target=path.resolve(root,'.'+pathname+(pathname.endsWith('/')?'index.html':''));
+  if(path.extname(target).toLowerCase()==='.pdf'){res.writeHead(404);res.end('Not found');return;}
   const relative=path.relative(root,target);
   if(relative.startsWith('..')||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p.startsWith('.'))){res.writeHead(403);res.end('Forbidden');return;}
   fs.stat(target,(error,stat)=>{if(error||!stat.isFile()){res.writeHead(404);res.end('Not found');return;}res.writeHead(200,{'Content-Type':types[path.extname(target)]||'application/octet-stream','Content-Length':stat.size,'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'});fs.createReadStream(target).pipe(res);});

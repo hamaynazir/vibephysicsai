@@ -21,23 +21,32 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Render the reading pages
+        run: |
+          python -m pip install -r tools/reading-requirements.txt
+          python tools/prepare-reading-pages.py
       - name: Check scientific calculations
-        run: npm test
+        run: |
+          npm test
+          node --test tools/reading-pages.test.mjs
       - uses: actions/configure-pages@v5
       - name: Prepare static website
         run: |
           mkdir _site
           cp index.html about.html reader.html CNAME library.css library.js catalog.js styles.css reader.css app.js lecture-data.js crystal-math.js visuals.js teaching.js teaching-math.js teaching-visuals.js learning.js learning-data.js learning-memory.js README.md .nojekyll _site/
-          cp -r assets vendor _site/
+          rsync -a --exclude='*.[pP][dD][fF]' assets vendor _site/
           cp study-motion.js _site/
           cp study-focus.js study-focus.css lecture-review.js lecture-experiments.js lecture-observations.js _site/
-          cp reader-navigation.js _site/
+          cp reader-navigation.js scrolling-reader.js interface.css _site/
           cp simulation-fullscreen.js simulation-fullscreen.css _site/
           cp site-theme.js site-theme.css _site/
           cp site-analytics.js _site/
           cp LICENSE LICENSING.md _site/
-          if [ -d lessons ]; then cp -r lessons _site/; fi
-          cp -r laboratories _site/
+          rsync -a --exclude='*.[pP][dD][fF]' lessons laboratories _site/
+          test -z "$(find _site -type f -iname '*.pdf' -print -quit)"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

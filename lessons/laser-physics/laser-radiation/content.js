@@ -73,7 +73,7 @@ export const challenges=[
  {id:'amplitude',section:'wave',title:'8 · Field amplitude versus irradiance',question:'If electric-field amplitude triples at fixed frequency, by what factor does average irradiance increase?',answer:9,tolerance:.001,unit:'times',why:'I ∝ E₀², so tripling E₀ multiplies irradiance by 3² = 9.'}
 ];
 export const sources=[
- ['Original lecture','assets/lecture.pdf','chapter 1.pdf: Laser Radiation and its properties, all 14 supplied pages; unchanged.'],
+ ['Original lecture',null,'chapter 1.pdf: Laser Radiation and its properties, all 14 supplied pages; unchanged.'],
  ['NIST · SI constants','https://www.nist.gov/si-redefinition/meet-constants','Exact SI values of c, h and elementary charge; the companion uses modern exact constants.'],
  ['Schawlow & Townes · Infrared and Optical Masers (1958)','https://link.aps.org/doi/10.1103/PhysRev.112.1940','The original optical-maser proposal, not a claim that an optical laser is impossible.'],
  ['OSHA · Laser hazards','https://www.osha.gov/laser-hazards','General eye and skin hazard context. This reader does not assess exposure limits or replace laboratory safety procedures.'],
