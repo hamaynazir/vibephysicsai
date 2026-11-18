@@ -1,3 +1,4 @@
+import {installLectureReview} from '../../../lecture-review.js';
 import {lesson,sections,pageSections,defaults,guide,challenges,sources,sectionDefaults} from './content.js';
 import {metricEntries} from './math.js';
 import {draw,moving} from './visuals.js';
@@ -16,6 +17,8 @@ function redraw(){draw($('#scene'),current.mode,state,motion.clock.time);}
 const unresolved=()=>Object.entries(memory.records).filter(([,r])=>r&&r.correct===false);
 function save(){const ok=storage.set(lesson.learningKey,JSON.stringify(memory));$('#saved-status').textContent=ok?'Notes and answer history saved in this browser only.':'Browser storage unavailable; progress lasts only for this session.';$('#review-count').textContent=unresolved().length?`${unresolved().length} item(s) to revisit`:'';}
 function record(id,correct){memory.records[id]={correct,attempts:(Number(memory.records[id]?.attempts)||0)+1};save();}
+installLectureReview(sections, topic => memory.records['quiz:'+topic.id]?.correct,
+  (topic, correct) => record('quiz:'+topic.id, correct));
 function entries(){return metricEntries(current.mode,state);}
 function metrics(){$('#metrics').innerHTML=entries().map(([value,label])=>`<div class="metric"><strong>${esc(fmt(value))}</strong><span>${label}</span></div>`).join('');redraw();}
 function selectSection(id){states.set(current.id,{...state});current=sections.find(s=>s.id===id)||sections[0];state=states.get(id)||{...defaults,...sectionDefaults[id]};$('#visual-section').value=current.id;$('#section-label').textContent=current.title;$('#title').textContent=current.title.replace(/^\d+\. /,'');$('#description').textContent=current.description;$('#formula').textContent=current.formula;$('#visual-previous').disabled=current===sections[0];$('#visual-next').disabled=current===sections.at(-1);$('#controls').innerHTML=current.controls.map(c=>`<label>${esc(c.label)}<output id="output-${c.key}" for="control-${c.key}">${fmt(state[c.key])}</output><input id="control-${c.key}" data-key="${c.key}" type="range" min="${c.min}" max="${c.max}" step="${c.step}" value="${state[c.key]}"></label>`).join('');$('#model-notes').innerHTML=current.ideas.map(([a,b])=>`<div class="idea-block"><h3>${a}</h3><p>${b}</p></div>`).join('');motion.configure(current.id,moving.has(current.id),'Animated construction or geometric guide; no physical particle dynamics.');motion.restart();metrics();$('.companion').scrollTop=0;renderMode();}

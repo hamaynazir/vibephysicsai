@@ -1,3 +1,4 @@
+import {installLectureReview} from './lecture-review.js';
 import {sections,pageMap,pageNotes,examples} from './lecture-data.js';
 import {Visualizer} from './visuals.js?v=study-motion-1';
 import {Teaching} from './teaching.js';
@@ -252,4 +253,6 @@ learning=new Learning({teaching,showTab:switchTab,refresh:()=>refresh(),patch:va
  const section=sections.find(s=>s.id===config.section)||sections[0];goPage(config.page||section.pages[0],section);
  mode=config.mode||section.mode;state=structuredClone(defaults[mode]);Object.assign(state,config.patch||{});teaching.previousKey='';teaching.update(mode,state);Object.assign(teaching.state,config.teach||{enabled:false});renderControls();refresh();
 }});
+installLectureReview(sections, topic => learning.progress.records['quiz-'+topic.id]?.resolved,
+  (topic, correct) => learning.recordQuiz(topic, correct));
 buildToc();setSection(sections[0],{preset:false});switchTab('explore');openPDF();

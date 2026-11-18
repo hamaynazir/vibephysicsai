@@ -1,3 +1,4 @@
+import {installLectureReview} from '../../../lecture-review.js';
 import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js';
 import {evaluate} from './math.js';
 import {draw,moving} from './visuals.js';
@@ -15,6 +16,8 @@ function redraw(){draw($('#scene'),current.mode,state,motion.clock.time);}
 const unresolved=()=>Object.entries(memory.records).filter(([,r])=>r&&r.correct===false);
 function save(){const ok=storage.set(lesson.learningKey,JSON.stringify(memory));$('#saved-status').textContent=ok?'Notes and answer history saved in this browser only.':'Browser storage unavailable; progress lasts only for this session.';$('#review-count').textContent=unresolved().length?`${unresolved().length} item(s) to revisit`:'';}
 function record(id,correct){memory.records[id]={correct,attempts:(Number(memory.records[id]?.attempts)||0)+1};save();}
+installLectureReview(sections, topic => memory.records['quiz:'+topic.id]?.correct,
+  (topic, correct) => record('quiz:'+topic.id, correct));
 function entries(){const r=evaluate(current.mode,state);switch(current.mode){
 case 'overview':case 'nuclides':return [[r.symbol,'Element symbol'],[r.Z,'Protons Z'],[r.N,'Neutrons N'],[r.A,'Mass number A']];
 case 'relations':{const names=Object.entries(r.relations).filter(([,v])=>v).map(([k])=>({same:'Same nuclide',isotope:'Isotopes',isotone:'Isotones',isobar:'Isobars'}[k]));return [[r.A,'First A'],[r.other.A,'Second A'],[names.join(', ')||'None of these','Relationship']];}

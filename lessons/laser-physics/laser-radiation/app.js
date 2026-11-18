@@ -1,3 +1,4 @@
+import {installLectureReview} from '../../../lecture-review.js';
 import {lesson,sections,pageSections,guide,challenges,sources} from './content.js?v=compare-1';
 import {C,H,EV,light,photonRate,irradiance,coherence,pulse,gaussianBeam,hydrogenEnergy,cavityGain,inversion} from './math.js';
 import {LaserDiagram} from './visuals.js?v=compare-1';
@@ -19,6 +20,8 @@ const fmt=(n,d=3)=>Number(n.toFixed(d)).toString();
 const save=()=>{memoryAvailable=store.set(lesson.learningKey,JSON.stringify(progress));renderCount();};
 const unresolved=()=>Object.entries(progress.records).filter(([,r])=>r&&r.correct===false);
 function record(id,correct){progress.records[id]={correct,attempts:(Number(progress.records[id]?.attempts)||0)+1};save();}
+installLectureReview(sections, topic => progress.records[topic.quiz.id]?.correct,
+  (topic, correct) => record(topic.quiz.id, correct));
 function renderCount(){$('#review-count').textContent=unresolved().length?`${unresolved().length} to revisit`:'';}
 function chapterDrawer(open){$('#chapter-sidebar').inert=!open;$('#workspace').inert=open;$('#chapter-shade').hidden=!open;document.body.classList.toggle('chapters-open',open);$('#chapters-toggle').setAttribute('aria-expanded',String(open));if(open)$('#section-search').focus();else $('#chapters-toggle').focus();}
 $('#chapters-toggle').onclick=()=>chapterDrawer($('#chapter-sidebar').inert);$('#chapter-shade').onclick=()=>chapterDrawer(false);

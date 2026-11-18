@@ -159,6 +159,7 @@ function installStudyFocus() {
   new MutationObserver(updatePrompt).observe(description, {childList: true, characterData: true, subtree: true});
   section.addEventListener('change', updatePrompt);
   updatePrompt();
+  if (!lab) document.dispatchEvent(new Event('study-focus-ready'));
 
   if (!nuclearLab) {
     if (stage.parentElement === controls.parentElement) {

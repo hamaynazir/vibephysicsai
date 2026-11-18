@@ -10,6 +10,29 @@
 .study-focus .companion > .mode { margin-block: .65rem; }
 .study-focus .companion > #page-context { margin-block: .35rem; }
 .study-focus .study-intro [hidden] { display: none !important; }
+.study-focus .lecture-review, .study-focus .review-experiment { margin: .45rem 0; padding: .5rem .7rem; border: 1px solid var(--border, #74898c70); border-radius: .45rem; background: transparent; color: inherit; }
+.lecture-review summary, .review-experiment summary { cursor: pointer; font-weight: 600; }
+.study-focus .prediction-check { margin: .3rem 0; padding: 0; border: 0; background: transparent; }
+.prediction-check summary { cursor: pointer; color: var(--accent, inherit); }
+.lecture-review > div { display: grid; gap: .6rem; padding-top: .7rem; }
+.lecture-review select { display: block; max-width: 100%; width: 100%; }
+.lecture-review fieldset { display: flex; flex-wrap: wrap; gap: .4rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.lecture-review legend { font-weight: 600; margin-bottom: .4rem; }
+.lecture-review button, .review-experiment button { white-space: normal; text-align: start; justify-self: start; }
+.lecture-review button[aria-pressed=true] { outline: 2px solid currentColor; outline-offset: -2px; }
+.lecture-review .review-feedback { margin: 0; }
+.review-feedback:empty { display: none; }
+.review-experiment svg { display: block; width: min(100%, 26rem); margin: .6rem auto; color: var(--accent, #227d78); }
+.review-experiment .experiment-inputs { display: flex; align-items: start; flex-wrap: wrap; gap: .65rem 1rem; }
+.experiment-inputs label { display: grid; gap: .2rem; flex: 1 1 8rem; }
+.experiment-inputs input, .experiment-inputs select { box-sizing: border-box; width: 100%; min-width: 0; }
+.review-experiment output { display: block; margin-top: .55rem; line-height: 1.5; }
+.study-focus .reading-comparison { margin: .5rem 0; padding: .45rem 0; border: 0; background: transparent; }
+.reading-comparison summary { cursor: pointer; }
+.reading-comparison button { margin: 0 .4rem .3rem 0; }
+.reading-comparison table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .9rem; }
+.reading-comparison :is(th,td) { padding: .3rem; border-bottom: 1px solid var(--line, #74898c70); text-align: start; overflow-wrap: anywhere; }
+.reading-comparison caption { text-align: start; margin-block: .5rem; }
 @media (max-width: 800px) {
   .study-focus .companion { padding-block-start: 16px; }
   .study-focus .companion > h1 { font-size: clamp(22px, 6vw, 28px); margin-block: .35rem .2rem; }
