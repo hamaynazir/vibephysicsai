@@ -69,14 +69,14 @@ const questions = {
     relations: 'Make two nuclei with the same Z and different N. What must two nuclei share to be isotopes, isotones, or isobars?',
     isomers: 'Increase the excitation energy of the same nucleus. What changes between nuclear isomers if proton and neutron counts stay fixed?',
     mass: 'Double the mass entered in atomic mass units. How do the mass and rest energy readouts change together?',
-    binding: 'Open the helium comparison and switch its reference mass. What does the difference between the separated and bound masses represent?',
-    beta: 'Follow a single neutron through beta-minus decay. Which counts change during beta-minus decay?',
+    binding: 'Compare helium-4 with another nuclide. Why can total binding energy and binding energy per nucleon tell different stories?',
+    beta: 'Replay the same sample of free neutrons. At the half-life, does the sample have to match the expected 50% survival?',
     scattering: 'Increase projectile energy at fixed charges. What happens to the turning point when the incoming energy increases?',
     radius: 'Compare mass numbers 27 and 216 with the same radius coefficient. How can nuclei grow larger while their average density stays similar?',
     charge: 'Remove one atomic electron and keep the proton count fixed. How do nuclear charge and net atomic charge differ?',
     fermi: 'Widen the surface at a fixed half-density radius. Which part of the density profile broadens when diffuseness increases?',
     particles: 'Locate the muon, pion and proton in the classification. Which particles belong to the same family, and why?',
-    recoil: 'Compare the fixed-target and recoil cases. How does allowing the target to recoil affect closest approach?',
+    recoil: 'Try the proton–alpha example, then swap their roles. What lab energy gives the same turning distance?',
     surface: 'Compare a small and a large nucleus at fixed surface width. What does the surface layer contribute to the nucleon count?'
   },
   'emt-vector-analysis': {

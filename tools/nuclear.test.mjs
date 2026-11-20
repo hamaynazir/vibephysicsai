@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {lesson,sections,pageSections,guide,challenges,defaults} from '../lessons/nuclear-models/basic-concepts/content.js';
 import {relation,nuclide,massEnergy,heliumBinding,closestApproach,nuclearRadius,uniformDensity,fermi,skinThickness,linearSurface,evaluate} from '../lessons/nuclear-models/basic-concepts/math.js';
+import {bindingEnergy,bindingNuclides,COHORT_SIZE,coulombState,decayState,ELECTRON_MEV,FERMI_RANGE,NEUTRON_LIFETIME,neutronCohort} from '../lessons/nuclear-models/basic-concepts/math.js';
 const near=(a,b,t=1e-9)=>assert.ok(Math.abs(a-b)<Math.max(1e-12,Math.abs(b)*t),`${a} != ${b}`);
 test('Nuclear lecture preserves all nine pages and defines fourteen sections and eleven exercises',()=>{assert.equal(lesson.pages,9);assert.equal(sections.length,14);assert.equal(challenges.length,11);assert.equal(pageSections.length,9);assert.equal(new Set(sections.map(s=>s.id)).size,14);for(const id of [...pageSections,...guide])assert.ok(sections.some(s=>s.id===id));for(const c of challenges){assert.ok(Number.isFinite(c.answer));assert.ok(sections.some(s=>s.id===c.section));}assert.ok(fs.existsSync(new URL('../lessons/nuclear-models/basic-concepts/assets/lecture.pdf',import.meta.url)));});
 test('All nuclear model controls produce finite values at default and extremes',()=>{for(const section of sections){assert.ok(section.quiz.answer>=0&&section.quiz.answer<section.quiz.options.length);for(const edge of ['value','min','max']){const s={...defaults,...(section.id==='surface'?{A:27}: {})};for(const c of section.controls)s[c.key]=c[edge];const result=evaluate(section.id,s);for(const value of Object.values(result))if(typeof value==='number')assert.ok(Number.isFinite(value),section.id);}}});
@@ -11,3 +12,56 @@ test('Radius scaling and density units cancel mass number correctly',()=>{near(n
 test('Fermi half-density and 90–10 percent thickness follow the analytic law',()=>{near(fermi(6,6,.55),.165/2);const a=.55,R=6,t=skinThickness(a);near(fermi(R-t/2,R,a)/.165,.9);near(fermi(R+t/2,R,a)/.165,.1);});
 test('Free-neutron lifetime differs from half-life; beta bookkeeping conserves A and charge',()=>{const r=evaluate('beta',{...defaults,seconds:878.4*Math.log(2)});near(r.survival,.5);near(r.daughterZ+r.daughterN,defaults.Z+defaults.N);assert.ok(r.halfLife>600&&r.halfLife<615);assert.ok(r.Q>.78&&r.Q<.79);});
 test('Surface fraction includes shell weighting and agrees with independent numerical quadrature',()=>{for(const A of [27,125,216]){const r=linearSurface(A),steps=200000,dr=r.hi/steps;let total=0,surface=0;for(let i=0;i<steps;i++){const x=(i+.5)*dr,rho=x<=r.lo?.17:.17*(r.hi-x)/3,v=4*Math.PI*x*x*rho*dr;total+=v;if(x>=r.lo)surface+=v;}near(r.total,total,1e-8);near(r.fraction,surface/total,1e-5);assert.ok(r.fraction>0&&r.fraction<1);}assert.ok(linearSurface(27).fraction>linearSurface(216).fraction);});
+
+test('All five binding comparisons reproduce AME2020 Table I to the teaching precision',()=>{
+  for(const [id,{reference}] of Object.entries(bindingNuclides)) {
+    const r=bindingEnergy(id);
+    assert.ok(Math.abs(r.perNucleon-reference)<.000001, id);
+    near(r.energy,r.perNucleon*r.A);
+    assert.equal(r.A,r.Z+r.N);
+  }
+  assert.equal(bindingEnergy('c-12').excess,0);
+  assert.ok(bindingEnergy('he-4').excess>0 && bindingEnergy('fe-56').excess<0);
+  assert.ok(bindingEnergy('ni-62').perNucleon>bindingEnergy('fe-56').perNucleon);
+  near(ELECTRON_MEV,.51099895069);
+});
+
+test('Coulomb timeline conserves relative energy and reproduces the analytic radial velocity',()=>{
+  for(const s of [defaults,{...defaults,recoil:1,energy:4.2},{...defaults,recoil:1,energy:.1,z2:1,m1:1,m2:1},{...defaults,energy:30}]) {
+    const start=coulombState(s,0), turn=coulombState(s,.5), end=coulombState(s,1);
+    near(start.separation,5*turn.distance);
+    near(turn.separation,turn.distance);
+    near(turn.kinetic,0);
+    near(end.separation,start.separation);
+    near(end.time,-start.time);
+    near(end.velocity,-start.velocity);
+    for(const p of [.05,.2,.4,.6,.8,.95]) {
+      const point=coulombState(s,p), before=coulombState(s,p-.00001), after=coulombState(s,p+.00001);
+      near(point.kinetic+point.potential,point.ecm);
+      near((after.separation-before.separation)/(after.time-before.time),point.velocity,.00002);
+      assert.ok(point.separation>=turn.distance && point.separation<=end.maxSeparation);
+    }
+  }
+});
+
+test('Neutron sample replay is seeded, independent of seek order and monotone in time',()=>{
+  assert.deepEqual(neutronCohort(),neutronCohort());
+  assert.notDeepEqual(neutronCohort(),neutronCohort(4));
+  assert.equal(decayState(0).remaining,COHORT_SIZE);
+  const half=decayState(NEUTRON_LIFETIME*Math.log(2));
+  near(half.survival,.5);
+  assert.ok(half.remaining<COHORT_SIZE && half.remaining>decayState(3000).remaining);
+  assert.deepEqual(decayState(half.seconds),half);
+  near(decayState(NEUTRON_LIFETIME).survival,1/Math.E);
+  assert.equal(decayState(5000).seconds,3000);
+});
+
+test('Fermi ruler uses a stable domain and includes the full 90–10 percent interval',()=>{
+  for(const A of [16,240])for(const r0 of [1.1,1.4])for(const diffuseness of [.2,1]) {
+    const s={...defaults,A,r0,diffuseness,probe:FERMI_RANGE};
+    const r=evaluate('fermi',s);
+    assert.equal(r.probe,FERMI_RANGE);
+    near(r.density,fermi(FERMI_RANGE,r.R,diffuseness,s.rho));
+    assert.ok(r.R-r.skin/2>=0&&r.R+r.skin/2<=FERMI_RANGE);
+  }
+});
