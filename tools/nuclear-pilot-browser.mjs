@@ -39,8 +39,8 @@ try {
     assert.equal(await desktop.locator('#page-input').inputValue(),String(page));
     assert.equal(await canvas.getAttribute('aria-describedby'),'scene-caption');
     assert.doesNotMatch(await desktop.locator('#metrics').innerText(),/NaN|undefined|Infinity/);
-    assert.equal(await timeline.isVisible(),['beta','scattering','recoil'].includes(id));
-    assert.equal(await play.isVisible(),['binding','isomers','beta','scattering','recoil'].includes(id));
+    assert.equal(await timeline.isVisible(),['beta','scattering','recoil','fermi'].includes(id));
+    assert.equal(await play.isVisible(),['binding','isomers','beta','scattering','recoil','fermi'].includes(id));
     for(const {key,options} of controls) {
       const input=desktop.locator('#control-'+key);
       if(options) await input.selectOption(options.at(-1)[0]);
@@ -116,6 +116,11 @@ try {
   }
 
   await section.selectOption('fermi');
+  assert.equal(await play.innerText(),'Play');
+  await reset.click();
+  await step.click();
+  assert.match(await time.innerText(),/At R/);
+  assert.equal(await metric('Probe position'),await metric('Half-density radius'));
   await desktop.locator('#control-probe').fill('0');
   assert.equal(await metric('Probe position'),'0');
   await desktop.locator('#control-probe').press('End');
@@ -165,6 +170,16 @@ try {
   assert.ok(await touch.locator('.pdf-scroll').isVisible());
   await touch.getByRole('button',{name:'Simulation',exact:true}).tap();
   assert.ok(await touch.locator('#scene').isVisible());
+
+  await desktop.emulateMedia({reducedMotion:'no-preference'});
+  await desktop.bringToFront();
+  await desktop.goto(lecture+'?check=density-autoplay#page=8&topic=fermi');
+  await canvas.scrollIntoViewIfNeeded();
+  await desktop.waitForFunction(()=>Number(document.querySelector('#scene').dataset.time)>.1);
+  assert.equal(await play.innerText(),'Pause');
+  await desktop.locator('#control-probe').fill('3');
+  assert.equal(await play.innerText(),'Play');
+  assert.equal(await metric('Probe position'),'3');
 
   await desktop.goto(base+'lessons/laser-physics/laser-radiation/index.html#page=2&topic=fields');
   await desktop.locator('#reader-subject').waitFor();

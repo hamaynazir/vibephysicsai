@@ -1,9 +1,9 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
 import {installLectureReview} from '../../../lecture-review.js?v=math-1';
 import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js?v=pilot-1';
-import {COHORT_SIZE,coulombState,evaluate} from './math.js?v=pilot-1';
-import {draw,bindingSteps,isomerSteps} from './visuals.js?v=pilot-1';
-import {LecturePlayback} from './playback.js?v=pilot-1';
+import {COHORT_SIZE,coulombState,evaluate,fermiWalkthrough} from './math.js?v=density-1';
+import {draw,bindingSteps,isomerSteps} from './visuals.js?v=density-1';
+import {LecturePlayback} from './playback.js?v=density-1';
 import katex from '../../../vendor/katex.mjs';
 import {installReaderNavigation} from '../../../reader-navigation.js?v=materials-3';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>n===null?'Not defined':typeof n==='number'?Number(n.toPrecision(5)).toString():String(n);
@@ -13,7 +13,11 @@ let current=sections[0],state={...defaults},page=1,mode='explore',sync=true,guid
 const states=new Map();
 $('#app').innerHTML=`<a class="skip" href="#companion">Skip to interactive lesson</a><header><div><a href="../../../#subject=nuclear-models">← Library</a><strong>Nuclear Concepts</strong></div><div class="header-buttons"><button id="sections-button">Sections</button><button id="theme" aria-label="Switch color theme">☾</button><button id="help" aria-label="Help">?</button></div></header><div class="mobile-tabs" role="group" aria-label="View panel"><button data-panel="manual" aria-pressed="false">Lecture</button><button data-panel="lab" aria-pressed="true">Simulation</button></div><nav class="navigation visual-navigation" data-lesson="nuclear-basic-concepts" aria-label="Subject, chapter and visualization navigation"><label class="visual-section-field">Section<select id="visual-section" aria-label="Choose visualization section">${sections.map(s=>`<option value="${s.id}">${s.title}</option>`).join('')}</select></label><div class="visual-section-arrows"><button id="visual-previous" aria-label="Previous section">←</button><button id="visual-next" aria-label="Next section">→</button></div></nav><main class="workspace" data-panel="lab"><section class="manual-panel" aria-label="Original lecture PDF"><div class="pdf-toolbar"><button id="prev-page" aria-label="Previous lecture page">←</button><label>PDF page <input id="page-input" aria-label="PDF page" type="number" min="1" max="9" value="1"></label><span>/ 9</span><button id="next-page" aria-label="Next lecture page">→</button><button id="sync" aria-pressed="true">Sync on</button></div><div class="pdf-scroll"><p id="pdf-status" role="status">Opening your original lecture…</p></div></section><section class="companion" id="companion" tabindex="-1"><p class="section-context">Nuclear Models · Chapter 1: Basic Concepts in Nuclear Physics</p><div class="eyebrow" id="section-label"></div><h1 id="title"></h1><p class="credit">Lecturer: ${lesson.lecturer}</p><p class="description" id="description"></p><label class="mode">Learn<select id="learning-mode" aria-label="Choose learning mode"><option value="explore">Explore the diagram</option><option value="explain">Explain this diagram</option><option value="practice">Practice a calculation</option><option value="predict">Predict, then reveal</option><option value="guide">Teach me from zero</option><option value="review">Review my weak points</option><option value="notes">Read notes & my notes</option><option value="question">Chapter question</option></select></label><p id="review-count" class="review-count"></p><section id="activity" hidden></section><div id="model"><div class="controls" id="controls"></div><div class="stage" id="stage"><canvas id="scene" role="img" aria-label="Nuclear physics teaching diagram"></canvas><div class="scene-caption">Illustrative geometry and energy diagrams—not particle trajectories or measured data.</div></div><button id="diagram-size" class="diagram-zoom" aria-pressed="false">Enlarge diagram</button><div class="metrics" id="metrics"></div><p class="equation" id="formula"></p><div id="model-notes"></div></div><details class="sources-panel"><summary>Lecture, scientific clarifications & sources</summary><p class="note">All nine original PDF pages are unchanged, including the cover. Companion explanations identify corrections to source statements: mass defect is not mass excess; free-neutron mean life is not half-life; a muon is a lepton. Models use explicit approximations and do not determine the stability of arbitrary nuclides.</p><ul>${sources.map(([label,url])=>!url?`<li>${label} · in this reader</li>`:`<li><a href="${url}" target="_blank" rel="noopener">${label}</a></li>`).join('')}</ul><p class="note">The supplied lecture retains its ownership and is excluded from the website code’s MIT license. No live AI tutor, tracking or account is required.</p></details><p id="saved-status" class="note">Progress and notes stay in this browser; they are not a mastery score.</p><div class="bottom-links"><a href="../../../#subject=nuclear-models">← Nuclear Models</a><a href="../../../laboratories/nuclear/index.html">Nuclear Laboratory →</a></div></section></main><dialog id="sections-dialog" class="chapter-dialog"><button data-close="sections-dialog">Close</button><h2>Chapter sections</h2>${sections.map(s=>`<a href="#page=${s.page}&topic=${s.id}" data-topic="${s.id}">${s.title}</a>`).join('')}</dialog><dialog id="help-dialog" class="chapter-dialog"><button data-close="help-dialog">Close</button><h2>Read, change, explain.</h2><p>Read the supplied nine-page lecture alongside 14 companion sections. Subject, Chapter and Section menus provide direct navigation. On mobile, switch between Lecture and Interactive lab.</p><p>Drag the timeline to replay neutron survival or a Coulomb encounter. Binding and isomer playback reveals an explanation in steps. Enlarge a diagram for bigger labels.</p><p>Learn offers explanations, predictions, eleven calculation exercises, a guided path, notes and review of incorrect attempts. Browser storage keeps positions and answers locally; clearing browser data can remove them. Arrow keys turn pages when no form control is focused.</p></dialog>`;
 installReaderNavigation($('.visual-navigation'));
-const motion = new LecturePlayback($('#stage'), redraw);
+let densityGuide = false;
+const motion = new LecturePlayback($('#stage'), () => {
+  if (current.id === 'fermi') densityGuide = true;
+  redraw();
+});
 function placePlayback() {
   const anchor = current.id === 'binding' ? $('#controls') : $('#stage');
   anchor.after(motion.bar);
@@ -58,8 +62,24 @@ function redraw(){
   const id = current.id, position = motion.position;
   if(id === 'beta') state.seconds = position;
   const collision = id === 'scattering' || id === 'recoil';
-  const result = collision ? coulombState(state,position) : evaluate(id,state);
-  draw($('#scene'),id,state,result,position);
+  const model = id === 'fermi' && densityGuide ? fermiWalkthrough(state, position) : state;
+  const result = collision ? coulombState(state,position) : evaluate(id,model);
+  draw($('#scene'),id,model,result,position);
+  if(id === 'fermi') {
+    const message = !densityGuide ? 'Explore with the sliders, or play the walkthrough.'
+      : position < 2 ? 'Follow the probe from the center toward R.'
+      : position < 4 ? 'At R, the density is half of ρ₀.'
+      : position < 6 ? 'Follow the probe to the 10% edge of the surface band.'
+      : model.diffuseness > state.diffuseness || state.diffuseness < 1
+        ? 'Increasing a widens the band. R stays fixed.' : 'The band is at the widest setting. R stays fixed.';
+    motion.update(message);
+    for (const key of ['probe','diffuseness']) {
+      $('#control-'+key).value = model[key];
+      const output = $('#output-'+key);
+      const value = Number(model[key].toFixed(2)).toString();
+      if(output.textContent !== value) output.textContent = value;
+    }
+  }
   const step = Math.floor(position + .00001);
   if(id === 'binding' || id === 'isomers') {
     const steps = id === 'binding' ? bindingSteps : isomerSteps;
@@ -127,6 +147,7 @@ function selectSection(id){
   $('#scene').setAttribute('aria-label',`${$('#title').textContent} diagram`);
   $('#scene').setAttribute('aria-describedby','scene-caption');
   motion.configure(current.id);
+  densityGuide = current.id === 'fermi' && motion.playing;
   placePlayback();
   redraw();
   $('.companion').scrollTop=0;
@@ -154,6 +175,12 @@ $('#controls').oninput=e=>{
   const key=e.target.dataset.key;
   if(!key)return;
   const output=$('#output-'+key);
+  if(current.id === 'fermi' && densityGuide) {
+    state = {...state, diffuseness:Number($('#control-diffuseness').value), probe:Number($('#control-probe').value)};
+    densityGuide = false;
+    motion.pause();
+    motion.position = 0;
+  }
   state[key]=output?+e.target.value:e.target.value;
   if(output)output.textContent=fmt(state[key]);
   redraw();

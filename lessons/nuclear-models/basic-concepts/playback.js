@@ -4,6 +4,7 @@ export const playbackProfiles = {
   beta: {limit: 3000, step: 30, rate: 150, label: 'Free-neutron elapsed time (s)'},
   scattering: {limit: 1, step: .025, rate: .16, label: 'Coulomb timeline'},
   recoil: {limit: 1, step: .025, rate: .16, label: 'Coulomb timeline'},
+  fermi: {limit: 10, step: 2, rate: 1, label: 'Density walkthrough progress', autoplay: true},
 };
 
 export class LecturePlayback {
@@ -39,7 +40,8 @@ export class LecturePlayback {
     this.play.onclick = () => this.toggle();
     this.bar.querySelector('[data-motion=step]').onclick = () => {
       const next = this.position + this.profile.step;
-      this.seek(this.profile.limit === 2 ? Math.floor(next + .00001) : next);
+      this.seek(this.profile.limit === 2 || this.profile.autoplay
+        ? Math.floor(next / this.profile.step + .00001) * this.profile.step : next);
     };
     this.bar.querySelector('[data-motion=reset]').onclick = () => this.seek(0);
     this.frame = this.frame.bind(this);
@@ -65,6 +67,8 @@ export class LecturePlayback {
     this.range.max = this.profile.limit;
     this.range.step = walkthrough ? '1' : 'any';
     this.bar.querySelector('#timeline-caption').textContent = this.profile.label;
+    this.playing = Boolean(this.profile.autoplay && !this.reduced.matches);
+    this.schedule();
   }
 
   update(label) {

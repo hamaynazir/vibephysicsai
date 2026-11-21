@@ -69,6 +69,16 @@ export const nuclearRadius=(A,r0=1.2)=>r0*Math.cbrt(A);
 export function uniformDensity(r0){const number=3/(4*Math.PI*r0**3);return {number,perCM3:number*1e39,kgM3:number*U_KG*1e45};}
 export const fermi=(r,R,a,rho=.165)=>rho/(1+Math.exp((r-R)/a));
 export const skinThickness=a=>4*Math.log(3)*a;
+export function fermiWalkthrough(state, position) {
+  const R = nuclearRadius(state.A, state.r0);
+  const smooth = t => {
+    const x = Math.max(0, Math.min(1, t));
+    return x * x * (3 - 2 * x);
+  };
+  const diffuseness = state.diffuseness + (Math.min(1, state.diffuseness + .35) - state.diffuseness) * smooth((position - 6) / 2);
+  const probe = R * smooth(position / 2) + skinThickness(diffuseness) / 2 * smooth((position - 4) / 2);
+  return {...state, diffuseness, probe};
+}
 export function linearSurface(A,width=3,r0=1.1,rho=.17){const c=nuclearRadius(A,r0),lo=c-width/2,hi=c+width/2;if(lo<0)throw Error('Linear surface model requires R ≥ width/2');const volumeFactor=c**3+c*width**2/4,total=4*Math.PI/3*rho*volumeFactor;return {c,lo,hi,total,fraction:1-lo**3/volumeFactor};}
 export function evaluate(mode,s){switch(mode){
 case 'overview':case 'nuclides':case 'relations':return {...nuclide(s.Z,s.N),other:nuclide(s.Z2,s.N2),relations:relation(s.Z,s.N,s.Z2,s.N2)};

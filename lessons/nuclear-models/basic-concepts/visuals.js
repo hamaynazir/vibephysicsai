@@ -1,4 +1,4 @@
-import {bindingEnergy, bindingNuclides, COHORT_SIZE, DECAY_LIMIT, fermi, FERMI_RANGE, NEUTRON_LIFETIME, nuclearRadius} from './math.js?v=pilot-1';
+import {bindingEnergy, bindingNuclides, COHORT_SIZE, DECAY_LIMIT, fermi, FERMI_RANGE, NEUTRON_LIFETIME, nuclearRadius} from './math.js?v=density-1';
 
 export const fmt = (value, digits = 4) => Number(value.toPrecision(digits)).toString();
 const W = 760, H = 440;

@@ -56,6 +56,22 @@ test('Neutron sample replay is seeded, independent of seek order and monotone in
   assert.equal(decayState(5000).seconds,3000);
 });
 
+test('Density walkthrough pauses at half density and widens the surface at fixed R',()=>{
+  const settings={...defaults,A:125};
+  const at=(position)=>evaluate('fermi',fermiWalkthrough(settings,position));
+  assert.equal(at(0).probe,0);
+  const half=at(2);
+  near(half.probe,half.R);
+  near(half.density,settings.rho/2);
+  near(at(3).probe,half.probe);
+  const edge=at(6), widened=at(8);
+  near(edge.density,settings.rho*.1);
+  near(widened.density,edge.density);
+  near(widened.R,edge.R);
+  assert.ok(widened.skin>edge.skin);
+  assert.equal(settings.diffuseness,defaults.diffuseness);
+});
+
 test('Fermi ruler uses a stable domain and includes the full 90–10 percent interval',()=>{
   for(const A of [16,240])for(const r0 of [1.1,1.4])for(const diffuseness of [.2,1]) {
     const s={...defaults,A,r0,diffuseness,probe:FERMI_RANGE};
@@ -65,3 +81,4 @@ test('Fermi ruler uses a stable domain and includes the full 90–10 percent int
     assert.ok(r.R-r.skin/2>=0&&r.R+r.skin/2<=FERMI_RANGE);
   }
 });
+import {fermiWalkthrough} from '../lessons/nuclear-models/basic-concepts/math.js';
