@@ -1,0 +1,31 @@
+Ze
+                        P-A                         3R3
+     Assume A charged sphere of radius. has been built up, as shown in figure below The
+        additional work                       required to add.a                                            layer.of thickness  dr to. the sphere.can be calculated
+        by. assuming the charge..? rr3p of the original.sphere 1s concentrated at the center of
+       the shell                (see the below figure). The electrical  potential energy of the nucleus  IS.
+       therefore.
+
+                                                                                                                             dr             Charge 4ar'dr 0     VcoulJTT3p.AmrZdrp.;
+           RI
+     -16n202Rsz2e?/R                I/V
+
+                                                                        Charge /3rp
+     The above equation contains a spurious "self-energy" term.          for each                                                                                         Proton                                                        ?e?/R
+                                                            ? protons provide the correct      (found by setting  2 =1). Subtracting  this term  for
+                                                        Since                                                                     cannot interact with      interaction energy between all pairs of protons.                                                       each proton
+        itself, this is indicated by the equation.
+     Vcou =Z(Z-1)e2/R.
+     The Coulomb term has a constant value and can be extracted from,
+                           e2       1                           z                        Vcou                  2130o                     8
+          constant of this eq. equivalent to Coulomb coefficient a.;EO  The
+      =     3e? 0.697 MeV     ac    5 Ro
+                                             A=16
+                                                                                        Lower energy    Hiaher enerqy
+                              ag   D-Asymmetry term                                                       and            88C    Assume that the levels are equidistant with spacing
+      that as a result of the Pauli Exclusion Principle, there is only       Pratons                                 18Nautrons      Protons   Neulrons                    BPPPPSIN-21:0    N-21=4    one identical nucleon per level. Furthermore,  the forces
+                                                     protons except for coulomb effects.    between neutrons are identical to those between
+                                                                                and.proton     The asymmetry energy is the difference in nuclear of a nucleus with neutron
+                                                                                                 particles    numbers, that of the isobar with neutron and                                                proton numbers.equal to A/2. If v
+                                                      10
+                                                                            Lecturer: Assistant Prof. Dr Adil M. Husseln M. Saeed

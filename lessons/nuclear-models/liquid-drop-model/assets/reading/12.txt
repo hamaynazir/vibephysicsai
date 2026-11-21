@@ -1,0 +1,35 @@
+Coulomb and Asymmetry effect on Potentials of Neutrons and Protons
+  Suppose that We exclude the Coulomb interaction from the potential  wells of
+                                                           is known to be more profound than that forneutrons and protons, the well for a proton
+a neutron. The reason is that in a given nucleus, there are usually more neutrons than
+                                                                             in more waysprotons, especially for the heavy nuclei, the n p interactions can occur
+                p p interactions on account                                                      of the Pauli exclusion principle. Thethan either the n n or
+                                                                                                          it                                                                                  givendifference  n well  depth AV,  is called the asymmetry energy;                                                                    s approximately
+                    MeVby; AV, =t22.6 (N-2)?=A
+                                                                                           the The (+) and () signs are for protons and neutrons, respectively. If we nOWconsider
+                                                                       proton. In otherCoulomb repulsion between                              protons, its effect raises the potential for a
+                                                       to the nuclear potential, which is more words, the Coulomb effect positively contributes
+ prominent at the center than at the surface,
+
+                   ?E-Pairing term
+
+                                                   to be paired with the same nucleonsMost of the stable nuclei have a tendency
+                                                                                      pair of                                              n-n) is more strongly bound than a                  of like nucleons (i.e., p-pTherefore, a pair                                                or
+ unlike nucleons (n-p                          p-n). This term captures the effect of spin-coupling                     or
+The nuclei with Z and N both odd will always                                           have at least one unpaired (odd) neutron
+                                                                      Nuclei withand                       proton and benefit the least from                                                             the pairing effect.    one unpaired (odd)
+                                             will show the strongest binding energy, but nucleieven-A for which Z and N both even
+                                                                                       A-1      A         A+1                                       to the other two cases.with odd-A will be intermediate                                                                                                        T
+                 term (?) can be in the form:Hence, the pairing                                                            G  4
+                -  Oo
+                (even-even) nuclei                     -OO"  O O   (apAi
+5 =<0  (even odd, odd  even) nuclei                  U   O-0      +-0.
+  (pA        (odd  odd) nuclei                          even      odd        even
+Due to Pauli Exclusion Principle, the nucleus would have lower energy if the number
+of protons with spin-up were equal                                        to the number of protons with spin down. This is
+ also true for neutrons. Further, o can                                   be calculated from neutron Separation energy by
+
+
+
+                                             12
+                                                                      Lecturer: Asslstant Prof. Dr Adil M. Hussein M. Saeed

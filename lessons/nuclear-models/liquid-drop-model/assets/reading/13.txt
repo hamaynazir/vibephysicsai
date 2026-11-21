@@ -1,0 +1,32 @@
+Ta
+ considering the nuclei with even Z and the mass numbers (A D). (A), and (4 + I)
+ which are even, odd, and even respectively.
+                     B(A+ 1,2) + B(A- 1,2)     ?B(A,Z)                    2                    ? B(A,2)=B(?+ 1,2)-S(A+ 1,2)
+ and
+                      B(A=1,2) = B(A,2)- S (A,Z)               B(A-1,2)= B(A + 1,2)-S(A+ 1,2)- ST(A,Z)
+   6=?A+1,2)+B(A+B(A +          1.2)-S(A+ 1.2)-Sn(A,2)_B(A+ 1,2) + S(A+ 1,Z)                         2
+                                      1,2)-Sn(A,2)                      ? 6Sn(A+
+                               2
+ For  different values of A.    is calculated from:
+ ? =     ap A-1/2, where ap= 12 MeV
+ O- find the relation between the pairing term of binding energy                                                     and nuclear potential.
+ F- Shell term ?
+                                                                              to one of the magic Magic nuclei, which are numbers ot protons or neutrons equal
+                                                                cannot benumbers (2, 8, 20, 50, 82, and 126), have high stability. This stability
+                                                the shell term (?, which is positive  if Npredicted by the liquid drop model; therefore,
+or Z approaches magic numbers) is a correction for that stability. For the double magic
+                        magic numbers.numbers, both N and Z are
+
+                                         ?Note: Nuclear model theories have proven that                                    new set of nuclear magic numbers
+exists. For example,                    proton number 14 is a magic number in the exotic nucleus silicon-
+22.  Also, Z?120 and  =138 as more robust proton magic numbers, characterized by
+significant energy gaps. Concurrently, N=184 is a strong candidate for a neutron magic
+number in this region.
+Summary of empirical terms on Binding energy.
+  The magnitudes of the various contributions                                                   to the binding energy curve are depicted
+ in the figure below. The initial rise of B/ A                                            with A  is due to the decreasing.importance
+ of the surface contributionas A ingreases. The Coulomb repulsion effect grows in
+ importance with A, causing.a..maximum. B/A at.A                                                                            of                                             60 and a subsequent decrease B/A at.larger. A. Except for                               the extreme ends of the mass number range, the semi-
+ empirical mass formula generally can give binding energies accurate to                                                                        within 1%of
+                                               13
+                                                                     Lecturer: Asslstant Prof. Dr Adll M. Hussein M. Saeed

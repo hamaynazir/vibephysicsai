@@ -8,3 +8,5 @@ Thumbs.db
 Vibe-Physics-AI-GitHub/
 tools/*browser-check.mjs
 **/assets/reading/
+!lessons/nuclear-models/liquid-drop-model/assets/reading/
+lessons/nuclear-models/liquid-drop-model/assets/lecture.pdf

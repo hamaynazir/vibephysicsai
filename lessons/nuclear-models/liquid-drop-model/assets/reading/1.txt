@@ -1,0 +1,30 @@
+CHAPTER TWO
+               Liquid Drop Model
+          Nuclear Binding and Separation Energy
+ 2.1 Nuclear Binding Energy
+
+ Atomic binding energy:
+                                               from its atomic mass-energy The mass-energy mc? of a specific nuclide differs
+      by an amount that  is equal to the total mass-energy of Z electrons. Thus, themac2
+                binding energy: total electronic
+                                                                          Bi                 mnNC?= mAC?Zmec2+ D?,
+                                                                  energies are of order Where B, is the binding energy of the   h electron, electron binding
+10 100 KeVin heavy atoms, while atomic mass energies are of the order A x MeV; thus,
+ to                                               neglect the last term of the equation.  a precision of about  l                           part in 10?, we can
+                                                                         in mass-energy betweenNuclear binding energy B.(A..2).of a nucleus is the difference
+             and its constituent Z protons and N neutrons. Other nuclear bindinga nucleus x
+energy is the energy released during the assembly of the nucleus from the constituents.
+                                                         when the atom                                            to the mass defect ?M that occursAdditionally, this energy corresponds
+is formed.
+                                         + NM,(M(A,Z)- ZMe)c?                 B(A,Z) = 6M c2 = [zMp
+                                        ? neutral hydrogen atoms, We can              ? proton and electron masses intoGrouping the
+                  arewrite the previous equation
+                             (A,2) = [ZM; + NMn M(A,Z)]c?                                 Btot
+                                                      M(A,Z) is the atomic mass                       mass [M= Z(Mp+ Mel, andwhere Ma is the hydrogen
+                                                                                to include the                                     mass units (u). It is convenientwith the masses generally given in atomic
+unit conversion factor in c?, thus:
+ c2   931.50 MeV/u.
+                               nucleon is given byThe average binding energy per
+                                    Bave(A, Z)Brot(A,2)?                                              A
+
+                                                                     Lecturer: Assistant Prof. Dr Adll M. Hussein M. Saeed

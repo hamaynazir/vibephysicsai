@@ -1,0 +1,23 @@
+B(A -4,Z-2) = (2-2)mp + (Z2)me +(N2)mn- M(A-4,2-2)]c?
+   M(A4,2-2)  (3-2)mp + (Z2)me  f                B(A-4,2-2) (c)               (N-2)m
+                              Brot(A,2)                             = [ZMg  NMn  M(A, 2)1c2
+                                                  (d)   M(A,Z)ZMg+ NMn   Bror(A,2)C2
+                                           (d) in equation (a)   By substituting equations (b), (c) and
+                                      B(A-4,2-2)   S   Zmp  2mp + 2me                                                     2mp                     - 2mz t Nmn                                 - 2mn                                                          C2            2me  2mn
+
+                     Ba(4,2)                                                    BLOt(A.2)  #                        Mg            Mnt    C2                    C2      MH                        NMi+-C2                              (zmp+2me)
+
+                          for finding   Example: Use  N?5                                              Btotal and Baverage, When Mnucteus   15.00901
+   Solution:                      +                Brotal1Zmp Nm Mnucleusc2
+                  c2 931.48MeV
+             A=2+NN=A-2=15-7=8
+                 Brotal  17X 1.00725+ 8 x 1.00804 15.00109]ux 931,48                                                          MeV/u
+                           =                                             B?otal   98.8MeV
+ and Baverage    Brotal              = 98.8 = 6.6MeV            A      15
+ 2.3 Abundance Systematics                              of Stable Nuclides
+
+ The      results, shown                    in Fig. below, show that N is for low A. but N>                                                                                        at high A.
+  One can readily understand that in heavy                                                 nuclei,                                                         the Coulomb repulsion will favor
+neutron-proton distribution with more neutrons than protons (asymmetry factor). It Is
+little more involved to explain why there should be an equal                                                                      distribution for the light
+nuclides (see the following  discussion on the semi-empirical mass formula).

@@ -1,0 +1,36 @@
+C
+                  /olum          Surace          Coulomb         Asymmetry 3Paring
+      ? Volume term; each nucleon feels the effect of the nucleons surrounding it
+       ? Surface                                  term; Volume term overestimates the effect  at the surface
+             (3 Coulomb term;  Repulsive force among the charged particles (protons)
+       ? Asymmetry term;  Nuclei tend tO have N1
+             (5 Pairing term:    12A-12 for even-even nuclei.:  + 12A-1/ for odd-odd nuclei
+                                       O for others
+
+                                                     Volume Energy
+
+
+                                                                  Surface Encrgy    M
+
+                                                             Coulomb Energy
+
+                                       NetMer Binding                                                                  Asymmetry Energy      2i"               N   Energy
+             i
+
+
+
+                       L
+                                 30    60    9p     120   150    180   210   240   270
+                                                 Mass Number (A)               TT
+A- Volume term (av)
+                                                                            to as the volumeThe attractive interaction between neighboring nucleons is referred
+term of binding energy (ay). Thus, this interaction  positively impacts the binding
+                                to the number of nucleons (A). Additionally, the bindingenergy, which is proportional
+                         to A because it depends on the volume of the nucleus.energy is proportional
+                  B   QVA
+                                                 By and A is linear. The               is   constant (15.49 MeV). The relationship between where av
+basis for this term is the strong nuclear force, which affects both protons and neutrons;
+                                   short distance between thethe strong force arises in a very                                                          nearest neighbours' and next-
+
+                                       8
+                                                                      Lecturer: Assistant Prof. Dr Adil M. Hussein M. Saeed

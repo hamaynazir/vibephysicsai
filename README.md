@@ -33,23 +33,25 @@ Reader labels distinguish subject labs from their chapters: Solid State Lab → 
 
 ## Current experience
 
-Scroll through all 170 lecture pages and 71 manual pages. The simulation follows the page when Sync is on. GitHub Pages generates individual previews and excludes the original PDFs from the live site. The public repository still contains the source documents, and any visible web page can be captured.
+Scroll through all 188 lecture pages and 71 manual pages. The simulation follows the page when Sync is on. GitHub Pages serves individual page previews. The new Liquid Drop Model chapter uses the prepared page previews, with its original PDF kept locally.
 
 Source Sans 3 and STIX Two Text are served locally. Their SIL Open Font Licenses are included in `assets/fonts/`.
 
-Each of the 131 lecture sections opens with a question. Use the diagram, then open **Check your prediction** to compare your reasoning. In adjustable diagrams, **Compare two settings** puts two sets of readings side by side. **Chapter review** lists each topic and its PDF pages, gives feedback on answers, and remembers which topics to revisit in this browser. Seven additional models explore lattice cell area, hexagonal basal axes, stiffness and fracture strength, excitation by light or collision, neutron survival, helium mass references, and Cartesian basis products.
+Use **Check your prediction** in chapters that offer guided questions. In supported diagrams, **Compare two settings** puts two sets of readings side by side. **Chapter review** gives feedback on answers and remembers which topics to revisit in this browser.
 
-All seven lecture readers and both laboratories have a **Full-screen simulation** button (⛶ on small screens). It hides the PDF and expands the interactive companion, keeping model controls, playback and learning tools available. Use **Back to lecture/manual** or Escape to return. Supported browsers use native full screen; otherwise a full-page focus view provides the same PDF-free layout. Models and saved progress are not recreated or cleared.
+All eight lecture readers and both laboratories have a **Full-screen simulation** button (⛶ on small screens). It hides the PDF and expands the interactive companion, keeping model controls, playback and learning tools available. Use **Back to lecture/manual** or Escape to return. Supported browsers use native full screen; otherwise a full-page focus view provides the same PDF-free layout. Models and saved progress are not recreated or cleared.
 
 The homepage also has a separate **Laboratories** collection: **Nuclear Laboratory** (28 original manual pages) and **Solid State Physics Lab** (43 pages), with **six experiment companions each**. All 12 include animated schematics, adjustable calculated responses, procedure walkthroughs, an on-screen table of simulated readings, calculation practice, a conceptual check and local notes. Selected linearized relationships support regression. These are separate from lecture subjects and are not included in lecture chapter counts. See [laboratories/README.md](laboratories/README.md) for coverage, provenance, scientific corrections and model limits. Simulated outputs are not real measurements or instructions for operating equipment.
 
-The lecture library has **seven available chapters, 170 original PDF pages and 131 companion sections**. Materials Science includes Chapters 1–3. The separate Laboratories collection has two manuals, 71 original manual pages and twelve experiment companions.
+The lecture library has **eight available chapters, 188 lecture pages and 135 companion sections**. Materials Science includes Chapters 1–3 and Nuclear Models includes Chapters 1–2. The separate Laboratories collection has two manuals, 71 original manual pages and twelve experiment companions.
 
 **Engineering Materials** (31 pages, 19 sections) covers alloy composition, ionic coordination, ceramic families, and polymer structure and response. **Mechanical Properties of Metals** (24 pages, 17 sections) covers stress and strain, elastic and plastic response, tensile measurements, and hardness. Both chapters pair the source pages with interactive models, typeset equations, worked practice and chapter review.
 
 **Electromagnetic Theory → Vector Analysis**, by Mr. Taha Yasin Ahmed, adds all 36 original slides, 24 companion sections, 16 calculation exercises and a 14-step introductory path. Models cover i/j/k components, vector sums and products, origin shifts, cube diagonals, gradient/divergence/curl, integral theorems, coordinate conversions, local bases and differential elements. Mathematical outputs are distinguished from real electromagnetic field simulations; see [the Vector Analysis README](lessons/electromagnetic-theory/vector-analysis/README.md).
 
 **Nuclear Models → Basic Concepts in Nuclear Physics**, by Assistant Professor Dr. Adil M. Hussein M. Saeed, adds all nine original pages, fourteen sections, eleven calculation exercises and a nine-step introductory path. Models cover nuclide notation and relationships, isomer excitation, mass-energy units, helium binding, beta bookkeeping, Coulomb closest approach with recoil, radius/density scaling, nuclear charge, Fermi profiles and a piecewise-linear surface problem. Scientific clarifications are separated from the unchanged PDF; see [the nuclear chapter README](lessons/nuclear-models/basic-concepts/README.md).
+
+**Nuclear Models → Liquid Drop Model** pairs 18 lecture pages with four animated modules on binding energy, particle removal, liquid-drop terms and mass parabolas. It includes 23 explanation steps, 16 presets and interactive charts using AME2020 and NUBASE2020 data. See [the chapter report](lessons/nuclear-models/liquid-drop-model/IMPLEMENTATION.md) for sources and verification.
 
 - Subject → Chapter → Section navigation lets you switch directly between available readers and resume saved positions.
 - The laser overview compares ordinary light with laser light through four animated views: coherence, directionality, spectral width and irradiance. Controls update diagrams and metrics; each comparison links to its detailed section.
@@ -214,7 +216,7 @@ tools/catalog.test.mjs Subject availability, search and saved-position checks
 
 ## Verification
 
-All seven chapter readers provide Subject → Chapter → Section selectors above the visualization. Switching to another available subject opens its chapter at the saved page; selecting the current chapter leaves the current page alone. Chapter options come from the shared catalog. No answers or reading history are cleared by switching.
+All eight chapter readers provide Subject → Chapter → Section selectors above the visualization. Switching to another available subject opens its chapter at the saved page; selecting the current chapter leaves the current page alone. Chapter options come from the shared catalog. No answers or reading history are cleared by switching.
 
 Materials Science and Crystal Structures add Play/Pause, Step, Restart and Speed where motion explains something. Materials animates transfer, scattering, molecular motion, London dipoles, electron drift and carbon view rotation. Solid State rotates the view and traces actual component paths, angle arcs, invariant A→B displacement and the perpendicular interplanar gap. These are teaching demonstrations; cell geometry and calculated parameters stay fixed. Manual 3D interaction pauses playback. Reduced-motion settings start paused, with deliberate Play available. Original PDFs, section counts, questions, exercises and saved-answer keys remain unchanged. Shared playback and conservation tests are in `tools/study-motion.test.mjs`.
 

@@ -1,0 +1,34 @@
+difference of  MeV (or more,                             up to 4 MeV) depending on whether the absorbed neutron
+    is even or odd (see Fig. below). This                                                                    is the                                              difference                                                         reason that ??t can undergo
+   fission with thermal                                                                         (E >]                        neutrons, whereas 238J can fission only with  fast neutrons
+  MeV).
+
+
+                                             l0                  T             E                      82
+              ?                     T
+            -"
+                                                                              T                 i             e      18     120     122     124      126     128      130
+                                                         Ncutron Number (N)
+  Generally speaking, the following systematic behavior is observed In neutron and proton
+  separation energies,
+ Sn(even N)           7 S(odd N)                for                                      a given Z
+ Sp(even2)> Sp(odd 2)                 for a given N
+ This effect is attributed to the pairing property of nuclear forces. the existence of extra
+ binding between a pair of identical nucleons in the same state that have total angular
+ moments pointing in opposite directions. This  trait is also the reason for the exceptional
+ stability of the a-particle decay from the heavy nuclei.
+ Alpha Separation Energy:
+ The separation energy Sa                                        is the work necessary to separate an a-particle from the
+ nucleus,
+                     = [M(A-4,7-2) + Ma-M(A,2)1c2                      Sa
+                =                                                                                                          it...)                 Sa                               Btot (A,2)-B(A= 4,2  2)- B(4,2)  (... prove
+
+
+                                       -                                                           B(4,2)         Prove that Sa Brot(A, 2)- B(A- 4,Z- 2)Question:
+ Proof:
+S?M(A-42-2)+ M-M(A, Z)1c2
+                               + 2me + 2mnM(4,2)c2                    Ba (4,2) = 2mp
+                                       Ba(4,2)
+M(4,2) = 2mp + 2me         2mc2                     (b)
+                                        4
+                                                                      Lecturer: Asslstant Prof. Dr Adil M. Husseln M. Saeed

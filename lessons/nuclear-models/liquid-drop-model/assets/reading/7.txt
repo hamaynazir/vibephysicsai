@@ -1,0 +1,30 @@
+CHAPTER TWO
+                2nd part:  Liquid Drop Model
+   This model provides  reasonable explanation for various nuclear phenomena, including
+   nuclear atomic                masses, nuclear binding energy, nuclear fission, and ?-decay. This model
+  assumes the nucleus might be expected                                                     to behave very much like a droplet of some
+   liquid, in which the forces of attraction and repulsion between the particles are balanced.
+  The following assumptions are being proposed due                                                        to the liquid drop model:
+                                                                               ?  I)- The nucleus, like a droplet, is incompressible matter,  1.e., V  a. A;p approaches
+      constant where   and p represent the volume of the nucleus and its  density,
+      respectively.
+  II)- The force between nucleons is considered to be spin-dependent and the same for
+     both protons and neutrons;  it is also charge-independent, meaning it is not
+      significantly affected by the Coulomb force.
+  III): The nuclear forces have a short-range character (saturation).
+ 2,4 Empirical Binding Energy Formula (EBE)
+   An empirical formula for the binding energy consisting of contributions representing
+                                                                          first proposed by volume..surface.. Coulomb..and other. ef?ects was                                                      von Weizs?cker in
+ 1935.
+ Note: More detailed theories exist. for example, Bruecker et al., Physical Review 121,
+ 255 (1961),
+ The empirical mass formula we consider here was derived based on the liquid  drop
+
+                                                                                                                     to model of the nucleus. The empirical mass formula is usually given some new terms
+                              below. the binding energy formula, as
+                         Z(-1)    (N-2)2              B(A,Z)                      Ca       t          aya,3_00           A    apA)
+                                          refer towhere the coefficients                                                                       and                       av, asacaaap                                          volume, surface, Coulomb, asymmetry
+pairing, respectively.
+A set of values for the five coefficients  in B( A,Z) Eq. is:
+                             T
+                                                                     Lecturer: Assistant Prof. Dr Adil M. Hussein M. Saeed

@@ -1,0 +1,35 @@
+Bave (A, 2) represents the average binding energy to remove a nucleon from the nucleus
+                                                                                    Bave( A,Z)  Taking the actual  data on nuclear mass for various A and Z, One Can calculate
+ and plot the results in the figure below.
+                                             2) The most striking feature of the Bave( A,                                       curve is the approximate constancy at 8 MeV
+ per nucleon,              except for the very light nuclei The binding energy not linearly increases
+  with A.
+
+                                            =                                                             15.009 u  Example: Use 1?N                       to find Btotal and Bave, when Mnucleus
+  Solution:
+                                Brotal (A,Z) = [ZMp + ?M, Mnucleusc'
+                       X 1.00728                           + 8 X 1,00804- 15.000109]u x 931.48 MeV /u             Brotal (A,2)  7
+                             ? 111.56MeV                                           Brotal (A,Z)
+                                          Brotal (A, Z)   111.56MeV     Bave(A,Z)- 7.437 MeV                   A            15
+
+                                                                              U.                                                                  it with I9N, M (150, )-15.003065 Q/ Find the Bave of 150, and compare
+      Root      8i
+
+
+
+
+                        }        -                   8
+              24      P&8IR   16  24                                                        90   120  150  180  210  240                                            30   60
+                                             Mass Number (A)
+Several remarkable features of the figure are
+First, the curve is relatively constant                                    except for the very light nuclei. The average
+                                                            per nucleonbinding energy of most nuclei varies by about 10%of 8 MeV
+Second, the curve reaches a peak near A   60,                                        where the nuclei are more tightly bound.
+                                     release from nuclear reactions via two methodsThis Bave curve estimates energy
+fusion for A<60 and fission for A>60.
+
+
+
+
+                                      1
+                                                                    Lecturer: Assistant Prof. Dr Adll M. Hussein M. Saeed

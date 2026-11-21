@@ -1,0 +1,32 @@
+Question: give the evidence from the Bave Curve for instability  of light and heavy mass
+   region nuclei compared to medium one
+
+                                                                                        nuclej   Answer: from the Bave Curve, the Bave value                                              of both light and heavy mass region
+    is ower than 8 Mev. but the medium mass region is more stable and greater than  Mev.
+   2.2 Separation Energy
+   The energy required to separate particle   from a nucleus is the separation energy S.
+   This is also the energy released,                                Or energy available for the reaction when particle x is
+                                                           proton,                                                                and                                                                   deuteron,   captured. This concept is usually applied to a neutron,                                                        a particles.
+  The energy balance in general is:
+             =               Sx   [Mx (A',2)+ M(A-A,Z-Z) - M(A,Z)1c2
+                                                                Z and mass number A'.  where particle    is treated as.a 'nucleus' with atomic number
+  For a neutron,
+                         Sn  [Mn+M(A=1,2) M(A, Z)]c2
+                  Sn= Btot(A,2)  Btot (A -1,2)    (....prove it...)
+                            Btot(A,Z)-  B(ot (A - 1,2)  Question; Prove that Sn=
+              M(A -1,2)- M(A,2)]c2                             (a)  Proof: Sn= [Mn+
+                                  B(ot (A,Z) = [ZMH +       M(A,Z)]C2                      NMn
+                  NM,-Btot(A,2)                                        (b) M(A,Z) = 2M, +              C
+                                   (N - 1)M, = M(A- 1,2)1C2                 Bror(A=1,2) = [ZMH+
+                                             Btot(A-1,2) M(A=1,2)=ZMH+ NMn-Mn-     CA                                    (c)
+ Substituting equations (b),(c) in equation (a)
+                               Bror(A1,2)                                   C2                  + Btot(2.2)]c;  SM+2M,NMMZMNMnC2qMa-NMn
+                       Sn                             Bror(A,2)-Bror(A-1.2)C2             c2
+                                                        ?.                      = Btot(A,2) Btot(A-1,2)                          Sn
+                                                                     vary from oneSn    is sometimes called the binding energy of the last neutron. S will
+nucleus to another. In the range of A. where                                               Btot/ A is roughly constant, we can estimate
+from the Btot/ A curve                             that S and Sp  8 MeV For heavy nuclei, Sn is more ike 5-6
+                                                                                                        2MeV.  It emits energy when a nucleus, M(A 1,2), absorbs   neutron; there is
+
+
+                                                                                                   Saeed                                                                      Lecturer: Assistant Prof. Dr Adil M. Hussein M.
