@@ -1,7 +1,10 @@
-import {closestApproach,heliumBinding,linearSurface,nuclearRadius,uniformDensity,U_MEV} from './math.js?v=pilot-1';
+import {closestApproach,heliumBinding,linearSurface,nuclearRadius,uniformDensity,U_MEV,TC_ISOMER,massSamples} from './math.js?v=chapter-2';
 export const lesson={id:'nuclear-basic-concepts',title:'Basic Concepts in Nuclear Physics',pages:9,pageKey:'study:nuclear-models:basic-concepts:page',learningKey:'study:nuclear-models:basic-concepts:learning',lecturer:'Assistant Professor Dr. Adil M. Hussein M. Saeed'};
 const slider=(key,label,min,max,step,value)=>({key,label,min,max,step,value});
-export const defaults={Z:6,N:6,Z2:6,N2:8,mass:1,excitation:142.7,isotope:'he-4',seconds:0,z1:2,z2:92,energy:25,m1:4,m2:238,recoil:0,A:56,r0:1.2,electrons:6,diffuseness:.55,rho:.165,probe:3,width:3};
+const number=(key,label,min,max,value)=>({...slider(key,label,min,max,'any',value),type:'number'});
+const choice=(key,label,options)=>({key,label,options,value:options[0][0]});
+const presets=(label,examples)=>({key:'preset',label,options:[['custom','Custom'],...Object.entries(examples).map(([id,[name]])=>[id,name])],value:'custom',examples});
+export const defaults={Z:6,N:6,Z2:6,N2:8,mass:1,excitation:142.7,isotope:'he-4',seconds:0,z1:2,z2:92,energy:25,m1:4,m2:238,recoil:0,A:56,r0:1.2,electrons:6,diffuseness:.55,rho:.165,probe:3,width:3,impact:0,preset:'custom',view:'main',units:'u',compare:'none',normalization:'free'};
 const section=(id,title,page,end,description,formula,controls,ideas,question,options,answer,explanation)=>({id,title,page,end,mode:id,description,formula,controls,ideas,quiz:{question,options,answer,explanation}});
 export const sections=[
 section('overview','1. Start with the nucleus',1,1,'A chapter companion—not a nuclear laboratory. Begin with symbols, then connect mass, size, charge and the end-of-chapter problems.','A = Z + N; nucleus charge = +Ze',[],[
@@ -9,74 +12,101 @@ section('overview','1. Start with the nucleus',1,1,'A chapter companion—not a 
  ['Scientific cautions','Some source statements need correction. See the local notes beside mass defect, beta decay and particle classification. A model is not a measured nucleus or a complete nuclear theory.']],
  'What distinguishes this reader from Nuclear Laboratory?', ['This is the lecture chapter','It controls laboratory equipment'],0,'This reader accompanies the supplied Basic Concepts lecture. Experimental manuals remain in Laboratories.'),
 section('nuclides','2. Nuclide notation',2,2,'Choose proton and neutron counts. Read the symbol and distinguish a nucleus from a neutral atom.','ᴬZX: A = Z + N',[
- slider('Z','Protons Z',1,20,1,6),slider('N','Neutrons N',0,30,1,6)],[
+ slider('Z','Protons Z',1,29,1,6),slider('N','Neutrons N',0,40,1,6),
+ choice('view','Composition view',[['main','Manual counts'],['neutron','What if we add a neutron?'],['proton','What if we add a proton?']])],[
  ['What the symbols count','Z is the proton count and identifies the element. N counts neutrons. A is a dimensionless integer counting nucleons, not the measured mass in u.'],
  ['Nucleus versus atom','The nucleus contains protons and neutrons. Electrons belong to the surrounding atom, not its nucleus. Arbitrary Z/N choices here are bookkeeping examples; the model does not assert that every combination is bound.']],
  'Carbon with Z=6 and N=8 has which mass number?', ['6','8','14'],2,'A=Z+N=6+8=14. Its symbol is carbon-14.'),
 section('relations','3. Isotopes, isotones & isobars',2,2,'Compare two integer proton/neutron pairs on a local nuclide chart.','Isotopes: same Z; isotones: same N; isobars: same A',[
- slider('Z','First nucleus Z',1,20,1,6),slider('N','First nucleus N',0,30,1,6),slider('Z2','Second nucleus Z',1,20,1,6),slider('N2','Second nucleus N',0,30,1,8)],[
+ presets('Lecture example',{
+   copper:['Cu-63 and Cu-65',{Z:29,N:34,Z2:29,N2:36}],
+   mgAl:['Mg-26 and Al-27',{Z:12,N:14,Z2:13,N2:14}],
+   alSi:['Al-27 and Si-28',{Z:13,N:14,Z2:14,N2:14}],
+   siP:['Si-31 and P-31',{Z:14,N:17,Z2:15,N2:16}],
+   pS:['P-31 and S-31',{Z:15,N:16,Z2:16,N2:15}],
+ }),slider('Z','First nucleus Z',1,29,1,6),slider('N','First nucleus N',0,40,1,6),slider('Z2','Second nucleus Z',1,29,1,6),slider('N2','Second nucleus N',0,40,1,8)],[
  ['Reading the chart','N is the horizontal coordinate and Z is vertical. Isotopes lie along a horizontal row, isotones along a vertical column, and isobars along a diagonal of constant Z+N.'],
  ['Same identity is not an isomer claim','The same Z and N specify the same nuclide. To distinguish isomers you also need nuclear excitation/state information. No stability band is inferred from this small bookkeeping chart.']],
  'Two distinct nuclei have the same A but different Z. They are…',['Isotopes','Isotones','Isobars'],2,'The mass-number sum is equal, so they are isobars.'),
 section('isomers','4. Nuclear isomers',2,2,'Keep A and Z unchanged while comparing a ground state and an excited nuclear state.','Mexcited − Mground = E*/c²',[
- slider('excitation','Illustrative excitation E* (keV)',1,500,.1,142.7)],[
+ presets('Reference state',{tc:['Technetium-99m',{excitation:TC_ISOMER.excitation}]}),number('excitation','Excitation E* (keV)',1,500,142.7)],[
  ['A state label matters','Nuclear isomers are relatively long-lived excited states of the same nucleus. A short-lived excited state is not automatically called an isomer. The lecture uses technetium as an example.'],
  ['What the walkthrough means','Compare the two levels and the energy gap. The slider sets an illustrative level spacing. The walkthrough has no physical time axis and does not predict a lifetime, a branching ratio or an electron orbit.']],
  'An isomeric transition changes which quantity here?', ['Z','A','Nuclear excitation energy'],2,'The nuclear identity stays fixed while its internal state and mass-energy change.'),
 section('mass','5. Nuclear mass & atomic mass units',3,4,'Convert a mass in u to kilograms and rest energy, without confusing mass and mass number.','1 u = m(¹²C neutral ground-state atom)/12; 1 u c² ≈ 931.494 MeV',[
- slider('mass','Mass (u)',.5,240,.5,1)],[
+ choice('view','Explore',[['main','Mass to rest energy'],['standard','Carbon-12 standard'],['particles','Compare particle masses'],['atomic','Atomic mass and A']]),
+ presets('Mass reference',Object.fromEntries(Object.entries(massSamples).map(([id,sample])=>[id,[sample.name,{mass:sample.mass}]]))),
+ number('mass','Mass (u)',.0005,240,1),
+ choice('units','Comparison units',[['u','Atomic mass units'],['kg','Kilograms'],['MeV','MeV/c²']])],[
  ['Definition and conversion','The carbon-12 reference is a neutral atom in its ground state; it is not a free nucleon. The approximate Avogadro derivation in the lecture gives the right scale, but rounded historical numbers do not define current precision.'],
  ['Corrections to the source','Carbon has multiple isotopes; carbon-12 is the chosen reference, not the only isotope. A proton is about 1836 electron masses. The proton and neutron masses are close but unequal. Nuclear mass and atomic mass differ because of electrons and their binding.'],
  ['Why use MeV/c²?','Mass-energy equivalence applies to every rest mass. Expressing mass in MeV/c² is not justified by assuming that nucleons follow classical vibrations or rotations.']],
  'Does A=12 mean that any nucleus with twelve nucleons has mass exactly 12 u?', ['Yes','No'],1,'Only the reference neutral carbon-12 atom has exactly 12 u by definition; A is a count.'),
 section('binding','6. Mass defect, binding & mass excess',4,5,'Compare a bound atom with separated hydrogen atoms and neutrons. Change the nuclide to see what changes in the mass difference and energy per nucleon.','Δm = ZmH + Nmn − Matom; B ≈ Δmc²; mass excess = (Matom − Au)c²',[
- {key:'isotope',label:'Nuclide',value:'he-4',options:[['h-2','Hydrogen-2'],['he-4','Helium-4'],['c-12','Carbon-12'],['fe-56','Iron-56'],['ni-62','Nickel-62']]}],[
+ {key:'isotope',label:'Nuclide',value:'he-4',options:[['h-2','Hydrogen-2'],['he-4','Helium-4'],['c-12','Carbon-12'],['fe-56','Iron-56'],['ni-62','Nickel-62'],['pb-208','Lead-208']]},
+ choice('view','Binding view',[['main','Energy accounting'],['alpha','Bare alpha nucleus'],['excess','Compare the two mass differences']])],[
  ['Two different differences','Binding mass defect compares separated constituent masses with the bound system. Mass excess compares a mass with A u. These are not interchangeable; even a bound nucleus can have positive mass excess.'],
  ['Binding does not prove every stability property','Positive binding means energy is needed to separate all constituent nucleons. It does not guarantee resistance to beta decay, fission or every particle-emission channel. Stable light nuclei exist: helium-4 and carbon-12 refute a blanket “A<20 is unstable” rule.'],
  ['Helium worked problem','Using atomic H and He masses cancels the electron rest-mass terms. Different electronic binding energies leave a small correction that this teaching model omits. For He-4 B≈28.30 MeV and B/A≈7.07 MeV.'],
- ['Comparison data','Ground-state neutral-atom masses and free-neutron mass are from AME2020. The comparison shows five selected nuclides. Energy per nucleon alone cannot determine decay stability.']],
+ ['Comparison data','The six selected AME2020 nuclides show the broad iron–nickel region. Nearby nucleons provide additional binding as small nuclei grow. At large Z, proton repulsion increasingly offsets the short-range attraction. Energy per nucleon alone cannot determine decay stability.']],
  'Can a bound nucleus have a positive mass excess?', ['Yes','No'],0,'Mass excess uses A u as its reference, not the sum of free constituent masses.'),
 section('beta','7. Free neutron & beta-minus bookkeeping',5,5,'Follow the proton/neutron count change and a free-neutron survival curve.','n → p + e⁻ + ν̄e; β⁻: Z→Z+1, N→N−1, A unchanged',[
+ choice('view','Decay view',[['main','Free-neutron population'],['event','One free-neutron event'],['thorium','Thorium-234 beta decay']]),
  slider('Z','Parent nuclear Z (bookkeeping)',1,19,1,6),slider('N','Parent nuclear N (bookkeeping)',1,30,1,8)],[
  ['Mean lifetime and half-life','The supplied page states about 13 min. Using the PDG reference mean lifetime τ=878.4 s instead gives t½=τ ln2≈609 s≈10.15 min. The curve and replayable sample of 48 synthetic lifetimes describe free neutrons. The sample fluctuates around the expectation and does not predict the decay time of any individual neutron.'],
  ['Conservation and energetics','A beta-minus decay converts a neutron into a proton and emits an electron and electron antineutrino. Whether a selected bound parent can actually decay requires its Q-value, not just count conservation. The lecture’s ²³⁴Th→²³⁴Pa example has unchanged A and Z rising from 90 to 91.']],
  'In beta-minus decay, how does A change?', ['It rises by one','It falls by one','It stays unchanged'],2,'A counts protons plus neutrons. One neutron becomes one proton, preserving the total.'),
-section('scattering','8. Coulomb closest approach',6,6,'Scrub a head-on encounter and see relative kinetic energy turn into electric potential energy, then back again.','D = (1.43996455 MeV fm) z₁z₂ / Ecm',[
- slider('energy','Projectile laboratory energy (MeV)',.1,30,.1,25),slider('z2','Target proton count Z',1,92,1,92),slider('recoil','Recoil: 0=fixed target, 1=finite target',0,1,1,0)],[
+section('scattering','8. Coulomb closest approach',6,6,'Scrub a head-on encounter and see how an off-center pass changes the deflection and turning distance.','D = (1.43996455 MeV fm) z₁z₂ / Ecm',[
+ choice('view','Scattering view',[['main','Single nucleus'],['apparatus','Gold-foil apparatus'],['lab','Laboratory frame']]),
+ slider('energy','Projectile laboratory energy (MeV)',.1,30,.1,25),slider('impact','Impact parameter b (fm)',0,100,.1,0),
+ slider('z2','Target proton count Z',1,92,1,92),slider('recoil','Recoil: 0=fixed target, 1=finite target',0,1,1,0)],[
  ['The energy budget','For a stationary, infinitely heavy target, the incident kinetic energy becomes Coulomb potential energy at a head-on turning point. The lecture’s alpha-on-U, 25 MeV estimate is about 10.6 fm.'],
  ['Finite target mass','For a target initially at rest, relative motion has Ecm=Elab M/(m+M). Only that center-of-mass energy converts to relative potential energy; some kinetic energy remains in overall motion. Target mass is held at 238 u in this charge scan, so the scan is not a catalog of real elements.'],
  ['Limits','The timeline solves one-dimensional relative motion in the classical, nonrelativistic point-charge model. Strong nuclear interactions, finite charge distributions, screening and tunneling are omitted. Extrapolating this curve to separations comparable with nuclear sizes can be misleading. Closest approach is not automatically a measured nuclear radius.']],
  'For fixed charges and fixed-target approximation, doubling incident energy makes D…',['Twice as large','Half as large'],1,'D is inversely proportional to the relative kinetic energy.'),
 section('radius','9. Radius & nearly constant density',7,7,'Compare the A^(1/3) radius law and the density of an equivalent sharp sphere.','R=r₀A^(1/3); n=3/(4πr₀³)',[
+ presets('Size example',{light:['Carbon-12',{A:12}],double:['A = 216 · compare with 27',{A:216}],triple:['A = 216 · compare with 8',{A:216,referenceA:8}],lead:['Lead-208',{A:208}]}),
  slider('A','Mass number A',4,240,1,56),slider('r0','Radius coefficient r₀ (fm)',1.1,1.4,.01,1.2)],[
  ['Scaling','Doubling A does not double the radius. Increasing A by a factor of eight doubles R in this approximate law. The uniform number density is independent of A for fixed r₀.'],
  ['Radii require a convention','Charge RMS radius, half-density radius and a reaction/interaction radius are different observables. The lecture’s 1.2–1.4 fm coefficients are effective conventions, not universal exact constants. Very light nuclei need special care.'],
  ['Check the lecture’s final radius question','For r₀=1.2 fm, A=8 gives R=2.4 fm and A=208 gives R≈7.11 fm. A blanket heavy-nucleus radius of 10 fm does not follow from this coefficient; specify which radius is meant. 1 fm=10⁻¹⁵ m=10⁻¹³ cm.']],
  'With fixed r₀, increasing A by eight times makes R…',['Eight times larger','Twice as large','Unchanged'],1,'R scales with the cube root of A: 8^(1/3)=2.'),
 section('charge','10. Nuclear charge & atomic neutrality',7,7,'Count positive nuclear charge and compare it with an atom or ion’s net charge.','Qnucleus=Ze; Qatom=(Z−Ne)e',[
- slider('Z','Protons Z',1,20,1,6),slider('electrons','Atomic electrons Ne',0,25,1,6)],[
+ choice('view','Charge view',[['main','Atom and ion charge'],['radial','Illustrative nuclear charge density']]),
+ slider('Z','Protons Z',1,20,1,6),slider('electrons','Atomic electrons Ne',0,25,1,6),slider('probe','Radial probe (fm)',0,15,.1,3)],[
  ['Different regions, different charges','The nucleus has charge +Ze. A neutral atom contains Z electrons, giving zero total charge. An ion can have more or fewer electrons without changing nuclear Z.'],
  ['No tiny charge claimed as established','The neutron has zero net electric charge in the standard description but an internal electromagnetic structure. Experimental limits on charge neutrality are not measurements of a definite small neutron charge or proton–electron mismatch. The lecture’s quoted tiny charge values must not be presented as established nonzero charges.']],
  'Removing an atomic electron changes which quantity?', ['Nuclear Z','The atom’s net charge'],1,'Electron loss creates a positive ion but does not change the nucleus.'),
 section('fermi','11. Diffuse nuclear density',8,8,'Change radius and surface diffuseness in a two-parameter Fermi density profile.','ρ(r)=ρ₀/[1+exp((r−R)/a)]; t₉₀–₁₀=4a ln3≈4.394a',[
- slider('probe','Radial probe position (fm)',0,15,.1,3),slider('diffuseness','Diffuseness a (fm)',.2,1,.01,.55),slider('A','Mass number for radius scale',16,240,1,125),slider('r0','Radius coefficient (fm)',1.1,1.4,.01,1.2),slider('rho','Density parameter ρ₀ (fm⁻³)',.1,.2,.005,.165)],[
+ slider('probe','Radial probe position (fm)',0,15,.1,3),slider('diffuseness','Diffuseness a (fm)',.2,1,.01,.55),
+ choice('view','Plot',[['main','Local nucleon density'],['shell','Nucleons per unit radial thickness']]),
+ presets('Model nucleus',Object.fromEntries([['C',12],['Ca',40],['Ca',48],['Ni',58],['Sn',124],['Pb',208]].map(([symbol,A])=>[symbol+A,[symbol+'-'+A,{A}]]))),
+ slider('A','Mass number for radius scale',4,240,1,125),slider('r0','Radius coefficient (fm)',1.1,1.4,.01,1.2),slider('rho','Density parameter ρ₀ (fm⁻³)',.1,.2,.005,.165),
+ choice('normalization','Normalization',[['free','Use chosen ρ₀'],['normalize','Normalize to A']]),
+ choice('compare','Comparison',[['none','One curve'],['12','Carbon-12 model'],['40','Calcium-40 model'],['48','Calcium-48 model'],['58','Nickel-58 model'],['124','Tin-124 model'],['208','Lead-208 model']])],[
  ['Read the profile','At r=R, the density is ρ₀/2 exactly. A larger a broadens the surface. The 90–10% thickness is 4 ln3 times a; the commonly drawn 4.4a is an approximation.'],
- ['Matter is not charge','The lecture mixes nucleon-density discussion with charge-density figures. A chosen nucleon profile has units fm⁻³; a charge density requires charge units and its own normalization. This curve is not digitized from the supplied experimental plots.'],
- ['Normalization','Controls set a mathematical shape. Its volume integral is not constrained to the selected A; A here sets the radius scale. A global scale factor would be needed to impose the exact integral. Light nuclei are not universally described by this simple profile.']],
+ ['Matter is not charge','The lecture plots charge density for He-4, C-12, Ca-40, Ca-48, Ni-58, Sn-124 and Pb-208. The model here predicts illustrative nucleon density. Its standard Fermi shape is especially limited for very light nuclei such as He-4.'],
+ ['Normalization','Use chosen ρ₀ to explore the shape and read its total count. Normalize to A rescales ρ₀ so the spherical integral equals A. The radius and diffuseness stay fixed. The shell-count plot shows how 4πr² weights each radial interval.']],
  'At the half-density radius R, what is ρ(R)?',['ρ₀','ρ₀/2','Zero'],1,'The exponential is exp(0)=1, so the denominator is two.'),
-section('particles','12. Nucleon structure, pions & muons',8,9,'Separate particle classification from a simple ordering by mass.','Muon: lepton; pion: meson; proton/neutron: baryons',[],[
+section('particles','12. Nucleon structure, pions & muons',8,9,'Separate particle classification from a simple ordering by mass.','Muon: lepton; pion: meson; proton/neutron: baryons',[
+ choice('view','Particle view',[['main','Compare rest energies'],['valence','Proton and neutron valence charges'],['scale','Atom to subnuclear length scales'],['roles','Pions and cosmic-ray muons']])],[
  ['Modern classification','A muon is a charged lepton, not a meson despite the historical name “mu meson.” Pions are mesons; protons and neutrons are composite baryons. Mass lying between electron and proton masses does not define a meson.'],
  ['Nucleon structure','A neutron can have an internal charge distribution while total charge is zero. The lecture’s core/vector/scalar-cloud drawing is a historical model illustration, not an exact modern map. No new fitted nucleon structure is inferred from it.'],
  ['Mass comparison only','The chart shows approximate rest energies: electron 0.511, muon 105.658, charged pion 139.570 and proton 938.272 MeV. Marker lengths represent rest energy, not particle size or lifetime.']],
  'Which statement uses modern classification?', ['A muon is a meson','A muon is a lepton'],1,'Muons belong to the lepton family. Pions are mesons.'),
 section('recoil','13. Worked problems: finite recoil',9,9,'Reproduce Problem 1 A–C with the target initially at rest and consistent relative kinetic energy.','Ecm=Elab M/(m+M); D=k z₁z₂/Ecm',[
- slider('energy','Projectile laboratory energy (MeV)',.1,5,.1,4.2),slider('z1','Projectile charge number',1,2,1,2),slider('z2','Target charge number',1,92,1,92),slider('m1','Projectile mass (u, approximate)',1,4,1,4),slider('m2','Target mass (u, approximate)',1,238,1,238)],[
+ presets('Worked example',{
+  p1a:['1A · alpha on uranium',{energy:4.2,z1:2,z2:92,m1:4,m2:238}],
+  p1b:['1B · proton on alpha',{energy:.2,z1:1,z2:2,m1:1,m2:4}],
+  p1c:['1C · alpha on proton',{energy:.8,z1:2,z2:1,m1:4,m2:1}],
+ }),choice('view','Frame',[['main','Center of mass'],['lab','Laboratory frame']]),slider('energy','Projectile laboratory energy (MeV)',.1,5,.1,4.2),slider('z1','Projectile charge number',1,2,1,2),slider('z2','Target charge number',1,92,1,92),slider('m1','Projectile mass (u, approximate)',1,4,1,4),slider('m2','Target mass (u, approximate)',1,238,1,238)],[
  ['Problem 1A','An alpha of 4.2 MeV on stationary U-238 has Ecm=4.2×238/242 MeV. Using charge product 2×92 gives D≈64.1 fm, a little larger than the fixed-target approximation.'],
  ['Problems 1B and 1C','A 0.2 MeV proton on an alpha at rest has Ecm=0.2×4/5=0.16 MeV and D≈18.0 fm. An alpha on a proton must have the same Ecm for the same closest distance: Elab=0.16×5=0.8 MeV.'],
  ['Independent controls are bookkeeping','Mass and charge sliders are independent pedagogical parameters, not a list of real projectile/target species. This model always includes finite target recoil. The timeline displays relative separation and energies in the center-of-mass frame.']],
  'Why do the swapped proton/alpha experiments require different lab energies?', ['Their center-of-mass energy fractions differ','The Coulomb charge product changes'],0,'The charge product stays 2. The fraction M/(m+M) changes when projectile and target are exchanged.'),
 section('surface','14. Worked problem: surface nucleons',9,9,'Use the supplied piecewise-linear surface sketch, not the Fermi profile, to solve Problem 2.','R=c=1.1A^(1/3); f(surface)=1−(R−a/2)³/[R³+Ra²/4]',[
- slider('A','Mass number A (lecture examples: 27, 125, 216)',27,216,1,27),slider('width','Total linear surface width a (fm)',1,3,.1,3)],[
+ presets('Worked example',{al:['Aluminium-27',{A:27,width:3}],te:['Tellurium-125',{A:125,width:3}],po:['Polonium-216',{A:216,width:3}]}),
+ slider('A','Mass number A',27,216,1,27),slider('width','Total linear surface width a (fm)',1,3,.1,3)],[
  ['Interpret the drawing explicitly','The graph labels c=R at half density and a as the full declining surface width. We therefore use a constant core up to R−a/2, followed by a linear drop to zero at R+a/2. Here a is not the Fermi diffuseness parameter of the earlier section.'],
  ['Correct weighting','The nucleon fraction must weight density by shell volume 4πr²dr; a triangle area in the radial graph alone is not a nucleon count. Integrating the linear polynomial gives total ∝R³+Ra²/4 and core ∝(R−a/2)³.'],
  ['Problem 2 values','Use the practice exercises for Al-27, Te-125 and Po-216 with full width a=3 fm. The factor ρ₀=0.17 fm⁻³ cancels from the fraction. With all supplied parameters fixed, the integral need not equal exactly A; this is an approximate shape model.']],
@@ -96,3 +126,8 @@ export const challenges=[
  ...[27,125,216].map(A=>({id:'surface'+A,section:'surface',question:`Problem 2: for A=${A}, c=1.1A^(1/3) fm and full linear surface width a=3 fm, find the surface fraction as a percentage.`,answer:linearSurface(A).fraction*100,unit:'%',working:'Let lo=c−a/2. Integrate the linear density with 4πr² weighting: f=1−lo³/(c³+ca²/4). ρ₀ cancels.'}))
 ];
 export const sources=[['Original lecture',null],['AME2020 Table I: evaluated atomic masses','https://amdc.impcas.ac.cn/web/masseval.html'],['NIST: CODATA 2022 mass and energy constants','https://physics.nist.gov/cuu/pdf/RevModPhys.97.025002.pdf'],['PDG 2025: neutron mean lifetime','https://pdg.lbl.gov/2025/AtomicNuclearProperties/neutron.html'],['NNDC: beta-decay bookkeeping and Q values','https://www.nndc.bnl.gov/nudat3/help/betadecay.jsp'],['PDG: muon (lepton) listing','https://pdgprod.lbl.gov/pdgprod/pdgLive/Particle.action?home=&node=S004']];
+sources.push(
+ ['NUBASE2020: selected nuclide and isomer properties','https://amdc.impcas.ac.cn/web/nubase_en.html'],
+ ['ENSDF: thorium-234 beta decay and daughter levels','https://www.nndc.bnl.gov/ensnds/234/Pa/beta_decay.pdf'],
+ ['Princeton: classical Coulomb scattering','https://kirkmcd.princeton.edu/examples/Ph205/ph205l12.pdf'],
+);

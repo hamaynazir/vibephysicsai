@@ -1,5 +1,7 @@
 # Basic Concepts in Nuclear Physics
 
+See the [chapter coverage matrix](CHAPTER-AUDIT.md) and [scientific correction log](SCIENTIFIC-CORRECTIONS.md) for the second-pass review and current model limits.
+
 Independent study companion to the nine-page Chapter One lecture supplied by the user,
 credited on its scanned cover to **Dr. Adil M. Hussein M. Saeed, Assistant Professor in
 Nuclear Physics**, University of Sulaimani, 2026–2027. The catalog retains the user's
@@ -68,8 +70,9 @@ remain in the PDF; the companion does not claim to digitize them.
   lecture. Zero net neutron charge is compatible with internal structure.
 - Two-parameter Fermi profile is a mathematical nucleon-density illustration, not a
   fit to the lecture's charge-density plots. R is the half-density radius; the 90–10%
-  thickness is 4a ln3. Shape controls are not renormalized to integrate to A; A sets
-  the radius scale only. ρ₀ is a profile parameter, not necessarily exactly ρ(0).
+  thickness is 4a ln3. The default mode lets A set the radius and shows the
+  integrated count. Optional normalization rescales the profile to integrate to A.
+  ρ₀ is a profile parameter and can differ from ρ(0).
 - Muons are leptons, not mesons. Pions are mesons; proton/neutron are baryons.
   The historical core/vector/scalar-cloud sketch is not reproduced as an exact
   modern nucleon-density model. Mass-comparison bars are not physical particle sizes.

@@ -5,6 +5,14 @@ export const playbackProfiles = {
   scattering: {limit: 1, step: .025, rate: .16, label: 'Coulomb timeline'},
   recoil: {limit: 1, step: .025, rate: .16, label: 'Coulomb timeline'},
   fermi: {limit: 10, step: 2, rate: 1, label: 'Density walkthrough progress', autoplay: true},
+  mass: {limit: 4, step: 1, rate: .6, label: 'Mass explanation progress'},
+  relations: {limit: 2, step: 1, rate: .65, label: 'Comparison steps'},
+  radius: {limit: 2, step: 1, rate: .65, label: 'Radius explanation steps'},
+  surface: {limit: 2, step: 1, rate: .65, label: 'Shell counting steps'},
+  event: {limit: 2, step: 1, rate: .65, label: 'Beta event steps'},
+  apparatus: {limit: 2, step: 1, rate: .65, label: 'Apparatus explanation steps'},
+  nuclides: {limit: 2, step: 1, rate: .65, label: 'Composition explanation steps'},
+  conversion: {limit: 2, step: 1, rate: .65, label: 'Energy conversion steps'},
 };
 
 export class LecturePlayback {
@@ -18,6 +26,7 @@ export class LecturePlayback {
     this.bar.className = 'study-motion nuclear-playback';
     this.bar.innerHTML = `<div class="nuclear-playback-actions" role="group" aria-label="Playback">
       <button type="button" data-motion="play">Play</button>
+      <button type="button" data-motion="back" aria-label="Previous explanation step" hidden>Back</button>
       <button type="button" data-motion="step" aria-label="Step forward">Step</button>
       <button type="button" data-motion="reset">Reset</button>
       <label>Speed <select aria-label="Simulation speed"><option value=".25">0.25×</option><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
@@ -38,9 +47,11 @@ export class LecturePlayback {
     };
     this.bar.querySelector('select').onchange = event => { this.speed = +event.target.value; };
     this.play.onclick = () => this.toggle();
+    this.back = this.bar.querySelector('[data-motion=back]');
+    this.back.onclick = () => this.seek(Math.ceil(this.position/this.profile.step-.00001)*this.profile.step-this.profile.step);
     this.bar.querySelector('[data-motion=step]').onclick = () => {
       const next = this.position + this.profile.step;
-      this.seek(this.profile.limit === 2 || this.profile.autoplay
+      this.seek(this.profile.limit === 2 || this.profile.autoplay || this.profile===playbackProfiles.mass
         ? Math.floor(next / this.profile.step + .00001) * this.profile.step : next);
     };
     this.bar.querySelector('[data-motion=reset]').onclick = () => this.seek(0);
@@ -58,14 +69,15 @@ export class LecturePlayback {
   configure(id) {
     this.pause();
     this.profile = playbackProfiles[id];
-    this.position = id === 'binding' || id === 'isomers' ? 2 : 0;
+    this.position = this.profile && !this.profile.autoplay && (this.profile.limit===2 || id==='mass') ? this.profile.limit : 0;
     this.bar.hidden = !this.profile;
     if (!this.profile) return;
     const walkthrough = this.profile.limit === 2;
+    this.back.hidden = !walkthrough && id!=='mass' && id!=='fermi';
     this.bar.querySelector('.nuclear-scrubber').hidden = walkthrough;
     this.bar.querySelector('.nuclear-playback-actions label').hidden = walkthrough;
     this.range.max = this.profile.limit;
-    this.range.step = walkthrough ? '1' : 'any';
+    this.range.step = walkthrough || id==='mass' ? '1' : 'any';
     this.bar.querySelector('#timeline-caption').textContent = this.profile.label;
     this.playing = Boolean(this.profile.autoplay && !this.reduced.matches);
     this.schedule();
@@ -74,7 +86,8 @@ export class LecturePlayback {
   update(label) {
     this.play.textContent = this.playing ? 'Pause' : 'Play';
     this.play.setAttribute('aria-label', this.playing ? 'Pause simulation' : 'Play simulation');
-    this.range.value = this.profile?.limit === 2 ? Math.floor(this.position + .00001) : this.position;
+    this.range.value = this.profile?.limit === 2 || this.profile===playbackProfiles.mass ? Math.floor(this.position + .00001) : this.position;
+    this.back.disabled = this.position===0;
     if (this.status.textContent !== label) this.status.textContent = label;
     if (this.range.getAttribute('aria-valuetext') !== label) this.range.setAttribute('aria-valuetext', label);
   }

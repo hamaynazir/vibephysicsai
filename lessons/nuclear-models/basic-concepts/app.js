@@ -1,9 +1,9 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
 import {installLectureReview} from '../../../lecture-review.js?v=math-1';
-import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js?v=pilot-1';
-import {COHORT_SIZE,coulombState,evaluate,fermiWalkthrough} from './math.js?v=density-1';
-import {draw,bindingSteps,isomerSteps} from './visuals.js?v=density-1';
-import {LecturePlayback} from './playback.js?v=density-1';
+import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js?v=chapter-2';
+import {COHORT_SIZE,coulombState,evaluate,fermiWalkthrough,massSamples,TC_ISOMER} from './math.js?v=chapter-2';
+import {draw,bindingSteps,isomerSteps} from './visuals.js?v=chapter-2';
+import {LecturePlayback} from './playback.js?v=chapter-2';
 import katex from '../../../vendor/katex.mjs';
 import {installReaderNavigation} from '../../../reader-navigation.js?v=materials-3';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>n===null?'Not defined':typeof n==='number'?Number(n.toPrecision(5)).toString():String(n);
@@ -29,13 +29,13 @@ const captions = {
   relations: 'Filled marker: first nuclide. Outline: second. Both positions use N horizontally and Z vertically.',
   isomers: 'The walkthrough reveals energy levels and their gap. Its steps have no physical time scale.',
   mass: 'Mass in u and kg is the same quantity. Multiplying by c² gives the rest energy.',
-  binding: 'The energy-level gap is schematic. The bars use a common linear scale and AME2020 masses.',
+  binding: 'The gap illustrates energy accounting. Points show selected AME2020 nuclides on common A and B/A axes.',
   beta: 'Filled marker: expected survival. Ring: this replayable sample of 48 free neutrons. The parent counts below are a separate bookkeeping example.',
-  scattering: 'Relative frame with the target as the reference. The ruler runs from zero to five turning distances. Point charges are drawn larger for visibility.',
-  recoil: 'Relative frame with the target as the reference. The ruler runs from zero to five turning distances. Point charges are drawn larger for visibility.',
+  scattering: 'Point-charge model. The laboratory frame includes center-of-mass drift when recoil is enabled. Detector flashes in the apparatus are illustrative.',
+  recoil: 'Compare the center-of-mass and laboratory frames. The relative energy and separation are the same in both views.',
   radius: 'Projected outlines of two sharp spheres, drawn on the same scale.',
   charge: 'The nuclear charge stays fixed when the electron count changes.',
-  fermi: 'Shading spans 90% to 10% of ρ₀. The ring marks a location on the curve.',
+  fermi: 'The slice and graph share one profile. Shading spans 90% to 10% of ρ₀. Comparison curves are illustrative models.',
   particles: 'Bar length encodes rest energy on a linear scale. Particle size is outside this comparison.',
   surface: 'Shading marks the declining density region. Its fraction uses the volume of spherical shells.',
 };
@@ -46,7 +46,7 @@ const equations = {
   mass: String.raw`1\,\mathrm u=\frac{m({}^{12}\mathrm C)}{12} \qquad (1\,\mathrm u)c^2\approx931.494\,\mathrm{MeV}`,
   binding: [String.raw`\Delta m=Zm_\mathrm{H}+Nm_\mathrm{n}-M_\mathrm{atom}`, String.raw`B\approx\Delta m\,c^2,\quad B/A`, String.raw`\Delta_{\mathrm{mass}}=(M_\mathrm{atom}-A\,\mathrm u)c^2`],
   beta: [String.raw`n\to p+e^-+\bar\nu_e`,String.raw`P_{\mathrm{survive}}(t)=e^{-t/\tau},\quad t_{1/2}=\tau\ln 2`],
-  scattering: [String.raw`U(r)=\frac{kz_1z_2}{r},\quad K_\mathrm{rel}+U=E_\mathrm{cm}`,String.raw`D=\frac{kz_1z_2}{E_\mathrm{cm}}`],
+  scattering: [String.raw`U(r)=\frac{kz_1z_2}{r},\quad K_\mathrm{rel}+U=E_\mathrm{cm}`,String.raw`d=\frac{kz_1z_2}{2E_\mathrm{cm}},\quad r_{\min}=d+\sqrt{d^2+b^2}`,String.raw`\theta=2\tan^{-1}(d/b),\quad \theta(b=0)=180^\circ`],
   recoil: [String.raw`E_\mathrm{cm}=\frac{M}{m+M}E_\mathrm{lab}`,String.raw`D=\frac{kz_1z_2}{E_\mathrm{cm}}`],
   radius: [String.raw`R=r_0 A^{1/3}`,String.raw`n=\frac{3}{4\pi r_0^3}`],
   charge: String.raw`Q_\mathrm{nucleus}=Ze,\quad Q_\mathrm{atom}=(Z-N_e)e`,
@@ -54,15 +54,60 @@ const equations = {
   surface: [String.raw`c=(1.1\,\mathrm{fm})A^{1/3}`,String.raw`f_\mathrm{surface}=1-\frac{(c-a/2)^3}{c^3+ca^2/4}`],
 };
 function equationMarkup(id) {
+  if(id==='binding'&&state.view==='alpha'){
+    return katex.renderToString(String.raw`\Delta m=2m_p+2m_n-M_\alpha,\quad B=\Delta mc^2`,{output:'mathml',displayMode:true});
+  }
   if (!equations[id]) return esc(current.formula);
   return [equations[id]].flat().map(formula => katex.renderToString(formula,{output:'mathml',displayMode:true})).join('');
 }
 
+const explanations = {
+  nuclides:['Read the starting composition','Identify the nucleon to add','Read the new composition'],
+  relations:['Locate the first nuclide','Compare the second nuclide','Read the shared row, column or diagonal'],
+  mass:['Start with the carbon-12 reference','Count atoms in one mole','Find the mass of one carbon-12 atom','Divide by twelve','Read one unified atomic mass unit'],
+  conversion:['Start with the mass in atomic mass units','Convert the same mass to kilograms','Multiply by c², then express the energy in MeV'],
+  radius:['Fix the density','Compare volumes and radii','Read the cube-root relationship'],
+  surface:['Locate the uniform core','Mark the declining surface','Weight by shell volume and compare the counts'],
+  event:['Before the beta event','At the transition','Check conservation across the products'],
+  apparatus:['Collimate the alpha beam','Pass through the thin gold foil','Read flashes around the detector'],
+};
+function configurePlayback(){
+  const id=current.id;
+  const profile=id==='beta'&&state.view!=='main'?'event':id==='scattering'&&state.view==='apparatus'?'apparatus':
+    id==='mass'&&state.view==='main'?'conversion':
+    (id==='mass'&&state.view!=='standard') || (id==='binding'&&state.view==='excess') || (id==='nuclides'&&state.view==='main')?'static':id;
+  motion.configure(profile);
+  densityGuide=id==='fermi'&&motion.playing;
+}
+function updateControlVisibility(){
+  const id=current.id, view=state.view;
+  const visible={
+    mass:{units:view==='particles',mass:view==='main',preset:view==='main'||view==='atomic'},
+    binding:{isotope:view!=='alpha'},
+    beta:{Z:view==='main',N:view==='main'},
+    scattering:{energy:view!=='apparatus',impact:view!=='apparatus',z2:view!=='apparatus',recoil:view!=='apparatus'},
+    charge:{electrons:view==='main',probe:view==='radial'},
+    fermi:{rho:state.normalization==='free'},
+  }[id];
+  for(const [key,show] of Object.entries(visible||{})) $('#control-'+key).closest('label').hidden=!show;
+  if(id==='mass'){
+    for(const option of $('#control-preset').options) option.disabled=view==='atomic'&&!massSamples[option.value]?.A;
+    if(view==='atomic'&&!massSamples[state.preset]?.A){
+      state.preset='c12';
+      state.mass=massSamples.c12.mass;
+      $('#control-preset').value='c12';
+      $('#control-mass').value=state.mass;
+      $('#output-mass').textContent=fmt(state.mass);
+    }
+  }
+}
+
 function redraw(){
   const id = current.id, position = motion.position;
-  if(id === 'beta') state.seconds = position;
-  const collision = id === 'scattering' || id === 'recoil';
-  const model = id === 'fermi' && densityGuide ? fermiWalkthrough(state, position) : state;
+  if(id === 'beta' && state.view==='main') state.seconds = position;
+  const collision = (id === 'scattering' && state.view!=='apparatus') || id === 'recoil';
+  const extra = id==='nuclides'&&position>=2 ? {Z:state.Z+Number(state.view==='proton'),N:state.N+Number(state.view==='neutron')} : null;
+  const model = id === 'fermi' && densityGuide ? fermiWalkthrough(state, position) : extra ? {...state,...extra} : state;
   const result = collision ? coulombState(state,position) : evaluate(id,model);
   draw($('#scene'),id,model,result,position);
   if(id === 'fermi') {
@@ -81,19 +126,25 @@ function redraw(){
     }
   }
   const step = Math.floor(position + .00001);
-  if(id === 'binding' || id === 'isomers') {
+  const stages = explanations[id==='beta'?'event':id==='scattering'?'apparatus':id==='mass'&&state.view==='main'?'conversion':id];
+  if(stages && ((id==='beta'&&state.view!=='main') || (id==='scattering'&&state.view==='apparatus') ||
+    ['relations','radius','surface'].includes(id) || (id==='mass'&&['main','standard'].includes(state.view)) || (id==='nuclides'&&state.view!=='main'))) {
+    motion.update(`Step ${step+1} of ${stages.length} · ${stages[step]}`);
+  }
+  if((id === 'binding' && state.view!=='excess') || id === 'isomers') {
     const steps = id === 'binding' ? bindingSteps : isomerSteps;
     motion.update(`Step ${step+1} of 3 · ${steps[step]}`);
   }
-  if(id === 'beta') motion.update(`${Math.round(result.seconds)} s · ${result.remaining} of ${COHORT_SIZE} remain`);
+  if(id === 'beta' && state.view==='main') motion.update(`${Math.round(result.seconds)} s · ${result.remaining} of ${COHORT_SIZE} remain`);
   if(collision) {
     const phase = Math.abs(position-.5)<1e-9 ? 'Turning point' : position < .5 ? 'Approaching' : 'Separating';
-    motion.update(`${phase} · t = ${fmt(result.time)} fm/c (zero at turn)`);
+    motion.update(`${phase} · t = ${fmt(result.time)} fm/c (zero at closest approach)`);
   }
   const values = entries(result);
   const container = $('#metrics');
-  if(container.dataset.topic !== id) {
-    container.dataset.topic = id;
+  const metricSet=[id,state.view,...values.map(([,label])=>label)].join('|');
+  if(container.dataset.topic !== metricSet) {
+    container.dataset.topic = metricSet;
     container.innerHTML = values.map(([,label])=>`<div class="metric"><strong></strong><span>${label}</span></div>`).join('');
   }
   container.querySelectorAll('strong').forEach((element,index) => {
@@ -107,23 +158,32 @@ function record(id,correct){memory.records[id]={correct,attempts:(Number(memory.
 installLectureReview(sections, topic => memory.records['quiz:'+topic.id]?.correct,
   (topic, correct) => record('quiz:'+topic.id, correct));
 function entries(r){switch(current.mode){
-case 'overview':case 'nuclides':return [[r.symbol,'Element symbol'],[r.Z,'Protons Z'],[r.N,'Neutrons N'],[r.A,'Mass number A']];
+case 'overview':case 'nuclides':return [[`${r.name} (${r.symbol})`,'Element'],[r.Z,'Protons Z'],[r.N,'Neutrons N'],[r.A,'Mass number A'],[r.charge,'Nuclear charge (C)']];
 case 'relations':{const names=Object.entries(r.relations).filter(([,v])=>v).map(([k])=>({same:'Same nuclide',isotope:'Isotopes',isotone:'Isotones',isobar:'Isobars'}[k]));return [[r.A,'First A'],[r.other.A,'Second A'],[names.join(', ')||'None of these','Relationship']];}
-case 'isomers':return [[state.excitation,'Excitation (keV)'],[r.massIncrement,'Mass increment (u)']];
-case 'mass':return [[state.mass,'Mass (u)'],[r.kg,'Mass (kg)'],[r.MeV,'Rest energy (MeV)'],[r.joule,'Rest energy (J)']];
-case 'binding':return [[r.separated.toFixed(6),'Separated mass (u)'],[r.mass.toFixed(6),'Neutral-atom mass (u)'],[r.defect,'Binding defect (u)'],[r.energy,'Binding energy ≈ (MeV)'],[r.perNucleon,'B/A ≈ (MeV per nucleon)'],[r.excess,'Atomic mass excess (MeV)']];
-case 'beta':return [[`${r.daughterZ}, ${r.daughterN}`,'Daughter Z, N (bookkeeping)'],[r.A,'A unchanged'],[`${(r.survival*100).toFixed(1)}%`,'Expected free-neutron survival'],[`${r.remaining} / ${COHORT_SIZE}`,'Sample remaining'],[r.halfLife/60,'Reference half-life (min)'],[r.Q,'Free decay Q (MeV)']];
-case 'scattering':case 'recoil':return [[r.separation,'Relative separation (fm)'],[r.distance,'Closest separation D (fm)'],[r.kinetic,'Relative kinetic energy (MeV)'],[r.potential,'Electric potential energy (MeV)']];
-case 'radius':return [[r.radius,'Sharp-sphere R (fm)'],[r.number,'Number density (fm⁻³)'],[r.perCM3,'Number density (cm⁻³)'],[r.kgM3,'Approximate mass density (kg/m³)']];
+case 'isomers':return [[state.excitation,'Excitation (keV)'],[r.massIncrement,'Mass increment (u)'],...(state.preset==='tc'?[[TC_ISOMER.halfLifeHours,'Tc-99m half-life (h)'],[TC_ISOMER.groundHalfLifeYears,'Tc-99 half-life (years)']]:[])];
+case 'mass': {
+  const sample=massSamples[state.preset];
+  if(state.view==='standard'||state.view==='particles')return [];
+  if(state.view==='atomic'){
+    const atom=sample?.A?sample:massSamples.c12;
+    return [[`${atom.Z}, ${atom.A-atom.Z}, ${atom.A}`,'Z, N, A'],[atom.mass.toFixed(9),'Neutral-atom mass (u)'],[atom.mass-atom.A,'Atomic mass minus A u (u)']];
+  }
+  return [[sample?.A?sample.mass.toFixed(9):state.mass,'Mass (u)'],[r.kg,'Mass (kg)'],[r.MeV,'Rest energy (MeV)'],[r.joule,'Rest energy (J)'],
+    ...(sample?.A?[[sample.A,'Mass number A'],[sample.mass-sample.A,'Atomic mass minus A u (u)']]:[])];
+}
+case 'binding':return [[`${r.Z}, ${r.N}, ${r.A}`,'Z, N, A'],[r.separated.toFixed(6),'Separated mass (u)'],[r.mass.toFixed(6),state.view==='alpha'?'Bare nucleus mass (u)':'Neutral-atom mass (u)'],[r.defect,'Binding defect (u)'],[r.energy,'Binding energy (MeV)'],[r.perNucleon,'B/A (MeV per nucleon)'],...(r.excess===undefined?[]:[[r.excess,'Atomic mass excess (MeV)']])];
+case 'beta':return state.view==='thorium'?[[234,'A unchanged'],[91,'Daughter Z'],[143,'Daughter N']]:state.view==='event'?[[r.Q,'Total kinetic energy available ≈ (MeV)'],[0,'Net product charge (e)'],[0,'Net electron lepton number']]:[[`${r.daughterZ}, ${r.daughterN}`,'Daughter Z, N (bookkeeping)'],[r.A,'A unchanged'],[`${(r.survival*100).toFixed(1)}%`,'Expected free-neutron survival'],[`${r.remaining} / ${COHORT_SIZE}`,'Sample remaining'],[r.halfLife/60,'Reference half-life (min)'],[r.Q,'Free decay Q (MeV)']];
+case 'scattering':case 'recoil':return state.view==='apparatus'?[]:[[r.separation,'Relative separation (fm)'],[r.distance,'Closest separation D (fm)'],[r.angle,'Asymptotic relative deflection (°)'],[r.kinetic,'Relative kinetic energy (MeV)'],[r.potential,'Electric potential energy (MeV)'],[r.ecm,'Total relative energy (MeV)']];
+case 'radius':return [[r.radius,'Sharp-sphere R (fm)'],[r.volume,'Volume (fm³)'],[r.number,'Number density (fm⁻³)'],[r.perCM3,'Number density (cm⁻³)'],[r.kgM3,'Approximate mass density (kg/m³)']];
 case 'charge':return [[r.charge,'Nuclear charge (C)'],[r.atomNet,'Atom/ion net charge (C)']];
-case 'fermi':return [[r.R,'Half-density radius R (fm)'],[r.skin,'90–10% surface thickness (fm)'],[r.probe,'Probe position (fm)'],[r.density,'Probe density (fm⁻³)']];
+case 'fermi':return [[r.R,'Half-density radius R (fm)'],[r.skin,'90–10% surface thickness (fm)'],[r.probe,'Probe position (fm)'],[r.density,'Probe density (fm⁻³)'],[r.rho,'Profile parameter ρ₀ (fm⁻³)'],[r.total,'Integrated nucleon count'],...(state.view==='shell'?[[r.shell,'Nucleons per fm at probe']]:[])];
 case 'particles':return [[r.electronEnergy,'Electron · lepton (MeV)'],[r.muonMass,'Muon · lepton (MeV)'],[r.pionMass,'Charged pion · meson (MeV)'],[r.protonMass,'Proton · baryon (MeV)']];
-case 'surface':return [[r.c,'Half-density radius c (fm)'],[r.lo,'Core edge (fm)'],[r.fraction*100,'Nucleons in linear surface (%)'],[r.total,'Integrated count with fixed ρ₀ (not forced to A)']];
+case 'surface':return [[r.c,'Half-density radius c (fm)'],[r.lo,'Core edge (fm)'],[r.hi,'Outer edge (fm)'],[r.fraction*100,'Nucleons in linear surface (%)'],[`${fmt(r.total)} vs ${state.A}`,'Integrated count vs selected A']];
 }}
 function controlMarkup(c) {
   const entry = c.options
     ? `<select id="control-${c.key}" data-key="${c.key}">${c.options.map(([value,label])=>`<option value="${value}" ${value===state[c.key]?'selected':''}>${esc(label)}</option>`).join('')}</select>`
-    : `<output id="output-${c.key}" for="control-${c.key}">${fmt(state[c.key])}</output><input id="control-${c.key}" data-key="${c.key}" type="range" min="${c.min}" max="${c.max}" step="${c.step}" value="${state[c.key]}">`;
+    : `<output id="output-${c.key}" for="control-${c.key}">${fmt(state[c.key])}</output><input id="control-${c.key}" data-key="${c.key}" type="${c.type||'range'}" min="${c.min}" max="${c.max}" step="${c.step}" value="${state[c.key]}">`;
   return `<label><span id="control-label-${c.key}">${esc(c.label)}</span>${entry}</label>`;
 }
 function selectSection(id){
@@ -146,8 +206,8 @@ function selectSection(id){
   caption.textContent=captions[current.id];
   $('#scene').setAttribute('aria-label',`${$('#title').textContent} diagram`);
   $('#scene').setAttribute('aria-describedby','scene-caption');
-  motion.configure(current.id);
-  densityGuide = current.id === 'fermi' && motion.playing;
+  configurePlayback();
+  updateControlVisibility();
   placePlayback();
   redraw();
   $('.companion').scrollTop=0;
@@ -175,6 +235,7 @@ $('#controls').oninput=e=>{
   const key=e.target.dataset.key;
   if(!key)return;
   const output=$('#output-'+key);
+  if(e.target.type==='number' && (!e.target.validity.valid || e.target.value===''))return;
   if(current.id === 'fermi' && densityGuide) {
     state = {...state, diffuseness:Number($('#control-diffuseness').value), probe:Number($('#control-probe').value)};
     densityGuide = false;
@@ -183,6 +244,27 @@ $('#controls').oninput=e=>{
   }
   state[key]=output?+e.target.value:e.target.value;
   if(output)output.textContent=fmt(state[key]);
+  const preset=current.controls.find(control=>control.examples);
+  if(key==='preset' && preset.examples[state.preset]) {
+    if(current.id==='radius')delete state.referenceA;
+    for(const [field,value] of Object.entries(preset.examples[state.preset][1])) {
+      state[field]=value;
+      const input=$('#control-'+field);
+      if(input){
+        input.value=value;
+        $('#output-'+field).textContent=fmt(value);
+      }
+    }
+  } else if(output && preset && Object.values(preset.examples).some(([,fields])=>key in fields)) {
+    state.preset='custom';
+    $('#control-preset').value='custom';
+  }
+  if(key==='preset' && state.preset==='custom' && current.id==='radius')delete state.referenceA;
+  if(key==='view'){
+    configurePlayback();
+    $('#formula').innerHTML=equationMarkup(current.id);
+  }
+  if(key==='view'||key==='normalization')updateControlVisibility();
   redraw();
 };
 $('#visual-section').onchange=e=>go(e.target.value);$('#visual-previous').onclick=()=>go(sections[sections.indexOf(current)-1]?.id);$('#visual-next').onclick=()=>go(sections[sections.indexOf(current)+1]?.id);

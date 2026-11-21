@@ -2,6 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {lesson,sections,pageSections,guide,challenges,defaults} from '../lessons/nuclear-models/basic-concepts/content.js';
 import {relation,nuclide,massEnergy,heliumBinding,closestApproach,nuclearRadius,uniformDensity,fermi,skinThickness,linearSurface,evaluate} from '../lessons/nuclear-models/basic-concepts/math.js';
 import {bindingEnergy,bindingNuclides,COHORT_SIZE,coulombState,decayState,ELECTRON_MEV,FERMI_RANGE,NEUTRON_LIFETIME,neutronCohort} from '../lessons/nuclear-models/basic-concepts/math.js';
+import {ALPHA_MASS,alphaBinding,betaBookkeeping,densityState,fermiProfile,massSamples,U_KG,valenceCharge} from '../lessons/nuclear-models/basic-concepts/math.js';
 const near=(a,b,t=1e-9)=>assert.ok(Math.abs(a-b)<Math.max(1e-12,Math.abs(b)*t),`${a} != ${b}`);
 test('Nuclear lecture preserves all nine pages and defines fourteen sections and eleven exercises',()=>{assert.equal(lesson.pages,9);assert.equal(sections.length,14);assert.equal(challenges.length,11);assert.equal(pageSections.length,9);assert.equal(new Set(sections.map(s=>s.id)).size,14);for(const id of [...pageSections,...guide])assert.ok(sections.some(s=>s.id===id));for(const c of challenges){assert.ok(Number.isFinite(c.answer));assert.ok(sections.some(s=>s.id===c.section));}assert.ok(fs.existsSync(new URL('../lessons/nuclear-models/basic-concepts/assets/lecture.pdf',import.meta.url)));});
 test('All nuclear model controls produce finite values at default and extremes',()=>{for(const section of sections){assert.ok(section.quiz.answer>=0&&section.quiz.answer<section.quiz.options.length);for(const edge of ['value','min','max']){const s={...defaults,...(section.id==='surface'?{A:27}: {})};for(const c of section.controls)s[c.key]=c[edge];const result=evaluate(section.id,s);for(const value of Object.values(result))if(typeof value==='number')assert.ok(Number.isFinite(value),section.id);}}});
@@ -70,6 +71,51 @@ test('Density walkthrough pauses at half density and widens the surface at fixed
   near(widened.R,edge.R);
   assert.ok(widened.skin>edge.skin);
   assert.equal(settings.diffuseness,defaults.diffuseness);
+});
+
+test('Off-axis paths satisfy energy, angular momentum, asymptotic angle and the closest approach',()=>{
+  for(const energy of [4.2,25])for(const impact of [.1,5,50])for(const recoil of [0,1]){
+    const s={...defaults,energy,impact,recoil};
+    const mu=(recoil?s.m1*s.m2/(s.m1+s.m2):s.m1)*931.49410372;
+    const turn=coulombState(s,.5);
+    const d=1.43996455*s.z1*s.z2/(2*turn.ecm);
+    near(turn.distance,d+Math.hypot(d,impact));
+    near(turn.angle,2*Math.atan(d/impact)*180/Math.PI);
+    assert.ok(turn.kinetic>0);
+    for(const progress of [0,.25,.5,.75,1]){
+      const state=coulombState(s,progress), [x,y]=state.position, [vx,vy]=state.vector;
+      near(state.kinetic,.5*mu*(vx*vx+vy*vy));
+      near(mu*(x*vy-y*vx),state.angularMomentum);
+      near(state.kinetic+state.potential,state.ecm);
+    }
+  }
+});
+
+test('Reference masses, alpha convention, beta charge and valence charges agree',()=>{
+  near(massSamples.c12.mass*U_KG/12,U_KG);
+  near(massEnergy(massSamples.electron.mass).MeV,ELECTRON_MEV);
+  near(alphaBinding().mass,ALPHA_MASS);
+  near(alphaBinding().energy,28.29561,1e-6);
+  assert.equal(nuclide(29,34).symbol,'Cu');
+  assert.equal(nuclide(29,34).A,63);
+  const beta=betaBookkeeping(90,144);
+  assert.deepEqual([beta.daughterZ,beta.daughterN,beta.A,beta.chargeAfter,beta.leptons],[91,143,234,90,0]);
+  assert.equal(valenceCharge('uud'),1);
+  assert.equal(valenceCharge('udd'),0);
+});
+
+test('Normalized Fermi profiles have the chosen count under independent quadrature',()=>{
+  for(const A of [12,40,208])for(const diffuseness of [.2,1]){
+    const s={...defaults,A,diffuseness,normalization:'normalize'};
+    const r=densityState(s), count=30000, dx=(r.R+40*diffuseness)/count;
+    let independent=0;
+    for(let i=0;i<count;i++){
+      const x=(i+.5)*dx;
+      independent+=4*Math.PI*x*x*fermi(x,r.R,diffuseness,r.rho)*dx;
+    }
+    near(independent,A,1e-7);
+    near(fermiProfile(r.R,diffuseness,r.rho),A);
+  }
 });
 
 test('Fermi ruler uses a stable domain and includes the full 90–10 percent interval',()=>{

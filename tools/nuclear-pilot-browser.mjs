@@ -40,10 +40,15 @@ try {
     assert.equal(await canvas.getAttribute('aria-describedby'),'scene-caption');
     assert.doesNotMatch(await desktop.locator('#metrics').innerText(),/NaN|undefined|Infinity/);
     assert.equal(await timeline.isVisible(),['beta','scattering','recoil','fermi'].includes(id));
-    assert.equal(await play.isVisible(),['binding','isomers','beta','scattering','recoil','fermi'].includes(id));
+    assert.equal(await play.isVisible(),['relations','mass','binding','isomers','beta','scattering','radius','recoil','fermi','surface'].includes(id));
     for(const {key,options} of controls) {
       const input=desktop.locator('#control-'+key);
-      if(options) await input.selectOption(options.at(-1)[0]);
+      if(options) {
+        if(await input.evaluate(el=>el.closest('label').hidden))continue;
+        const more=input.locator('xpath=ancestor::details[contains(@class,"study-more-controls")]');
+        if(await more.count() && !await more.evaluate(node=>node.open))await more.locator('summary').click();
+        await input.selectOption({index:await input.evaluate(el=>Array.from(el.options).findLastIndex(option=>!option.disabled))});
+      }
       else await input.evaluate(el=>{el.value=el.max;el.dispatchEvent(new Event('input',{bubbles:true}));});
       assert.doesNotMatch(await desktop.locator('#metrics').innerText(),/NaN|undefined|Infinity/);
     }
@@ -51,8 +56,9 @@ try {
   }
 
   await section.selectOption('binding');
+  await desktop.locator('#control-view').selectOption('main');
   await desktop.getByRole('combobox',{name:'Nuclide',exact:true}).selectOption('he-4');
-  assert.match(await metric('Binding energy ≈'),/^28\.29/);
+  assert.match(await metric('Binding energy (MeV)'),/^28\.29/);
   await reset.click();
   assert.match(await time.innerText(),/Step 1 of 3/);
   const separated = await pixels();
@@ -64,6 +70,34 @@ try {
   await desktop.getByRole('combobox',{name:'Nuclide',exact:true}).selectOption('ni-62');
   assert.match(await metric('B/A'),/^8\.794/);
 
+  await section.selectOption('relations');
+  await desktop.locator('#control-preset').selectOption('copper');
+  assert.equal(await metric('First A'),'63');
+  assert.equal(await metric('Second A'),'65');
+  assert.equal(await metric('Relationship'),'Isotopes');
+
+  await section.selectOption('nuclides');
+  await desktop.locator('#control-view').selectOption('neutron');
+  const isotopeElement=await metric('Element');
+  const isotopeMass=Number(await metric('Mass number A'));
+  await reset.click();
+  assert.equal(await metric('Element'),isotopeElement);
+  assert.equal(Number(await metric('Mass number A')),isotopeMass-1);
+  await desktop.locator('#control-view').selectOption('proton');
+  assert.notEqual(await metric('Element'),isotopeElement);
+
+  await section.selectOption('mass');
+  await desktop.locator('#control-view').selectOption('standard');
+  await reset.click();
+  assert.match(await time.innerText(),/Step 1 of 5/);
+  await timeline.press('End');
+  assert.match(await time.innerText(),/Step 5 of 5/);
+  await desktop.locator('[data-motion=back]').click();
+  assert.match(await time.innerText(),/Step 4 of 5/);
+  await desktop.locator('#control-view').selectOption('atomic');
+  await desktop.locator('#control-preset').selectOption('li7');
+  assert.match(await metric('Neutral-atom mass'),/^7\.016/);
+
   await section.selectOption('isomers');
   await reset.click();
   const ground = await pixels();
@@ -71,6 +105,7 @@ try {
   assert.notEqual(await pixels(),ground);
 
   await section.selectOption('beta');
+  await desktop.locator('#control-view').selectOption('main');
   assert.equal(await play.innerText(),'Play');
   const seek = value => timeline.evaluate((el,value)=>{el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));},value);
   await seek(878.4*Math.log(2));
@@ -107,6 +142,8 @@ try {
 
   for(const id of ['scattering','recoil']) {
     await section.selectOption(id);
+    await desktop.locator('#control-view').selectOption('main');
+    if(id==='scattering')await desktop.locator('#control-impact').fill('0');
     await seek(.5);
     assert.equal(await metric('Relative kinetic energy'),'0');
     assert.equal(await metric('Relative separation'),await metric('Closest separation'));
@@ -114,8 +151,29 @@ try {
     await timeline.press('ArrowRight');
     assert.match(await time.innerText(),/Separating/);
   }
+  await section.selectOption('scattering');
+  await desktop.locator('#control-impact').fill('20');
+  assert.ok(Number(await metric('Asymptotic relative deflection'))<90);
+  await seek(.5);
+  assert.ok(Number(await metric('Relative kinetic energy'))>0);
+  await desktop.locator('#control-view').selectOption('apparatus');
+  assert.match(await time.innerText(),/Read flashes/);
+  assert.equal(await timeline.isVisible(),false);
+  await section.selectOption('recoil');
+  await desktop.locator('#control-preset').selectOption('p1b');
+  const p1b=await metric('Closest separation');
+  await desktop.locator('#control-preset').selectOption('p1c');
+  assert.equal(await metric('Closest separation'),p1b);
+  assert.equal(await desktop.locator('#control-energy').inputValue(),'0.8');
+  await section.selectOption('surface');
+  await desktop.locator('#control-preset').selectOption('po');
+  assert.equal(await desktop.locator('#control-A').inputValue(),'216');
+  await reset.click();
+  await step.click();
+  assert.match(await time.innerText(),/Mark the declining surface/);
 
   await section.selectOption('fermi');
+  await desktop.locator('#control-view').selectOption('main');
   assert.equal(await play.innerText(),'Play');
   await reset.click();
   await step.click();
@@ -125,6 +183,11 @@ try {
   assert.equal(await metric('Probe position'),'0');
   await desktop.locator('#control-probe').press('End');
   assert.equal(await metric('Probe position'),'15');
+  const extra=desktop.locator('.study-more-controls');
+  if(!await extra.evaluate(node=>node.open))await extra.locator('summary').click();
+  await desktop.locator('#control-preset').selectOption('Pb208');
+  await desktop.locator('#control-normalization').selectOption('normalize');
+  assert.equal(await metric('Integrated nucleon count'),'208');
 
   await desktop.locator('.lecture-tools > summary').click();
   await desktop.locator('.lecture-practice > summary').click();
