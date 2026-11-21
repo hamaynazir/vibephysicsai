@@ -13,6 +13,7 @@ export const playbackProfiles = {
   apparatus: {limit: 2, step: 1, rate: .65, label: 'Apparatus explanation steps'},
   nuclides: {limit: 2, step: 1, rate: .65, label: 'Composition explanation steps'},
   conversion: {limit: 2, step: 1, rate: .65, label: 'Energy conversion steps'},
+  scale: {limit: 3, step: 1, rate: .65, label: 'Scale explanation steps', discrete:true},
 };
 
 export class LecturePlayback {
@@ -51,7 +52,7 @@ export class LecturePlayback {
     this.back.onclick = () => this.seek(Math.ceil(this.position/this.profile.step-.00001)*this.profile.step-this.profile.step);
     this.bar.querySelector('[data-motion=step]').onclick = () => {
       const next = this.position + this.profile.step;
-      this.seek(this.profile.limit === 2 || this.profile.autoplay || this.profile===playbackProfiles.mass
+      this.seek(this.profile.limit === 2 || this.profile.autoplay || this.profile===playbackProfiles.mass || this.profile.discrete
         ? Math.floor(next / this.profile.step + .00001) * this.profile.step : next);
     };
     this.bar.querySelector('[data-motion=reset]').onclick = () => this.seek(0);
@@ -69,10 +70,10 @@ export class LecturePlayback {
   configure(id) {
     this.pause();
     this.profile = playbackProfiles[id];
-    this.position = this.profile && !this.profile.autoplay && (this.profile.limit===2 || id==='mass') ? this.profile.limit : 0;
+    this.position = this.profile && !this.profile.autoplay && (this.profile.limit===2 || id==='mass' || this.profile.discrete) ? this.profile.limit : 0;
     this.bar.hidden = !this.profile;
     if (!this.profile) return;
-    const walkthrough = this.profile.limit === 2;
+    const walkthrough = this.profile.limit === 2 || this.profile.discrete;
     this.back.hidden = !walkthrough && id!=='mass' && id!=='fermi';
     this.bar.querySelector('.nuclear-scrubber').hidden = walkthrough;
     this.bar.querySelector('.nuclear-playback-actions label').hidden = walkthrough;
@@ -128,7 +129,7 @@ export class LecturePlayback {
     this.request = undefined;
     const dt = this.last === undefined ? 0 : (now - this.last) / 1000;
     this.last = now;
-    const speed = this.profile.limit === 2 ? 1 : this.speed;
+    const speed = this.profile.limit === 2 || this.profile.discrete ? 1 : this.speed;
     this.position = Math.min(this.profile.limit, this.position + dt * this.profile.rate * speed);
     if (this.position >= this.profile.limit) this.pause();
     this.render();

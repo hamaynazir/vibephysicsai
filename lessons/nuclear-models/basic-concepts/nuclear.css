@@ -16,4 +16,6 @@
 .nuclear-scrubber input{width:100%;min-height:36px;accent-color:var(--accent);margin:0}
 .nuclear-playback .study-motion-status{font-size:.85rem;margin:1px 0 0;color:var(--text);font-variant-numeric:tabular-nums}
 .controls input[type=number]{min-height:44px;border:1px solid var(--line);border-radius:6px;background:var(--soft);padding:6px 9px}
+.controls input[aria-invalid]{outline:2px solid #b54c58}
+#scene[data-model=fermi],#scene[data-model=scattering]{touch-action:none}
 #formula .katex{display:block;overflow-x:auto}

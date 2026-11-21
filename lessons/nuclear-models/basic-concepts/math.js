@@ -1,3 +1,4 @@
+import {bindingData} from './binding-data.js?v=refine-1';
 export const U_MEV=931.49410372,U_KG=1.66053906892e-27,E=1.602176634e-19,COULOMB=1.43996455,MP=1.0072764665789,MN=1.00866491606;
 export const NEUTRON_LIFETIME = 878.4;
 export const ELECTRON_MEV = 0.51099895069;
@@ -7,14 +8,10 @@ export const FERMI_RANGE = 15;
 export const AVOGADRO = 6.02214076e23;
 export const ALPHA_MASS = 4.001506179129;
 export const TC_ISOMER = {excitation:142.6836, halfLifeHours:6.0066, groundHalfLifeYears:211100};
-export const bindingNuclides = {
-  'h-2': {Z: 1, N: 1, mass: 2.014101777844, reference: 1.1122831},
-  'he-4': {Z: 2, N: 2, mass: 4.00260325413, reference: 7.0739156},
-  'c-12': {Z: 6, N: 6, mass: 12, reference: 7.6801446},
-  'fe-56': {Z: 26, N: 30, mass: 55.934935537, reference: 8.7903563},
-  'ni-62': {Z: 28, N: 34, mass: 61.928344753, reference: 8.7945555},
-  'pb-208': {Z:82,N:126,mass:207.976652005,reference:7.8674530},
-};
+export const bindingNuclides=bindingData;
+// NUBASE2020 ground states from the lecture examples.
+export const chartNuclides=[[29,34,true],[29,36,true],[12,14,true],[13,14,true],
+  [14,14,true],[14,17,false],[15,16,true],[16,15,false]];
 // AME2020 neutral hydrogen and free-neutron masses from the comparison table.
 const hydrogenAtom = 1.007825031898;
 const neutronMass = 1.00866491590;
@@ -34,6 +31,10 @@ export const massSamples = {
   c12:{name:'Carbon-12',mass:12,A:12,Z:6},
 };
 export const valenceCharge = quarks => [...quarks].reduce((thirds,q)=>thirds+(q==='u'?2:-1),0)/3;
+export function baryonIdentity(upCount){
+  const quarks='u'.repeat(upCount)+'d'.repeat(3-upCount);
+  return {quarks,charge:valenceCharge(quarks),name:({1:'Neutron',2:'Proton'})[upCount]||'Other flavor combination'};
+}
 export function betaBookkeeping(Z,N) {
   return {daughterZ:Z+1,daughterN:N-1,A:Z+N,chargeBefore:Z,chargeAfter:Z+1-1,leptons:1-1};
 }
@@ -81,11 +82,12 @@ export function coulombState(s, progress) {
   const comSpeed=targetFraction*Math.sqrt(2*s.energy/(s.m1*U_MEV));
   // Incoming velocity points along (-scale, b) in the hyperbola's axes.
   const drift=[-scale,b].map(component=>component/Math.hypot(scale,b)*comSpeed*time);
+  const comKinetic=s.recoil===1?s.energy-ecm:0;
   return {ecm,distance,separation,potential,kinetic,maxSeparation,time,position,vector,
     incoming:[-scale/Math.hypot(scale,b),b/Math.hypot(scale,b)],
     outgoing:[scale/Math.hypot(scale,b),b/Math.hypot(scale,b)],
     velocity:Math.sign(signed)*Math.sqrt(2*kinetic/reducedMass),angle:2*Math.atan2(scale,b)*180/Math.PI,
-    targetFraction,drift,
+    targetFraction,drift,comKinetic,
     angularMomentum:reducedMass*infinitySpeed*b};
 }
 
@@ -122,7 +124,8 @@ export function densityState(s) {
   const R=nuclearRadius(s.A,s.r0), probe=s.probe??3;
   const integral=fermiProfile(R,s.diffuseness,1);
   const rho=s.normalization==='normalize'?s.A/integral:s.rho;
-  return {R,probe,rho,density:fermi(probe,R,s.diffuseness,rho),skin:skinThickness(s.diffuseness),
+  const skin=skinThickness(s.diffuseness), r90=R-skin/2, r10=R+skin/2;
+  return {R,probe,rho,density:fermi(probe,R,s.diffuseness,rho),skin,r90,r10,center:fermi(0,R,s.diffuseness,rho),
     atR:rho/2,total:rho*integral,shell:shellDensity(probe,fermi(probe,R,s.diffuseness,rho))};
 }
 export function alphaBinding() {

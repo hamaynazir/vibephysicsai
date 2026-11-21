@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {lesson,sections,pageSections,guide,challenges,defaults} from '../lessons/nuclear-models/basic-concepts/content.js';
 import {relation,nuclide,massEnergy,heliumBinding,closestApproach,nuclearRadius,uniformDensity,fermi,skinThickness,linearSurface,evaluate} from '../lessons/nuclear-models/basic-concepts/math.js';
 import {bindingEnergy,bindingNuclides,COHORT_SIZE,coulombState,decayState,ELECTRON_MEV,FERMI_RANGE,NEUTRON_LIFETIME,neutronCohort} from '../lessons/nuclear-models/basic-concepts/math.js';
-import {ALPHA_MASS,alphaBinding,betaBookkeeping,densityState,fermiProfile,massSamples,U_KG,valenceCharge} from '../lessons/nuclear-models/basic-concepts/math.js';
+import {ALPHA_MASS,alphaBinding,betaBookkeeping,densityState,fermiProfile,massSamples,U_KG,valenceCharge,baryonIdentity} from '../lessons/nuclear-models/basic-concepts/math.js';
 const near=(a,b,t=1e-9)=>assert.ok(Math.abs(a-b)<Math.max(1e-12,Math.abs(b)*t),`${a} != ${b}`);
 test('Nuclear lecture preserves all nine pages and defines fourteen sections and eleven exercises',()=>{assert.equal(lesson.pages,9);assert.equal(sections.length,14);assert.equal(challenges.length,11);assert.equal(pageSections.length,9);assert.equal(new Set(sections.map(s=>s.id)).size,14);for(const id of [...pageSections,...guide])assert.ok(sections.some(s=>s.id===id));for(const c of challenges){assert.ok(Number.isFinite(c.answer));assert.ok(sections.some(s=>s.id===c.section));}assert.ok(fs.existsSync(new URL('../lessons/nuclear-models/basic-concepts/assets/lecture.pdf',import.meta.url)));});
 test('All nuclear model controls produce finite values at default and extremes',()=>{for(const section of sections){assert.ok(section.quiz.answer>=0&&section.quiz.answer<section.quiz.options.length);for(const edge of ['value','min','max']){const s={...defaults,...(section.id==='surface'?{A:27}: {})};for(const c of section.controls)s[c.key]=c[edge];const result=evaluate(section.id,s);for(const value of Object.values(result))if(typeof value==='number')assert.ok(Number.isFinite(value),section.id);}}});
@@ -14,7 +14,8 @@ test('Fermi half-density and 90–10 percent thickness follow the analytic law',
 test('Free-neutron lifetime differs from half-life; beta bookkeeping conserves A and charge',()=>{const r=evaluate('beta',{...defaults,seconds:878.4*Math.log(2)});near(r.survival,.5);near(r.daughterZ+r.daughterN,defaults.Z+defaults.N);assert.ok(r.halfLife>600&&r.halfLife<615);assert.ok(r.Q>.78&&r.Q<.79);});
 test('Surface fraction includes shell weighting and agrees with independent numerical quadrature',()=>{for(const A of [27,125,216]){const r=linearSurface(A),steps=200000,dr=r.hi/steps;let total=0,surface=0;for(let i=0;i<steps;i++){const x=(i+.5)*dr,rho=x<=r.lo?.17:.17*(r.hi-x)/3,v=4*Math.PI*x*x*rho*dr;total+=v;if(x>=r.lo)surface+=v;}near(r.total,total,1e-8);near(r.fraction,surface/total,1e-5);assert.ok(r.fraction>0&&r.fraction<1);}assert.ok(linearSurface(27).fraction>linearSurface(216).fraction);});
 
-test('All five binding comparisons reproduce AME2020 Table I to the teaching precision',()=>{
+test('The sampled binding trend reproduces AME2020 Table I to teaching precision',()=>{
+  assert.ok(Object.keys(bindingNuclides).length>=50);
   for(const [id,{reference}] of Object.entries(bindingNuclides)) {
     const r=bindingEnergy(id);
     assert.ok(Math.abs(r.perNucleon-reference)<.000001, id);
@@ -25,6 +26,20 @@ test('All five binding comparisons reproduce AME2020 Table I to the teaching pre
   assert.ok(bindingEnergy('he-4').excess>0 && bindingEnergy('fe-56').excess<0);
   assert.ok(bindingEnergy('ni-62').perNucleon>bindingEnergy('fe-56').perNucleon);
   near(ELECTRON_MEV,.51099895069);
+});
+
+test('Light diffuse profiles keep the formal 90% radius separate from the physical domain',()=>{
+  const light=densityState({...defaults,A:4,r0:1.2,diffuseness:1});
+  const heavy=densityState({...defaults,A:208,r0:1.2,diffuseness:1});
+  assert.ok(light.r90<0 && light.center<.9*light.rho);
+  assert.ok(heavy.r90>0 && heavy.center>.9*heavy.rho);
+  near(light.r10-light.r90,light.skin);
+});
+
+test('Valence builder preserves the three constituent charges',()=>{
+  assert.deepEqual([0,1,2,3].map(up=>baryonIdentity(up).charge),[-1,0,1,2]);
+  assert.equal(baryonIdentity(1).name,'Neutron');
+  assert.equal(baryonIdentity(2).name,'Proton');
 });
 
 test('Coulomb timeline conserves relative energy and reproduces the analytic radial velocity',()=>{

@@ -1,10 +1,10 @@
-import {closestApproach,heliumBinding,linearSurface,nuclearRadius,uniformDensity,U_MEV,TC_ISOMER,massSamples} from './math.js?v=chapter-2';
+import {closestApproach,heliumBinding,linearSurface,nuclearRadius,uniformDensity,U_MEV,TC_ISOMER,massSamples,bindingNuclides,chartNuclides,nuclide} from './math.js?v=refine-1';
 export const lesson={id:'nuclear-basic-concepts',title:'Basic Concepts in Nuclear Physics',pages:9,pageKey:'study:nuclear-models:basic-concepts:page',learningKey:'study:nuclear-models:basic-concepts:learning',lecturer:'Assistant Professor Dr. Adil M. Hussein M. Saeed'};
 const slider=(key,label,min,max,step,value)=>({key,label,min,max,step,value});
 const number=(key,label,min,max,value)=>({...slider(key,label,min,max,'any',value),type:'number'});
 const choice=(key,label,options)=>({key,label,options,value:options[0][0]});
 const presets=(label,examples)=>({key:'preset',label,options:[['custom','Custom'],...Object.entries(examples).map(([id,[name]])=>[id,name])],value:'custom',examples});
-export const defaults={Z:6,N:6,Z2:6,N2:8,mass:1,excitation:142.7,isotope:'he-4',seconds:0,z1:2,z2:92,energy:25,m1:4,m2:238,recoil:0,A:56,r0:1.2,electrons:6,diffuseness:.55,rho:.165,probe:3,width:3,impact:0,preset:'custom',view:'main',units:'u',compare:'none',normalization:'free'};
+export const defaults={Z:6,N:6,Z2:6,N2:8,mass:1,excitation:142.7,isotope:'he-4',seconds:0,z1:2,z2:92,energy:25,m1:4,m2:238,recoil:0,A:56,r0:1.2,electrons:6,diffuseness:.55,rho:.165,probe:3,width:3,impact:0,preset:'custom',view:'main',units:'u',compare:'none',normalization:'free',chart:'manual',up:2};
 const section=(id,title,page,end,description,formula,controls,ideas,question,options,answer,explanation)=>({id,title,page,end,mode:id,description,formula,controls,ideas,quiz:{question,options,answer,explanation}});
 export const sections=[
 section('overview','1. Start with the nucleus',1,1,'A chapter companion—not a nuclear laboratory. Begin with symbols, then connect mass, size, charge and the end-of-chapter problems.','A = Z + N; nucleus charge = +Ze',[],[
@@ -24,7 +24,8 @@ section('relations','3. Isotopes, isotones & isobars',2,2,'Compare two integer p
    alSi:['Al-27 and Si-28',{Z:13,N:14,Z2:14,N2:14}],
    siP:['Si-31 and P-31',{Z:14,N:17,Z2:15,N2:16}],
    pS:['P-31 and S-31',{Z:15,N:16,Z2:16,N2:15}],
- }),slider('Z','First nucleus Z',1,29,1,6),slider('N','First nucleus N',0,40,1,6),slider('Z2','Second nucleus Z',1,29,1,6),slider('N2','Second nucleus N',0,40,1,8)],[
+ }),choice('chart','Select a nuclide',[['manual','Manual counts'],...chartNuclides.map(([Z,N])=>[`${Z},${N}`,`${nuclide(Z,N).symbol}-${Z+N}`])]),
+ slider('Z','First nucleus Z',1,29,1,6),slider('N','First nucleus N',0,40,1,6),slider('Z2','Second nucleus Z',1,29,1,6),slider('N2','Second nucleus N',0,40,1,8)],[
  ['Reading the chart','N is the horizontal coordinate and Z is vertical. Isotopes lie along a horizontal row, isotones along a vertical column, and isobars along a diagonal of constant Z+N.'],
  ['Same identity is not an isomer claim','The same Z and N specify the same nuclide. To distinguish isomers you also need nuclear excitation/state information. No stability band is inferred from this small bookkeeping chart.']],
  'Two distinct nuclei have the same A but different Z. They are…',['Isotopes','Isotones','Isobars'],2,'The mass-number sum is equal, so they are isobars.'),
@@ -43,12 +44,13 @@ section('mass','5. Nuclear mass & atomic mass units',3,4,'Convert a mass in u to
  ['Why use MeV/c²?','Mass-energy equivalence applies to every rest mass. Expressing mass in MeV/c² is not justified by assuming that nucleons follow classical vibrations or rotations.']],
  'Does A=12 mean that any nucleus with twelve nucleons has mass exactly 12 u?', ['Yes','No'],1,'Only the reference neutral carbon-12 atom has exactly 12 u by definition; A is a count.'),
 section('binding','6. Mass defect, binding & mass excess',4,5,'Compare a bound atom with separated hydrogen atoms and neutrons. Change the nuclide to see what changes in the mass difference and energy per nucleon.','Δm = ZmH + Nmn − Matom; B ≈ Δmc²; mass excess = (Matom − Au)c²',[
- {key:'isotope',label:'Nuclide',value:'he-4',options:[['h-2','Hydrogen-2'],['he-4','Helium-4'],['c-12','Carbon-12'],['fe-56','Iron-56'],['ni-62','Nickel-62'],['pb-208','Lead-208']]},
+ {key:'isotope',label:'Nuclide',value:'he-4',options:Object.entries(bindingNuclides).map(([id,{Z,N}])=>
+   [id,({'h-2':'Hydrogen-2','he-4':'Helium-4','c-12':'Carbon-12','fe-56':'Iron-56','ni-62':'Nickel-62','pb-208':'Lead-208'})[id]??`${nuclide(Z,N).symbol}-${Z+N}`])},
  choice('view','Binding view',[['main','Energy accounting'],['alpha','Bare alpha nucleus'],['excess','Compare the two mass differences']])],[
  ['Two different differences','Binding mass defect compares separated constituent masses with the bound system. Mass excess compares a mass with A u. These are not interchangeable; even a bound nucleus can have positive mass excess.'],
  ['Binding does not prove every stability property','Positive binding means energy is needed to separate all constituent nucleons. It does not guarantee resistance to beta decay, fission or every particle-emission channel. Stable light nuclei exist: helium-4 and carbon-12 refute a blanket “A<20 is unstable” rule.'],
  ['Helium worked problem','Using atomic H and He masses cancels the electron rest-mass terms. Different electronic binding energies leave a small correction that this teaching model omits. For He-4 B≈28.30 MeV and B/A≈7.07 MeV.'],
- ['Comparison data','The six selected AME2020 nuclides show the broad iron–nickel region. Nearby nucleons provide additional binding as small nuclei grow. At large Z, proton repulsion increasingly offsets the short-range attraction. Energy per nucleon alone cannot determine decay stability.']],
+ ['Comparison data','The AME2020 plot samples the largest measured B/A in each five-mass-number bin and adds the lecture examples. Nearby nucleons contribute additional binding as small nuclei grow. At large Z, proton repulsion increasingly offsets short-range attraction. Energy per nucleon alone cannot determine decay stability.']],
  'Can a bound nucleus have a positive mass excess?', ['Yes','No'],0,'Mass excess uses A u as its reference, not the sum of free constituent masses.'),
 section('beta','7. Free neutron & beta-minus bookkeeping',5,5,'Follow the proton/neutron count change and a free-neutron survival curve.','n → p + e⁻ + ν̄e; β⁻: Z→Z+1, N→N−1, A unchanged',[
  choice('view','Decay view',[['main','Free-neutron population'],['event','One free-neutron event'],['thorium','Thorium-234 beta decay']]),
@@ -78,7 +80,7 @@ section('charge','10. Nuclear charge & atomic neutrality',7,7,'Count positive nu
  ['No tiny charge claimed as established','The neutron has zero net electric charge in the standard description but an internal electromagnetic structure. Experimental limits on charge neutrality are not measurements of a definite small neutron charge or proton–electron mismatch. The lecture’s quoted tiny charge values must not be presented as established nonzero charges.']],
  'Removing an atomic electron changes which quantity?', ['Nuclear Z','The atom’s net charge'],1,'Electron loss creates a positive ion but does not change the nucleus.'),
 section('fermi','11. Diffuse nuclear density',8,8,'Change radius and surface diffuseness in a two-parameter Fermi density profile.','ρ(r)=ρ₀/[1+exp((r−R)/a)]; t₉₀–₁₀=4a ln3≈4.394a',[
- slider('probe','Radial probe position (fm)',0,15,.1,3),slider('diffuseness','Diffuseness a (fm)',.2,1,.01,.55),
+ slider('probe','Radial probe position (fm)',0,15,'any',3),slider('diffuseness','Diffuseness a (fm)',.2,1,'any',.55),
  choice('view','Plot',[['main','Local nucleon density'],['shell','Nucleons per unit radial thickness']]),
  presets('Model nucleus',Object.fromEntries([['C',12],['Ca',40],['Ca',48],['Ni',58],['Sn',124],['Pb',208]].map(([symbol,A])=>[symbol+A,[symbol+'-'+A,{A}]]))),
  slider('A','Mass number for radius scale',4,240,1,125),slider('r0','Radius coefficient (fm)',1.1,1.4,.01,1.2),slider('rho','Density parameter ρ₀ (fm⁻³)',.1,.2,.005,.165),
@@ -89,7 +91,8 @@ section('fermi','11. Diffuse nuclear density',8,8,'Change radius and surface dif
  ['Normalization','Use chosen ρ₀ to explore the shape and read its total count. Normalize to A rescales ρ₀ so the spherical integral equals A. The radius and diffuseness stay fixed. The shell-count plot shows how 4πr² weights each radial interval.']],
  'At the half-density radius R, what is ρ(R)?',['ρ₀','ρ₀/2','Zero'],1,'The exponential is exp(0)=1, so the denominator is two.'),
 section('particles','12. Nucleon structure, pions & muons',8,9,'Separate particle classification from a simple ordering by mass.','Muon: lepton; pion: meson; proton/neutron: baryons',[
- choice('view','Particle view',[['main','Compare rest energies'],['valence','Proton and neutron valence charges'],['scale','Atom to subnuclear length scales'],['roles','Pions and cosmic-ray muons']])],[
+ choice('view','Particle view',[['main','Compare rest energies'],['valence','Proton and neutron valence charges'],['scale','Atom to subnuclear length scales'],['roles','Pions and cosmic-ray muons']]),
+ slider('up','Number of up quarks',0,3,1,2)],[
  ['Modern classification','A muon is a charged lepton, not a meson despite the historical name “mu meson.” Pions are mesons; protons and neutrons are composite baryons. Mass lying between electron and proton masses does not define a meson.'],
  ['Nucleon structure','A neutron can have an internal charge distribution while total charge is zero. The lecture’s core/vector/scalar-cloud drawing is a historical model illustration, not an exact modern map. No new fitted nucleon structure is inferred from it.'],
  ['Mass comparison only','The chart shows approximate rest energies: electron 0.511, muon 105.658, charged pion 139.570 and proton 938.272 MeV. Marker lengths represent rest energy, not particle size or lifetime.']],

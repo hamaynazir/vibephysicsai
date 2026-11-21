@@ -1,14 +1,16 @@
-import {bindingEnergy, bindingNuclides, COHORT_SIZE, DECAY_LIMIT, fermi, FERMI_RANGE, NEUTRON_LIFETIME, nuclearRadius, AVOGADRO, U_KG, massSamples, massEnergy, coulombState, densityState, shellDensity, valenceCharge} from './math.js?v=chapter-2';
+import {bindingEnergy, bindingNuclides, chartNuclides, nuclide, COHORT_SIZE, DECAY_LIMIT, fermi, FERMI_RANGE, NEUTRON_LIFETIME, nuclearRadius, AVOGADRO, U_KG, massSamples, massEnergy, coulombState, densityState, shellDensity, baryonIdentity} from './math.js?v=refine-1';
 
 export const fmt = (value, digits = 4) => Number(value.toPrecision(digits)).toString();
 const W = 760, H = 440;
 const sequence = position => Math.min(2, Math.floor(position + .00001));
-const statusByNuclide = {'Cu-63':'stable','Cu-65':'stable','Mg-26':'stable','Al-27':'stable','Si-28':'stable','Si-31':'radioactive','P-31':'stable','S-31':'radioactive'};
+const statusByNuclide = Object.fromEntries(chartNuclides.map(([Z,N,stable])=>[`${nuclide(Z,N).symbol}-${Z+N}`,stable?'stable':'radioactive']));
+const bindingPlot = Object.keys(bindingNuclides).map(key=>({key,...bindingEnergy(key)}));
 let pathKey, pathPoints;
 export const bindingSteps = ['Separated constituents', 'Compare with the bound atom', 'Compare energy per nucleon'];
 export const isomerSteps = ['Ground state', 'Same Z and N in the excited state', 'Reveal the energy gap'];
 
 export function draw(canvas, id, s, r, position) {
+  const targets=[];
   const resolution = Math.min(window.devicePixelRatio || 1, 2);
   if (canvas.width !== W * resolution || canvas.height !== H * resolution) {
     canvas.width = W * resolution;
@@ -127,23 +129,29 @@ export function draw(canvas, id, s, r, position) {
         text(caption,62,58,{size:24,color:proton?red:teal,bold:true});
       }
       text(r.symbol,534,245,{size:116,bold:true});
-      text(r.A,511,161,{size:41,color:purple,align:'right',bold:true});
-      text(r.Z,511,248,{size:41,color:red,align:'right',bold:true});
+      const addition=id==='nuclides'&&s.view!=='main'&&position>=2;
+      text(r.A,511,161,{size:41,color:addition?teal:purple,align:'right',bold:true});
+      text(r.Z,511,248,{size:41,color:addition&&s.view==='proton'?purple:red,align:'right',bold:true});
       line(470,151,409,151,purple,2);
       line(470,236,409,236,red,2);
       text(`Z = ${r.Z} proton${r.Z===1?'':'s'}`,113,339,{color:red,bold:true});
       text(`N = ${r.N} neutron${r.N===1?'':'s'}`,363,339,{color:teal,bold:true});
       text(`${r.Z} + ${r.N} = ${r.A} nucleons`,380,391,{size:30,align:'center'});
+      const addedProton=addition&&s.view==='proton';
       for (let i=0; i<r.A; i++) {
         const angle=i*2.39996323, radius=14*Math.sqrt(i);
-        dot(228+radius*Math.cos(angle),189+radius*Math.sin(angle),6.5,i<r.Z?red:teal,i>=r.Z);
+        const x=228+radius*Math.cos(angle), y=189+radius*Math.sin(angle);
+        const proton=i<r.Z-Number(addedProton)||(addedProton&&i===r.A-1);
+        dot(x,y,6.5,proton?red:teal,!proton);
+        if(addition&&i===r.A-1)dot(x,y,10,purple,true);
       }
+      if(id==='overview')text(`Nuclear charge = +${r.Z}e`,380,425,{size:19,align:'center',color:red});
       break;
     }
     case 'relations': {
       const step=sequence(position);
-      const minN=Math.max(0,Math.min(s.N,s.N2)-2), maxN=Math.max(minN+4,Math.max(s.N,s.N2)+2);
-      const minZ=Math.max(0,Math.min(s.Z,s.Z2)-2), maxZ=Math.max(minZ+4,Math.max(s.Z,s.Z2)+2);
+      const minN=Math.max(0,Math.min(s.N,s.N2,14)-2), maxN=Math.max(38,s.N+2,s.N2+2);
+      const minZ=Math.max(0,Math.min(s.Z,s.Z2,12)-2), maxZ=Math.max(31,s.Z+2,s.Z2+2);
       const x=n=>92+(n-minN)/(maxN-minN)*580, y=z=>352-(z-minZ)/(maxZ-minZ)*238;
       for(let n=minN; n<=maxN; n++) {
         line(x(n),114,x(n),352,grid,1);
@@ -155,6 +163,27 @@ export function draw(canvas, id, s, r, position) {
       }
       text('Protons Z',92,90);
       text('Neutrons N',382,410,{align:'center'});
+      if(step===2){
+        if(s.chart!=='manual'){
+          line(x(minN),y(s.Z),x(maxN),y(s.Z),teal,2,true);
+          line(x(s.N),y(minZ),x(s.N),y(maxZ),purple,2,true);
+          const lo=Math.max(minN,r.A-maxZ), hi=Math.min(maxN,r.A-minZ);
+          line(x(lo),y(r.A-lo),x(hi),y(r.A-hi),red,2,true);
+          text('Same Z · Same N · Same A',672,90,{size:17,align:'right',color:muted});
+        }
+        for(const [Z,N,stable] of chartNuclides){
+          const px=x(N), py=y(Z);
+          dot(px,py,5,muted,!stable);
+        }
+        const nearest=(a,b)=>chartNuclides.reduce((best,[Z,N])=>{
+          const distance=Math.hypot(a-x(N),b-y(Z));
+          return distance<best.distance?{Z,N,distance}:best;
+        },{distance:Infinity});
+        targets.push({hit:(a,b)=>nearest(a,b).distance<=19,apply:(a,b)=>{
+          const {Z,N}=nearest(a,b);
+          return ['chart',`${Z},${N}`];
+        }});
+      }
       const active = r.relations.isotope || r.relations.isotone || r.relations.isobar;
       if(active && step===2) {
         if(r.relations.isotope) line(x(minN),y(s.Z),x(maxN),y(s.Z),purple,3,true);
@@ -187,6 +216,7 @@ export function draw(canvas, id, s, r, position) {
       if(step===2) {
         arrow(387,upper+5,387,ground-5,purple);
         text(`${fmt(s.excitation)} keV`,407,(ground+upper)/2+7,{color:purple,bold:true});
+        text(`Rest-mass increase: ${fmt(r.massIncrement)} u`,132,397,{size:20,color:muted});
       }
       break;
     }
@@ -194,9 +224,9 @@ export function draw(canvas, id, s, r, position) {
       if(s.view==='standard') {
         const stages=[
           'Neutral carbon-12 in its ground state',
-          `One mole contains ${fmt(AVOGADRO,7)} atoms`,
-          `Mass of one atom ≈ ${fmt(12*U_KG,6)} kg`,
-          'Divide the mass of one atom by 12',
+          `Molar mass ≈ 0.012 kg/mol · Nₐ = ${fmt(AVOGADRO,9)} mol⁻¹`,
+          `Molar mass ÷ Nₐ ≈ ${fmt(12*U_KG,6)} kg per atom`,
+          'Definition: divide the mass of one carbon-12 atom by 12',
           `1 u ≈ ${fmt(U_KG,7)} kg`
         ];
         const step=Math.min(4,Math.floor(position+.00001));
@@ -206,7 +236,7 @@ export function draw(canvas, id, s, r, position) {
         stages.slice(0,step+1).forEach((label,i)=>{
           const y=124+i*64;
           dot(77,y-7,7,i===step?purple:grid);
-          text(label,103,y,{size:25,color:i===step?purple:ink,bold:i===step});
+          text(label,103,y,{size:21,color:i===step?purple:ink,bold:i===step});
         });
         break;
       }
@@ -219,6 +249,10 @@ export function draw(canvas, id, s, r, position) {
           const y=142+i*92, value=s.units==='u'?mass:massEnergy(mass)[s.units];
           text(name,55,y,{size:24});
           line(200,y-7,643,y-7,grid,2);
+          for(const decade of [-3,-2,-1,0]){
+            const mark=x(10**decade);
+            line(mark,y-13,mark,y,muted,1);
+          }
           dot(x(mass),y-7,8,i===0?purple:teal,i===2);
           text(`${fmt(value,9)} ${unit}`,698,y+30,{size:20,align:'right'});
         });
@@ -237,7 +271,8 @@ export function draw(canvas, id, s, r, position) {
         text('−0.02 u',80,297,{size:20,align:'center'});
         text('0',center,297,{size:20,align:'center'});
         text('+0.02 u',650,297,{size:20,align:'center'});
-        text(`Magnified difference: M − A u = ${fmt(diff,6)} u`,65,364,{size:25,color:purple});
+        text(`Magnified difference: M − A u = ${fmt(diff,6)} u`,65,354,{size:25,color:purple});
+        text('A counts nucleons. The ruler shows the neutral-atom mass difference.',65,398,{size:17,color:muted});
         break;
       }
       const step=sequence(position);
@@ -257,6 +292,7 @@ export function draw(canvas, id, s, r, position) {
       const step=sequence(position), chosen=s.isotope;
       if(s.view==='excess') {
         text('Same atom · two mass references',65,72,{size:29,bold:true});
+        text(`Measured atomic mass: ${r.mass.toFixed(6)} u`,65,107,{size:19,color:muted});
         text('Separated hydrogen atoms and neutrons',65,143,{color:teal});
         text(`Binding difference: ${fmt(r.defect,6)} u → ${fmt(r.energy)} MeV`,65,191,{color:teal,bold:true});
         text(`Reference for mass excess: ${r.A} u`,65,277,{color:purple});
@@ -279,13 +315,19 @@ export function draw(canvas, id, s, r, position) {
           text('Supply B to separate the nucleus again.',95,340,{color:muted});
           break;
         }
-        const g=axes(220,9,'Mass number A','B/A (MeV)',{left:76,right:694,top:248,bottom:368});
-        Object.keys(bindingNuclides).forEach(key=>{
-          const data=bindingEnergy(key), x=g.x(data.A), y=g.y(data.perNucleon);
+        const g=axes(240,9,'Mass number A','B/A (MeV)',{left:76,right:694,top:248,bottom:368});
+        const points=bindingPlot.map(data=>[g.x(data.A),g.y(data.perNucleon)]);
+        poly(points,grid);
+        bindingPlot.forEach((data,i)=>{
+          const {key}=data, [x,y]=points[i];
           dot(x,y,key===chosen?8:5,key===chosen?purple:teal,key!==chosen);
           if(key===chosen) text(key.toUpperCase(),Math.min(654,Math.max(110,x)),y+(y<271?22:-10),{size:17,align:'center',color:purple});
         });
-        text('Selected evaluated nuclei',696,230,{size:17,align:'right',color:muted});
+        targets.push({hit:(x,y)=>points.some(([a,b])=>Math.hypot(a-x,b-y)<=19),apply:(x,y)=>{
+          const index=points.reduce((best,[a,b],i)=>Math.hypot(a-x,b-y)<Math.hypot(points[best][0]-x,points[best][1]-y)?i:best,0);
+          return ['isotope',bindingPlot[index].key];
+        }});
+        text('AME2020 · selected upper trend',696,230,{size:17,align:'right',color:muted});
       }
       break;
     }
@@ -301,7 +343,7 @@ export function draw(canvas, id, s, r, position) {
         }
         if(step===2){
           text(thorium?'Charge: 90 = 91 − 1 · mass number stays 234':'Charge: 0 = +1 − 1 · lepton number: 0 = +1 − 1',60,350,{size:23});
-          text('Energy and vector momentum are shared by the products.',60,393,{size:21,color:muted});
+          text(thorium?'ENSDF lists a 73.92 keV level in the daughter scheme.':'Schematic event · energy and momentum sharing are not sampled.',60,393,{size:20,color:muted});
         }
         break;
       }
@@ -317,6 +359,8 @@ export function draw(canvas, id, s, r, position) {
       text(`${r.remaining} remain`,517,321,{color:purple,bold:true});
       text('● Expected',518,355,{size:18,color:teal});
       text('○ Sample',518,380,{size:18,color:purple});
+      line(g.x(r.halfLife),g.y(0),g.x(r.halfLife),g.y(.5),muted,1,true);
+      text('Half-life',g.x(r.halfLife)+6,g.y(.5)-9,{size:15,color:muted});
       break;
     }
     case 'scattering':
@@ -324,24 +368,35 @@ export function draw(canvas, id, s, r, position) {
       if(s.view==='apparatus') {
         const step=sequence(position);
         text('Geiger–Marsden apparatus · schematic',55,52,{size:28,bold:true});
-        rect(61,173,95,61,fill);
-        text('α source',70,211,{size:20});
-        rect(189,161,12,33,muted);
-        rect(189,214,12,33,muted);
-        arrow(155,204,355,204,purple);
-        text('Collimated beam',152,282,{size:20});
+        const x=455,y=213,radius=127, theta=r.angle*Math.PI/180;
+        const detector=[x+radius*Math.cos(theta), y-radius*Math.sin(theta)];
+        rect(61,183,95,61,fill);
+        text('α source',70,221,{size:20});
+        rect(189,172,12,31,muted);
+        rect(189,224,12,32,muted);
+        arrow(155,y,x-19,y,purple);
+        text('Collimated beam',96,287,{size:20});
         if(step>=1){
-          rect(365,146,7,116,purple);
-          text('Gold foil',325,312,{size:20});
-          for(const [x,y] of [[587,204],[562,109],[281,66]]) arrow(372,204,x,y,teal);
+          rect(x-3,178,7,70,purple);
+          arrow(x,y,...detector,teal);
+          text('Thin gold foil',x,370,{size:20,align:'center'});
         }
         if(step===2){
-          dot(404,203,184,muted,true);
-          for(const [x,y] of [[588,207],[562,107],[281,65]]) dot(x,y,7,purple);
-          text('Movable scintillation screen',705,285,{size:21,align:'right'});
-          text('Near-central passes can produce rare large deflections.',57,412,{size:22,color:muted});
+          dot(x,y,radius,muted,true);
+          dot(...detector,8,purple,true);
+          text(`Predicted hit · ${fmt(r.angle)}°`,699,410,{size:22,color:purple,align:'right'});
         }
         break;
+      }
+      if(id==='scattering'){
+        const guideX=87;
+        const impactY=174+s.impact*.65;
+        line(guideX,174,guideX+91,174,grid,1,true);
+        line(guideX,impactY,guideX+91,impactY,purple,2);
+        dot(guideX+46,impactY,7,purple,true);
+        text('Drag beam offset',guideX,263,{size:17,color:muted});
+        targets.push({hit:(x,y)=>x>=65&&x<=194&&y>=156&&y<=254,drag:true,
+          apply:(_x,y)=>['impact',Math.max(0,Math.min(100,(y-174)/.65))]});
       }
       if(s.impact>0 || s.recoil===1) {
         const key=[s.z1,s.z2,s.energy,s.m1,s.m2,s.recoil,s.impact].join('|');
@@ -372,6 +427,9 @@ export function draw(canvas, id, s, r, position) {
         dot(px,py,8,purple,true);
         const velocity=rotate(r.vector), norm=Math.hypot(...velocity), length=31*Math.sqrt(r.kinetic/r.ecm);
         if(!lab && norm>0)arrow(px,py,px+velocity[0]/norm*length,py+velocity[1]/norm*length,purple);
+        const relative=rotate(r.position);
+        if(!lab&&s.impact>0)arrow(px,py,px+relative[0]/r.separation*20,py+relative[1]/r.separation*20,red);
+        if(!lab&&s.impact>0)text('Red arrow: repulsion direction',699,105,{size:16,align:'right',color:red});
         if(s.impact>0 && !lab) {
           const out=rotate(r.outgoing);
           arrow(521,165,577,165,muted);
@@ -389,7 +447,7 @@ export function draw(canvas, id, s, r, position) {
         text(`Total relative energy ${fmt(r.ecm)} MeV`,365,413,{align:'center',size:21});
         break;
       }
-      const left=90,right=690,base=114,span=right-left;
+      const left=210,right=690,base=114,span=right-left;
       const projectile=left+r.separation/r.maxSeparation*span;
       const turning=left+r.distance/r.maxSeparation*span;
       text('Head-on relative separation',left,49,{size:27,bold:true});
@@ -424,7 +482,10 @@ export function draw(canvas, id, s, r, position) {
         text(label,x,365,{color,align:'center',bold:true});
         text(`${fmt(radius)} fm`,x,395,{color,align:'center'});
       }
-      if(step===2)text(`A and volume ×${fmt(s.A/referenceA)}  →  radius ×${fmt(Math.cbrt(s.A/referenceA))}`,380,88,{size:23,align:'center',bold:true});
+      if(step===2){
+        text(`A and volume ×${fmt(s.A/referenceA)}  →  radius ×${fmt(Math.cbrt(s.A/referenceA))}`,380,88,{size:23,align:'center',bold:true});
+        text(`V = ${fmt(r.volume)} fm³  ·  A/V = ${fmt(r.number)} fm⁻³`,380,424,{size:20,align:'center',color:muted});
+      }
       break;
     }
     case 'charge': {
@@ -436,7 +497,7 @@ export function draw(canvas, id, s, r, position) {
         line(g.x(s.probe),g.y(0),g.x(s.probe),g.y(value),muted,2,true);
         dot(g.x(s.probe),g.y(value),8,purple,true);
         text('Illustrative positive charge profile',84,56,{size:27,bold:true});
-        text(`At ${fmt(s.probe)} fm: ${fmt(value*100)}% of reference density`,84,87,{size:19,color:purple});
+        text(`At ${fmt(s.probe)} fm: ${fmt(value*100)}% of reference density · model A ≈ 2Z`,84,87,{size:18,color:purple});
         radialSlice(R,a,s.probe);
         break;
       }
@@ -450,6 +511,7 @@ export function draw(canvas, id, s, r, position) {
       text('+',260,234,{size:36,align:'center',color:muted});
       text('=',510,234,{size:36,align:'center',color:muted});
       text(charge===0?'Neutral atom':charge>0?'Positive ion':'Negative ion',630,302,{color:purple,align:'center'});
+      text('Changing the electrons changes the ion charge. Nuclear charge stays fixed at the selected Z.',380,385,{size:15,align:'center',color:muted});
       break;
     }
     case 'fermi': {
@@ -459,55 +521,70 @@ export function draw(canvas, id, s, r, position) {
       const scan=p=>Math.max(...Array.from({length:61},(_,i)=>value(i/4,p)));
       const ymax=isShell?Math.ceil(Math.max(scan(r),other?scan(other):0)/10)*10:Math.ceil(Math.max(r.rho,other?.rho||0)*20)/20;
       const g=axes(FERMI_RANGE,ymax,'Radius r (fm)',isShell?'Nucleons per fm':'Nucleon density (fm⁻³)',{left:277,right:699,top:135,bottom:352});
-      const low=r.R-r.skin/2, high=r.R+r.skin/2;
+      const low=Math.max(0,r.r90), high=r.r10;
       rect(g.x(low),g.y(ymax),g.x(high)-g.x(low),g.y(0)-g.y(ymax),fill);
       if(other)curve(g,0,FERMI_RANGE,x=>value(x,other),muted,true);
       curve(g,0,FERMI_RANGE,x=>value(x,r),teal);
       line(g.x(r.R),g.y(0),g.x(r.R),g.y(value(r.R,r)),muted,1,true);
       dot(g.x(r.R),g.y(value(r.R,r)),6,teal);
-      dot(g.x(low),g.y(value(low,r)),5,teal,true);
+      if(r.r90>=0)dot(g.x(low),g.y(value(low,r)),5,teal,true);
       dot(g.x(high),g.y(value(high,r)),5,teal,true);
       dot(g.x(r.probe),g.y(value(r.probe,r)),8,purple,true);
       radialSlice(r.R,s.diffuseness,r.probe);
-      text('90–10% surface band',699,51,{size:21,color:purple,align:'right'});
-      text(`${fmt(r.density)} fm⁻³ at ${fmt(r.probe)} fm`,50,51,{size:22,color:purple});
+      text(r.r90<0?'90% point below r = 0':'90–10% surface band',699,51,{size:21,color:purple,align:'right'});
+      text(`${isShell?`${fmt(r.shell)} nucleons/fm`:`${fmt(r.density)} fm⁻³`} at ${fmt(r.probe)} fm`,50,51,{size:22,color:purple});
+      const clamp=r=>Math.max(0,Math.min(FERMI_RANGE,r));
+      targets.push({hit:(x,y)=>x>=277&&x<=699&&y>=135&&y<=352,drag:true,apply:x=>['probe',clamp((x-277)/422*FERMI_RANGE)]},
+        {hit:(x,y)=>Math.hypot(x-123,y-230)<=95,drag:true,apply:(x,y)=>['probe',clamp(Math.hypot(x-123,y-230)/6.3)]});
       if(other)text(`Dashed: A = ${s.compare} model`,699,82,{size:18,align:'right',color:muted});
       break;
     }
     case 'particles': {
       if(s.view==='valence'){
+        const current=baryonIdentity(s.up);
         text('Valence composition · schematic',57,59,{size:29,bold:true});
-        for(const [x,name,quarks] of [[212,'Proton','uud'],[548,'Neutron','udd']]){
-          dot(x,218,105,muted,true);
-          text(name,x,101,{size:26,align:'center'});
-          [...quarks].forEach((q,i)=>{
-            const px=x+[-45,45,0][i], py=218+[-24,-24,42][i];
-            dot(px,py,25,q==='u'?teal:purple,true);
-            text(q==='u'?'u':'d',px,py+7,{align:'center',color:q==='u'?teal:purple,bold:true});
-          });
-          text(`${quarks==='uud'?'+⅔ + ⅔ − ⅓':'+⅔ − ⅓ − ⅓'} = ${valenceCharge(quarks)>0?'+':''}${valenceCharge(quarks)}e`,x,368,{size:25,align:'center'});
-        }
+        dot(211,218,105,muted,true);
+        [...current.quarks].forEach((q,i)=>{
+          const px=211+[-45,45,0][i], py=218+[-27,-27,42][i];
+          dot(px,py,28,q==='u'?teal:purple,true);
+          text(q==='u'?'u +⅔':'d −⅓',px,py+5,{size:15,align:'center',color:q==='u'?teal:purple,bold:true});
+          targets.push({hit:(x,y)=>Math.hypot(x-px,y-py)<30,apply:()=>['up',s.up+(q==='u'?-1:1)]});
+        });
+        text(current.name,356,163,{size:27,bold:true});
+        text(`${current.quarks} · total ${current.charge>0?'+':''}${current.charge}e`,356,218,{size:27,color:purple});
+        text('Proton uud = +e · neutron udd = 0',356,276,{size:21});
+        text('Tap a quark or change the up-quark count.',380,353,{size:21,align:'center',color:muted});
         text('Real nucleons also contain gluons and sea quarks.',380,413,{size:20,color:muted,align:'center'});
         break;
       }
       if(s.view==='scale'){
+        const step=Math.min(3,Math.floor(position+.00001));
         text('Approximate length scales',65,58,{size:29,bold:true});
         const x=exponent=>95+(exponent+19)*64;
         line(x(-19),230,x(-10),230,muted,2);
         for(let n=-19;n<=-10;n++)line(x(n),222,x(n),238,muted,1);
-        for(const [scale,label,y] of [[-18,'Subnuclear probe',287],[-15,'Nucleon',174],[-14,'Heavy nucleus',287],[-10,'Atom',174]]){
-          dot(x(scale),230,7,purple);
+        const levels=[[-10,'Atom',174],[-14,'Heavy nucleus',287],[-15,'Nucleon',174],[-18,'Subnuclear probe',287]];
+        for(const [scale,label,y] of levels.slice(0,step+1)){
+          dot(x(scale),230,scale===levels[step][0]?9:6,scale===levels[step][0]?purple:teal);
           line(x(scale),230,x(scale),y+5,muted,1,true);
           text(label,x(scale),y,{size:19,align:'center'});
           text(`10${String(scale).replace(/./g,c=>({'-':'⁻','0':'⁰','1':'¹','4':'⁴','5':'⁵','8':'⁸'})[c])} m`,x(scale),y+32,{size:18,align:'center',color:muted});
         }
-        text('One tick equals a factor of ten in length.',380,407,{size:22,align:'center'});
+        if(step===3){
+          for(const [i,q] of ['u','u','d'].entries()){
+            const cx=119+i*37;
+            dot(cx,349,14,q==='u'?teal:purple,true);
+            text(q,cx,355,{size:16,align:'center'});
+          }
+          text('Valence-quark schematic',226,355,{size:20,color:muted});
+        }
+        text(step===3?'Probe scale only · valence quarks have no assigned size here.':'One tick equals a factor of ten in length.',380,407,{size:21,align:'center'});
         break;
       }
       if(s.view==='roles'){
         text('Pion · meson',70,93,{size:32,color:purple,bold:true});
         text('Helps model the longer-range nuclear interaction.',70,147);
-        text('Virtual exchange is an effective description.',70,181,{size:20,color:muted});
+        text('Virtual exchange is an effective description, with no tracked particle path.',70,181,{size:17,color:muted});
         line(70,220,685,220,grid,2);
         text('Muon · charged lepton',70,277,{size:32,color:teal,bold:true});
         text('Cosmic-ray showers can produce real muons.',70,332);
@@ -516,6 +593,7 @@ export function draw(canvas, id, s, r, position) {
       }
       const items=[['Electron · lepton',r.electronEnergy,teal],['Muon · lepton',r.muonMass,teal],['Charged pion · meson',r.pionMass,purple],['Proton · baryon',r.protonMass,red]];
       text('Rest energy (MeV) · linear scale',42,53,{size:25,bold:true});
+      text('Equal horizontal distances represent equal energy differences.',42,406,{size:18,color:muted});
       line(328,87,328,367,grid);
       items.forEach(([label,value,color],i)=>{
         const y=118+i*72, x=328+value/1000*278;
@@ -548,11 +626,12 @@ export function draw(canvas, id, s, r, position) {
         const density=x=>x<r.lo?.17:x<r.hi?.17*(r.hi-x)/s.width:0;
         const max=shellDensity(r.hi,.17);
         curve(g,0,9,x=>.2*shellDensity(x,density(x))/max,purple,true);
-        text('Dashed: shell count shape (rescaled)',691,108,{size:16,align:'right',color:purple});
+        text('Dashed: rescaled 4πr²ρ · use the count ratio above',691,108,{size:16,align:'right',color:purple});
       }
       break;
     }
   }
   canvas.dataset.model=id;
   canvas.dataset.time=position.toFixed(4);
+  return targets;
 }

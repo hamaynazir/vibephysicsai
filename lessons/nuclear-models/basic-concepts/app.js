@@ -1,9 +1,9 @@
 import {createScrollReader} from '../../../scrolling-reader.js';
 import {installLectureReview} from '../../../lecture-review.js?v=math-1';
-import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js?v=chapter-2';
-import {COHORT_SIZE,coulombState,evaluate,fermiWalkthrough,massSamples,TC_ISOMER} from './math.js?v=chapter-2';
-import {draw,bindingSteps,isomerSteps} from './visuals.js?v=chapter-2';
-import {LecturePlayback} from './playback.js?v=chapter-2';
+import {lesson,sections,pageSections,defaults,guide,challenges,sources} from './content.js?v=refine-1';
+import {COHORT_SIZE,coulombState,evaluate,fermiWalkthrough,massSamples,TC_ISOMER,baryonIdentity,fermi,nuclearRadius} from './math.js?v=refine-1';
+import {draw,bindingSteps,isomerSteps} from './visuals.js?v=refine-1';
+import {LecturePlayback} from './playback.js?v=refine-1';
 import katex from '../../../vendor/katex.mjs';
 import {installReaderNavigation} from '../../../reader-navigation.js?v=materials-3';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>n===null?'Not defined':typeof n==='number'?Number(n.toPrecision(5)).toString():String(n);
@@ -69,11 +69,12 @@ const explanations = {
   radius:['Fix the density','Compare volumes and radii','Read the cube-root relationship'],
   surface:['Locate the uniform core','Mark the declining surface','Weight by shell volume and compare the counts'],
   event:['Before the beta event','At the transition','Check conservation across the products'],
-  apparatus:['Collimate the alpha beam','Pass through the thin gold foil','Read flashes around the detector'],
+  apparatus:['Collimate the alpha beam','Deflect the ray at the gold foil','Locate the predicted detector hit'],
+  scale:['Begin at the atomic scale','Look inside the atom','Resolve a nucleon','Describe valence quarks schematically'],
 };
 function configurePlayback(){
   const id=current.id;
-  const profile=id==='beta'&&state.view!=='main'?'event':id==='scattering'&&state.view==='apparatus'?'apparatus':
+  const profile=id==='particles'&&state.view==='scale'?'scale':id==='beta'&&state.view!=='main'?'event':id==='scattering'&&state.view==='apparatus'?'apparatus':
     id==='mass'&&state.view==='main'?'conversion':
     (id==='mass'&&state.view!=='standard') || (id==='binding'&&state.view==='excess') || (id==='nuclides'&&state.view==='main')?'static':id;
   motion.configure(profile);
@@ -85,9 +86,10 @@ function updateControlVisibility(){
     mass:{units:view==='particles',mass:view==='main',preset:view==='main'||view==='atomic'},
     binding:{isotope:view!=='alpha'},
     beta:{Z:view==='main',N:view==='main'},
-    scattering:{energy:view!=='apparatus',impact:view!=='apparatus',z2:view!=='apparatus',recoil:view!=='apparatus'},
+    scattering:{z2:view!=='apparatus',recoil:view!=='apparatus'},
     charge:{electrons:view==='main',probe:view==='radial'},
     fermi:{rho:state.normalization==='free'},
+    particles:{up:view==='valence'},
   }[id];
   for(const [key,show] of Object.entries(visible||{})) $('#control-'+key).closest('label').hidden=!show;
   if(id==='mass'){
@@ -105,11 +107,58 @@ function updateControlVisibility(){
 function redraw(){
   const id = current.id, position = motion.position;
   if(id === 'beta' && state.view==='main') state.seconds = position;
-  const collision = (id === 'scattering' && state.view!=='apparatus') || id === 'recoil';
+  const apparatus=id==='scattering'&&state.view==='apparatus';
+  const collision = (id === 'scattering' && !apparatus) || id === 'recoil';
   const extra = id==='nuclides'&&position>=2 ? {Z:state.Z+Number(state.view==='proton'),N:state.N+Number(state.view==='neutron')} : null;
   const model = id === 'fermi' && densityGuide ? fermiWalkthrough(state, position) : extra ? {...state,...extra} : state;
-  const result = collision ? coulombState(state,position) : evaluate(id,model);
-  draw($('#scene'),id,model,result,position);
+  const result = apparatus ? coulombState({...state,z2:79,m2:197,recoil:0},.5) :
+    collision ? coulombState(state,position) : evaluate(id,model);
+  hitTargets = draw($('#scene'),id,model,result,position) || [];
+  if(id==='fermi') {
+    const domain=result.r90<0?' The center is below 90% of ρ₀. The 90% point lies outside the physical radius range.':'';
+    const reading=`At ${fmt(result.probe)} fm, ${state.view==='shell'?`${fmt(result.shell)} nucleons per fm`:`density is ${fmt(result.density)} fm⁻³`}. Half-density radius ${fmt(result.R)} fm.`;
+    const caption='The slice and graph share a profile. Touch or drag the probe, or use the radial slider. Dashed comparisons are illustrative. '+reading+domain;
+    if($('#scene-caption').textContent!==caption)$('#scene-caption').textContent=caption;
+  }
+  if(id==='scattering'||id==='recoil'){
+    const caption=apparatus?`Illustrative gold-foil detector. The fixed-target model predicts a ${fmt(result.angle)}° deflection for this impact parameter. The marker represents one predicted ray.`:
+      `Relative deflection ${fmt(result.angle)}°, closest separation ${fmt(result.distance)} fm. `+
+      (state.view==='lab'?(state.recoil?'Positions include center-of-mass drift. The displayed angle and energies use relative motion.':'The target stays fixed. The laboratory and fixed-target pictures coincide in this approximation.'):'The point-charge model uses relative motion.');
+    if($('#scene-caption').textContent!==caption)$('#scene-caption').textContent=caption;
+  }
+  if(id==='relations'){
+    const a=`${result.symbol}-${result.A}`, b=`${result.other.symbol}-${result.other.A}`;
+    $('#scene-caption').textContent=`First nuclide ${a}, Z ${result.Z}, N ${result.N}. Second nuclide ${b}, Z ${result.other.Z}, N ${result.other.N}. Select a chart dot or use Select a nuclide. A row shares Z, a column shares N, a diagonal shares A.`;
+  }
+  if(id==='binding'){
+    const summary=`Z ${result.Z}, N ${result.N}, A ${result.A}. Binding energy ${fmt(result.energy)} MeV, or ${fmt(result.perNucleon)} MeV per nucleon.`;
+    $('#scene-caption').textContent=summary+(state.view==='main'?' The graph samples an evaluated upper trend and includes lesson examples. Choose a marker or use Nuclide.':state.view==='alpha'?' Energy accounting for a bare nucleus.':'Binding defect and atomic mass excess use different mass references.');
+  }
+  if(id==='beta'&&state.view==='thorium')$('#scene-caption').textContent='Thorium-234 has 90 protons and 144 neutrons. The daughter has 91 protons and 143 neutrons. Pa* represents excited daughter states. The 73.92 keV ENSDF level is one entry in the daughter scheme.';
+  if(id==='beta'&&state.view!=='thorium'){
+    const caption=state.view==='event'?'One schematic event. A proton, electron and electron antineutrino share the available energy and momentum.':captions.beta;
+    if($('#scene-caption').textContent!==caption)$('#scene-caption').textContent=caption;
+  }
+  if(id==='charge'&&state.view==='radial'){
+    const percent=100*fermi(state.probe,nuclearRadius(2*state.Z),.55,1);
+    $('#scene-caption').textContent=`At ${fmt(state.probe)} fm, relative charge density is ${fmt(percent)}% of the reference. This illustrative profile assumes A ≈ 2Z and a fixed diffuseness.`;
+  }
+  if(id==='charge'&&state.view==='main')$('#scene-caption').textContent=captions.charge;
+  if(id==='mass'&&state.view==='standard')$('#scene-caption').textContent='Divide the approximate carbon-12 molar mass, 0.012 kg per mole, by the Avogadro constant to estimate the mass per atom. One twelfth of the neutral ground-state atom’s mass defines 1 u.';
+  if(id==='mass'&&state.view!=='standard')$('#scene-caption').textContent=captions.mass;
+  if(id==='particles'){
+    const captionsByView={
+      valence:'Each up quark contributes +⅔e and each down quark contributes −⅓e. The model tracks valence flavor and charge. Real nucleons also include gluons and sea quarks.',
+      scale:'Each tick is a factor of ten. The last landmark represents an example probe scale. The valence-quark schematic assigns no quark size.',
+      roles:'Pions are mesons. Muons are charged leptons. Charged pion decay is one route to muons in cosmic-ray showers.',
+    };
+    const caption=captionsByView[state.view]||captions.particles;
+    if($('#scene-caption').textContent!==caption)$('#scene-caption').textContent=caption;
+  }
+  if(id==='radius'){
+    const reference=state.referenceA??27;
+    $('#scene-caption').textContent=`Reference A = ${reference}. Selected A = ${state.A}. The volume ratio is ${fmt(state.A/reference)} and the radius ratio is its cube root, ${fmt(Math.cbrt(state.A/reference))}. Density stays fixed when r₀ is fixed.`;
+  }
   if(id === 'fermi') {
     const message = !densityGuide ? 'Explore with the sliders, or play the walkthrough.'
       : position < 2 ? 'Follow the probe from the center toward R.'
@@ -121,13 +170,13 @@ function redraw(){
     for (const key of ['probe','diffuseness']) {
       $('#control-'+key).value = model[key];
       const output = $('#output-'+key);
-      const value = Number(model[key].toFixed(2)).toString();
+      const value = fmt(model[key]);
       if(output.textContent !== value) output.textContent = value;
     }
   }
   const step = Math.floor(position + .00001);
-  const stages = explanations[id==='beta'?'event':id==='scattering'?'apparatus':id==='mass'&&state.view==='main'?'conversion':id];
-  if(stages && ((id==='beta'&&state.view!=='main') || (id==='scattering'&&state.view==='apparatus') ||
+  const stages = explanations[id==='particles'?'scale':id==='beta'?'event':id==='scattering'?'apparatus':id==='mass'&&state.view==='main'?'conversion':id];
+  if(stages && ((id==='particles'&&state.view==='scale') || (id==='beta'&&state.view!=='main') || (id==='scattering'&&state.view==='apparatus') ||
     ['relations','radius','surface'].includes(id) || (id==='mass'&&['main','standard'].includes(state.view)) || (id==='nuclides'&&state.view!=='main'))) {
     motion.update(`Step ${step+1} of ${stages.length} · ${stages[step]}`);
   }
@@ -173,11 +222,19 @@ case 'mass': {
 }
 case 'binding':return [[`${r.Z}, ${r.N}, ${r.A}`,'Z, N, A'],[r.separated.toFixed(6),'Separated mass (u)'],[r.mass.toFixed(6),state.view==='alpha'?'Bare nucleus mass (u)':'Neutral-atom mass (u)'],[r.defect,'Binding defect (u)'],[r.energy,'Binding energy (MeV)'],[r.perNucleon,'B/A (MeV per nucleon)'],...(r.excess===undefined?[]:[[r.excess,'Atomic mass excess (MeV)']])];
 case 'beta':return state.view==='thorium'?[[234,'A unchanged'],[91,'Daughter Z'],[143,'Daughter N']]:state.view==='event'?[[r.Q,'Total kinetic energy available ≈ (MeV)'],[0,'Net product charge (e)'],[0,'Net electron lepton number']]:[[`${r.daughterZ}, ${r.daughterN}`,'Daughter Z, N (bookkeeping)'],[r.A,'A unchanged'],[`${(r.survival*100).toFixed(1)}%`,'Expected free-neutron survival'],[`${r.remaining} / ${COHORT_SIZE}`,'Sample remaining'],[r.halfLife/60,'Reference half-life (min)'],[r.Q,'Free decay Q (MeV)']];
-case 'scattering':case 'recoil':return state.view==='apparatus'?[]:[[r.separation,'Relative separation (fm)'],[r.distance,'Closest separation D (fm)'],[r.angle,'Asymptotic relative deflection (°)'],[r.kinetic,'Relative kinetic energy (MeV)'],[r.potential,'Electric potential energy (MeV)'],[r.ecm,'Total relative energy (MeV)']];
+case 'scattering':case 'recoil':return state.view==='apparatus'?[[r.angle,'Predicted detector angle (°)'],[r.distance,'Closest separation D (fm)']]:[[r.separation,'Relative separation (fm)'],[r.distance,'Closest separation D (fm)'],[r.angle,'Asymptotic relative deflection (°)'],[r.kinetic,'Relative kinetic energy (MeV)'],[r.potential,'Electric potential energy (MeV)'],[r.ecm,'Total relative energy (MeV)'],...(state.recoil&&state.view==='lab'?[[r.comKinetic,'Center-of-mass drift energy (MeV)'],[r.comKinetic+r.ecm,'Total laboratory energy (MeV)']]:[])];
 case 'radius':return [[r.radius,'Sharp-sphere R (fm)'],[r.volume,'Volume (fm³)'],[r.number,'Number density (fm⁻³)'],[r.perCM3,'Number density (cm⁻³)'],[r.kgM3,'Approximate mass density (kg/m³)']];
 case 'charge':return [[r.charge,'Nuclear charge (C)'],[r.atomNet,'Atom/ion net charge (C)']];
-case 'fermi':return [[r.R,'Half-density radius R (fm)'],[r.skin,'90–10% surface thickness (fm)'],[r.probe,'Probe position (fm)'],[r.density,'Probe density (fm⁻³)'],[r.rho,'Profile parameter ρ₀ (fm⁻³)'],[r.total,'Integrated nucleon count'],...(state.view==='shell'?[[r.shell,'Nucleons per fm at probe']]:[])];
-case 'particles':return [[r.electronEnergy,'Electron · lepton (MeV)'],[r.muonMass,'Muon · lepton (MeV)'],[r.pionMass,'Charged pion · meson (MeV)'],[r.protonMass,'Proton · baryon (MeV)']];
+case 'fermi':return [[r.R,'Half-density radius R (fm)'],[r.skin,r.r90<0?'Formal 90–10% width (fm)':'90–10% surface thickness (fm)'],[r.probe,'Probe position (fm)'],[r.density,'Probe density (fm⁻³)'],[r.rho,'Profile parameter ρ₀ (fm⁻³)'],[r.total,'Integrated nucleon count'],...(state.view==='shell'?[[r.shell,'Nucleons per fm at probe']]:[])];
+case 'particles':{
+  if(state.view==='valence'){
+    const baryon=baryonIdentity(state.up);
+    return [[baryon.name,'Valence assignment'],[baryon.quarks,'Flavor content'],[baryon.charge,'Total charge (e)']];
+  }
+  if(state.view==='scale')return [['≈10⁻¹⁰ m','Atomic size'],['≈10⁻¹⁴ m','Heavy nucleus size'],['≈10⁻¹⁵ m','Nucleon scale'],['≤10⁻¹⁸ m','Example subnuclear probe scale']];
+  if(state.view==='roles')return [['Meson','Pion'],['Charged lepton','Muon']];
+  return [[r.electronEnergy,'Electron · lepton (MeV)'],[r.muonMass,'Muon · lepton (MeV)'],[r.pionMass,'Charged pion · meson (MeV)'],[r.protonMass,'Proton · baryon (MeV)']];
+}
 case 'surface':return [[r.c,'Half-density radius c (fm)'],[r.lo,'Core edge (fm)'],[r.hi,'Outer edge (fm)'],[r.fraction*100,'Nucleons in linear surface (%)'],[`${fmt(r.total)} vs ${state.A}`,'Integrated count vs selected A']];
 }}
 function controlMarkup(c) {
@@ -231,11 +288,48 @@ function renderMode(){mode=$('#learning-mode').value;const show=['explore','expl
 function advanceGuide(delta){memory.guide=Math.max(0,Math.min(guide.length-1,memory.guide+delta));save();guideActive=true;selectSection(guide[memory.guide]);setPage(current.page,false);}
 $('#activity').onclick=e=>{const answer=e.target.closest('[data-answer]');if(answer){const correct=+answer.dataset.answer===current.quiz.answer;record('quiz:'+current.id,correct);$('#feedback').hidden=false;$('#feedback').textContent=(correct?'Correct. ':'Not quite. ')+current.quiz.explanation;if($('#reveal-model'))$('#reveal-model').hidden=false;}if(e.target.id==='reveal-model')$('#model').hidden=false;const review=e.target.closest('[data-review]');if(review){const id=review.dataset.review;if(id.startsWith('exercise:')){mode='practice';$('#learning-mode').value=mode;renderMode();practice(id.slice(9));}else{const sectionId=id.slice(5);go(sectionId);$('#learning-mode').value='question';renderMode();}}};
 $('#learning-mode').onchange=()=>{guideActive=false;renderMode();};
+let hitTargets=[];
+let dragging=null;
+const scene=$('#scene');
+function canvasPoint(event){
+  const {left,top,width,height}=scene.getBoundingClientRect();
+  return [(event.clientX-left)*760/width,(event.clientY-top)*440/height];
+}
+function applyTarget(target,x,y){
+  const [key,value]=target.apply(x,y);
+  const input=$('#control-'+key);
+  input.value=value;
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+}
+scene.addEventListener('pointerdown',event=>{
+  if(event.button!==0)return;
+  const [x,y]=canvasPoint(event);
+  const target=hitTargets.find(item=>item.hit(x,y));
+  if(!target)return;
+  applyTarget(target,x,y);
+  if(target.drag){
+    dragging={id:event.pointerId,target};
+    scene.setPointerCapture(event.pointerId);
+  }
+});
+scene.addEventListener('pointermove',event=>{
+  if(dragging?.id===event.pointerId)applyTarget(dragging.target,...canvasPoint(event));
+});
+for(const name of ['pointerup','pointercancel','lostpointercapture']){
+  scene.addEventListener(name,event=>{if(dragging?.id===event.pointerId)dragging=null;});
+}
 $('#controls').oninput=e=>{
   const key=e.target.dataset.key;
   if(!key)return;
   const output=$('#output-'+key);
-  if(e.target.type==='number' && (!e.target.validity.valid || e.target.value===''))return;
+  if(e.target.type==='number'){
+    const valid=e.target.validity.valid && e.target.value!=='';
+    e.target.toggleAttribute('aria-invalid',!valid);
+    if(!valid){
+      output.textContent=`Enter ${e.target.min}–${e.target.max}. Diagram shows the last valid value (${fmt(state[key])}).`;
+      return;
+    }
+  }
   if(current.id === 'fermi' && densityGuide) {
     state = {...state, diffuseness:Number($('#control-diffuseness').value), probe:Number($('#control-probe').value)};
     densityGuide = false;
@@ -244,6 +338,21 @@ $('#controls').oninput=e=>{
   }
   state[key]=output?+e.target.value:e.target.value;
   if(output)output.textContent=fmt(state[key]);
+  if(current.id==='relations' && key==='chart' && state.chart!=='manual'){
+    const [Z,N]=state.chart.split(',').map(Number);
+    state.Z=Z;
+    state.N=N;
+    state.preset='custom';
+    $('#control-preset').value='custom';
+    for(const field of ['Z','N']){
+      $('#control-'+field).value=state[field];
+      $('#output-'+field).textContent=fmt(state[field]);
+    }
+  }
+  if(current.id==='relations' && ['Z','N','preset'].includes(key)){
+    state.chart='manual';
+    $('#control-chart').value='manual';
+  }
   const preset=current.controls.find(control=>control.examples);
   if(key==='preset' && preset.examples[state.preset]) {
     if(current.id==='radius')delete state.referenceA;
@@ -252,11 +361,13 @@ $('#controls').oninput=e=>{
       const input=$('#control-'+field);
       if(input){
         input.value=value;
+        input.removeAttribute('aria-invalid');
         $('#output-'+field).textContent=fmt(value);
       }
     }
   } else if(output && preset && Object.values(preset.examples).some(([,fields])=>key in fields)) {
     state.preset='custom';
+    if(current.id==='radius')delete state.referenceA;
     $('#control-preset').value='custom';
   }
   if(key==='preset' && state.preset==='custom' && current.id==='radius')delete state.referenceA;

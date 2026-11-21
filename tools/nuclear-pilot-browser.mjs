@@ -20,6 +20,11 @@ const step = desktop.locator('[data-motion=step]');
 const reset = desktop.locator('[data-motion=reset]');
 const pixels = () => canvas.evaluate(node=>node.toDataURL());
 const metric = label => desktop.locator('.metric').filter({hasText:label}).locator('strong').innerText();
+async function canvasClick(x,y){
+  await canvas.scrollIntoViewIfNeeded();
+  const box=await canvas.boundingBox();
+  await desktop.mouse.click(box.x+x/760*box.width,box.y+y/440*box.height);
+}
 
 try {
   await desktop.goto(lecture+'#page=4&topic=binding');
@@ -69,12 +74,16 @@ try {
   assert.match(await time.innerText(),/Step 3 of 3/);
   await desktop.getByRole('combobox',{name:'Nuclide',exact:true}).selectOption('ni-62');
   assert.match(await metric('B/A'),/^8\.794/);
+  await canvasClick(689,267.9);
+  assert.equal(await desktop.locator('#control-isotope').inputValue(),'u-238');
 
   await section.selectOption('relations');
   await desktop.locator('#control-preset').selectOption('copper');
   assert.equal(await metric('First A'),'63');
   assert.equal(await metric('Second A'),'65');
   assert.equal(await metric('Relationship'),'Isotopes');
+  await canvasClick(672-(38-14)/(38-12)*580,352-(13-10)/(31-10)*238);
+  assert.equal(await desktop.locator('#control-chart').inputValue(),'13,14');
 
   await section.selectOption('nuclides');
   await desktop.locator('#control-view').selectOption('neutron');
@@ -97,6 +106,17 @@ try {
   await desktop.locator('#control-view').selectOption('atomic');
   await desktop.locator('#control-preset').selectOption('li7');
   assert.match(await metric('Neutral-atom mass'),/^7\.016/);
+  await desktop.locator('#control-view').selectOption('main');
+  await desktop.locator('#control-mass').fill('999');
+  assert.match(await desktop.locator('#output-mass').innerText(),/last valid value/);
+  await desktop.locator('#control-mass').fill('1');
+  assert.equal(await desktop.locator('#control-mass').getAttribute('aria-invalid'),null);
+
+  await section.selectOption('radius');
+  await desktop.locator('#control-preset').selectOption('triple');
+  assert.match(await desktop.locator('#scene-caption').innerText(),/Reference A = 8/);
+  await desktop.locator('#control-A').fill('125');
+  assert.match(await desktop.locator('#scene-caption').innerText(),/Reference A = 27/);
 
   await section.selectOption('isomers');
   await reset.click();
@@ -152,12 +172,18 @@ try {
     assert.match(await time.innerText(),/Separating/);
   }
   await section.selectOption('scattering');
+  await canvasClick(132,200);
+  assert.equal(await desktop.locator('#control-impact').inputValue(),'40');
   await desktop.locator('#control-impact').fill('20');
   assert.ok(Number(await metric('Asymptotic relative deflection'))<90);
   await seek(.5);
   assert.ok(Number(await metric('Relative kinetic energy'))>0);
   await desktop.locator('#control-view').selectOption('apparatus');
-  assert.match(await time.innerText(),/Read flashes/);
+  assert.match(await time.innerText(),/detector/);
+  const predicted=await metric('Predicted detector angle');
+  await desktop.locator('#control-impact').fill('0');
+  assert.notEqual(await metric('Predicted detector angle'),predicted);
+  assert.equal(await metric('Predicted detector angle'),'180');
   assert.equal(await timeline.isVisible(),false);
   await section.selectOption('recoil');
   await desktop.locator('#control-preset').selectOption('p1b');
@@ -188,6 +214,34 @@ try {
   await desktop.locator('#control-preset').selectOption('Pb208');
   await desktop.locator('#control-normalization').selectOption('normalize');
   assert.equal(await metric('Integrated nucleon count'),'208');
+  await desktop.locator('#control-normalization').selectOption('free');
+  await desktop.locator('#control-A').fill('4');
+  await desktop.locator('#control-r0').fill('1.2');
+  await desktop.locator('#control-diffuseness').fill('1');
+  assert.match(await desktop.locator('#scene-caption').innerText(),/outside the physical radius range/);
+  await seek(.5);
+  assert.equal(Number(await desktop.locator('#control-probe').inputValue()).toPrecision(5),
+    Number(await metric('Probe position')).toPrecision(5));
+  await canvas.scrollIntoViewIfNeeded();
+  const densityBox=await canvas.boundingBox();
+  await desktop.mouse.move(densityBox.x+densityBox.width*.5,densityBox.y+densityBox.height*.5);
+  await desktop.mouse.down();
+  await desktop.mouse.move(densityBox.x+densityBox.width*.7,densityBox.y+densityBox.height*.5);
+  await desktop.mouse.up();
+  assert.ok(Number(await metric('Probe position'))>8);
+
+  await section.selectOption('particles');
+  await desktop.locator('#control-view').selectOption('valence');
+  await desktop.locator('#control-up').fill('2');
+  await canvasClick(166,191);
+  assert.equal(await metric('Valence assignment'),'Neutron');
+  assert.equal(await metric('Total charge (e)'),'0');
+  await desktop.locator('#control-view').selectOption('scale');
+  await reset.click();
+  assert.match(await time.innerText(),/Step 1 of 4/);
+  await step.click();
+  assert.match(await time.innerText(),/Step 2 of 4/);
+  await section.selectOption('fermi');
 
   await desktop.locator('.lecture-tools > summary').click();
   await desktop.locator('.lecture-practice > summary').click();
@@ -233,6 +287,12 @@ try {
   assert.ok(await touch.locator('.pdf-scroll').isVisible());
   await touch.getByRole('button',{name:'Simulation',exact:true}).tap();
   assert.ok(await touch.locator('#scene').isVisible());
+  await touch.goto(lecture+'?check=density-touch#page=8&topic=fermi');
+  const touchScene=touch.locator('#scene');
+  await touchScene.scrollIntoViewIfNeeded();
+  const touchBox=await touchScene.boundingBox();
+  await touch.touchscreen.tap(touchBox.x+touchBox.width*.7,touchBox.y+touchBox.height*.5);
+  assert.ok(Number(await touch.locator('#control-probe').inputValue())>8);
 
   await desktop.emulateMedia({reducedMotion:'no-preference'});
   await desktop.bringToFront();
